@@ -1,0 +1,3 @@
+package algolab;
+
+class AppTest {}
