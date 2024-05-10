@@ -87,7 +87,6 @@ class VerticalLayout implements LayoutManager {
     @Override
     public void addLayoutComponent(String name, Component comp) {
     }
-
     @Override
     public void removeLayoutComponent(Component comp) {
     }
@@ -96,17 +95,18 @@ class VerticalLayout implements LayoutManager {
     public Dimension preferredLayoutSize(Container parent) {
         Dimension dimension = new Dimension( getTotalPaddingWidth(parent), getTotalPaddingHeight(parent) );
         MINIMUM_SIZE.height = dimension.height;
-        for(Component c :parent.getComponents()){
-            if( !c.isVisible() ){
+        for ( Component c :parent.getComponents() ) {
+            if ( !c.isVisible() ) {
                 continue;
             }
 
             Dimension preferredSize = c.getPreferredSize();
-            dimension.height += preferredSize.getHeight();
-            if(preferredSize.width > dimension.width){
+            dimension.height += preferredSize.getHeight() + gapY;
+            if (preferredSize.width > dimension.width) {
                 dimension.width = preferredSize.width;
             }
         }
+        dimension.height -= gapY;
         MINIMUM_SIZE.width = dimension.width;
         return dimension;
     }
@@ -115,7 +115,7 @@ class VerticalLayout implements LayoutManager {
         Insets padding = container.getInsets();
         return padding.left + padding.right;
     }
-    private int getTotalPaddingHeight(Container container){
+    private int getTotalPaddingHeight(Container container) {
         Insets padding = container.getInsets();
         return padding.top + padding.bottom;
     }
@@ -129,9 +129,10 @@ class VerticalLayout implements LayoutManager {
     public void layoutContainer(Container parent) {
         Insets padding = parent.getInsets();
         int y = padding.top;
-        for( Component c : parent.getComponents() ){
-            if( c.isVisible() ) {
-                c.setBounds(padding.left, y, parent.getWidth(), c.getPreferredSize().height);
+        int width = parent.getWidth() - padding.left - padding.right;
+        for ( Component c : parent.getComponents() ) {
+            if ( c.isVisible() ) {
+                c.setBounds(padding.left, y, width, c.getPreferredSize().height);
                 y += c.getHeight() + gapY;
            }
         }
