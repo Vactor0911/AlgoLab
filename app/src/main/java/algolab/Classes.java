@@ -1,6 +1,8 @@
 package algolab;
 
 import java.awt.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 class GbcFactory {
     private static GridBagConstraints gbc = new GridBagConstraints();
@@ -60,7 +62,7 @@ class GbcFactory {
     public static GridBagConstraints createGbc(int x, int y) {
         return createGbc(x, y, 1, 1, 1, 1);
     }
-}
+} //GbcFactory 클래스
 
 /**
  * 객체를 세로로 배치할 수 있는 배치 관리자이다.
@@ -137,4 +139,19 @@ class VerticalLayout implements LayoutManager {
            }
         }
     }
-}
+} //VerticalLayout 클래스
+
+/**
+ * DocumentListener 리스너를 상속받는 클래스이다.
+ * 필요한 메소드만 오버라이드하여 사용한다.
+ */
+class DocumentAdapter implements DocumentListener {
+    @Override
+    public void insertUpdate(DocumentEvent e) { }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) { }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) { }
+} //DocumentAdapter 클래스
