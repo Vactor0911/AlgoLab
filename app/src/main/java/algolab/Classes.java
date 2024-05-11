@@ -1,8 +1,8 @@
 package algolab;
 
 import java.awt.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import java.awt.event.*;
+import javax.swing.event.*;
 
 class GbcFactory {
     private static GridBagConstraints gbc = new GridBagConstraints();
@@ -155,3 +155,15 @@ class DocumentAdapter implements DocumentListener {
     @Override
     public void changedUpdate(DocumentEvent e) { }
 } //DocumentAdapter 클래스
+
+/**
+ * FocusListener 리스너를 상속받는 클래스이다.
+ * 필요한 메소드만 오버라이드하여 사용한다.
+ */
+class FocusAdapter implements FocusListener {
+    @Override
+    public void focusGained(FocusEvent e) { }
+
+    @Override
+    public void focusLost(FocusEvent e) { }
+} //FocusAdapter 클래스
