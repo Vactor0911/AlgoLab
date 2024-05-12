@@ -215,7 +215,7 @@ class ListBox extends JScrollPane {
      * 리스트 박스에 값을 삽입한다.
      * <p>리스트 박스를 생성할 때 지정한 {@code columns} 값에 영향을 받는다.
      * <p>{@code columns}가 1보다 크다면 {@code value}가 0번째에 삽입되고, 나머지 값은 {@code 공백; ""}으로 삽입된다.
-     * @param value {@code String} 형태의 값
+     * @param value 삽입하고자 하는 {@code String} 형태의 값
      */
     public void put(String value) {
         put( new String[]{value} );
@@ -344,15 +344,32 @@ class ListContent extends JPanel {
         add(pnl, GbcFactory.createGbc(1, 0, 0.9d, 1.0d));
     } //생성자
 
+    /**
+     * 주어진 값으로 인덱스 값을 설정한다.
+     * @param index 설정하고자 하는 인덱스 값
+     */
     public void setIndex(int index) {
         this.index = index;
         lblIndex.setText( Integer.toString(index + 1) );
     }
 
+    /**
+     * 저장된 인덱스 값을 반환한다.
+     * @return 인덱스 값
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * 리스트 박스에 저장된 값을 변경한다.
+     * <p>리스트 박스를 생성할 때 지정한 {@code columns} 값에 영향을 받는다.
+     * <ol>
+     *  <li> {@code values}의 크기가 {@code columns} 보다 크다면 {@code columns} 보다 크거나 같은 인덱스의 원소는 변경되지 않는다.
+     *  <li> {@code values}의 크기가 {@code columns} 보다 작다면 부족한 값은 {@code 공백; ""}으로 변경된다.
+     * </ol>
+     * @param values 설정하고자 하는 {@code String[]} 형태의 값
+     */
     public void setTexts(String[] values) {
         for (int i=0; i<aryTextField.length; i++) {
             String strValue = "";
@@ -363,6 +380,10 @@ class ListContent extends JPanel {
         }
     }
 
+    /**
+     * 리스트 박스에 저장된 모든 값을 반환한다.
+     * @return {@code String[]} 형태의 문자열 배열
+     */
     public String[] getTexts() {
         if (aryTextField.length <= 0) {
             return null;
@@ -375,6 +396,10 @@ class ListContent extends JPanel {
         return aryValue;
     }
 
+    /**
+     * 리스트 박스가 비어있는지에 대한 여부를 반환한다.
+     * @return 리스트 박스가 비어있다면 {@code true}를, 아니라면 {@code false}를 반환한다.
+     */
     public boolean isEmpty() {
         for (JTextField tf : aryTextField) {
             if ( tf.getText().isBlank() == false ) {
@@ -384,6 +409,10 @@ class ListContent extends JPanel {
         return true;
     }
 
+    /**
+     * 인덱스 번호를 표시할지 설정한다.
+     * @param b {@code true}라면 인덱스 번호를 리스트 박스 왼쪽에 표시한다. {@code false}라면 인덱스 번호를 숨긴다.
+     */
     public void showIndex(boolean b) {
         lblIndex.setVisible(b);
     }
