@@ -109,6 +109,9 @@ class RoundButton extends ButtonBase {
     }
 } //RoundButton 클래스
 
+/**
+ * 수정 가능한 문자열 데이터를 저장할 수 있는 리스트 박스를 구현한 클래스이다.
+ */
 class ListBox extends JScrollPane {
     //상수
     private static final int GAP = 5;
@@ -121,10 +124,14 @@ class ListBox extends JScrollPane {
 
     //변수
     private ArrayList<ListContent> listContents = new ArrayList<>();
-    private int columns;
+    private final int columns;
 
+    /**
+     * {@code columns}개의 열을 갖는 리스트 박스를 생성한다. {@code columns}는 리스트 박스가 생성된 이후에는 수정될 수 없다.
+     * @param columns 리스트 박스의 열 개수를 지정한다. 1보다 작을 수 없다.
+     */
     public ListBox(int columns) {
-        this.columns = columns;
+        this.columns = Math.max(columns, 1);
 
         pnl.setLayout( new VerticalLayout(5) );
         setViewportView(pnl);
@@ -150,15 +157,32 @@ class ListBox extends JScrollPane {
         this(1);
     } //생성자
 
+    /**
+     * 스크롤의 최대 위치 값을 반환한다.
+     * @return 스크롤의 최대 값
+     */
     public int getMaxValue() {
         JScrollBar vScrollBar = getVerticalScrollBar();
         return vScrollBar.getMaximum() - vScrollBar.getHeight();
     }
 
+    /**
+     * 스크롤이 더 이상 스크롤할 수 없는 끝 부분에 위치해있는지에 대한 여부를 반환한다.
+     * @return 스크롤이 끝 부분에 있다면 {@code true}, 아니라면 {@code false}를 반환한다.
+     */
     public boolean isScrollEnd() {
         return getVerticalScrollBar().getValue() == getMaxValue();
     }
 
+    /**
+     * 리스트 박스에 값을 삽입한다.
+     * <p>리스트 박스를 생성할 때 지정한 {@code columns} 값에 영향을 받는다.
+     * <ol>
+     *  <li> {@code values}의 크기가 {@code columns} 보다 크다면 {@code columns} 보다 크거나 같은 인덱스의 원소는 삽입되지 않는다.
+     *  <li> {@code values}의 크기가 {@code columns} 보다 작다면 부족한 값은 {@code 공백; ""}으로 삽입된다.
+     * </ol>
+     * @param values {@code String[]} 형태의 값
+     */
     public void put(String[] values) {
         //마지막 ListContent 객체가 비어있다면 반환
         if (listContents.size() > 0) {
@@ -187,13 +211,28 @@ class ListBox extends JScrollPane {
         listContents.add(content);
         pnlContent.add(content);
     } //put(String[] values)
+    /**
+     * 리스트 박스에 값을 삽입한다.
+     * <p>리스트 박스를 생성할 때 지정한 {@code columns} 값에 영향을 받는다.
+     * <p>{@code columns}가 1보다 크다면 {@code value}가 0번째에 삽입되고, 나머지 값은 {@code 공백; ""}으로 삽입된다.
+     * @param value {@code String} 형태의 값
+     */
     public void put(String value) {
         put( new String[]{value} );
     }
+    /**
+     * 리스트 박스에 비어있는 값을 삽입한다.
+     * <p>리스트 박스를 생성할 때 지정한 {@code columns} 값에 영향을 받는다.
+     * <p>{@code columns}개의 비어있는 값이 삽입된다.
+     */
     public void put() {
         put( new String[]{""} );
     }
 
+    /**
+     * 리스트에 저장된 모든 값을 반환한다.
+     * @return {@code String[][]} 형태의 문자열 배열
+     */
     public String[][] get() {
         String[][] aryValues = new String[listContents.size()][columns];
 
@@ -204,6 +243,11 @@ class ListBox extends JScrollPane {
         return aryValues;
     }
 
+    /**
+     * 리스트에 저장된 값 중 {@code index}번째 행의 값을 반환한다.
+     * @param index 반환하고자 하는 행의 인덱스
+     * @return {@code String[]} 형태의 문자열 배열
+     */
     public String[] get(int index) {
         try {
             return listContents.get(index).getTexts();
@@ -213,6 +257,10 @@ class ListBox extends JScrollPane {
         }
     }
 
+    /**
+     * 리스트에서 {@code index}번째 행을 삭제한다.
+     * @param index 삭제하고자 하는 행의 인덱스
+     */
     public void removeContent(int index) {
         pnlContent.remove( listContents.get(index) );
         listContents.remove(index);
@@ -230,6 +278,9 @@ class ListBox extends JScrollPane {
     }
 } //ListBox 클래스
 
+/**
+ * 리스트 박스에 저장되는 데이터와 상호작용 할 수 있도록 구현한 클래스이다.
+ */
 class ListContent extends JPanel {
     //상수
     private final int INDEX_WIDTH;
