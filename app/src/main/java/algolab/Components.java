@@ -120,9 +120,12 @@ class ListBox extends JScrollPane {
     private Button btnAdd = new Button("Add");
 
     //변수
-    private ArrayList<ListContent> list = new ArrayList<>();
+    private ArrayList<ListContent> listContents = new ArrayList<>();
+    private int columns;
 
-    public ListBox() {
+    public ListBox(int columns) {
+        this.columns = columns;
+
         pnl.setLayout( new VerticalLayout(5) );
         setViewportView(pnl);
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -137,12 +140,14 @@ class ListBox extends JScrollPane {
         btnAdd.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[] value = { Integer.toString(list.size()+1) };
-                put(value);
+                put();
                 revalidate();
             }
         } );
         pnl.add(btnAdd);
+    } //생성자
+    public ListBox() {
+        this(1);
     } //생성자
 
     public int getMaxValue() {
@@ -155,25 +160,65 @@ class ListBox extends JScrollPane {
     }
 
     public void put(String[] values) {
-        System.out.println(list.size());
-        ListContent content = new ListContent(this, list.size(), values);
+        //마지막 ListContent 객체가 비어있다면 반환
+        if (listContents.size() > 0) {
+            if ( listContents.get(listContents.size() - 1).isEmpty() ) {
+                return;
+            }
+        }
+
+        //열 개수에 따른 values 매개변수 가공
+        String[] fixedValues = new String[columns];
+        for (int i=0; i<fixedValues.length; i++) {
+            if (i < values.length) {
+                fixedValues[i] = values[i];
+            }
+            else {
+                fixedValues[i] = "";
+            }
+        }
+
+        //ListContent 생성 및 삽입
+        ListContent content = new ListContent(this, listContents.size(), fixedValues);
         Dimension prefSize = content.getPreferredSize();
         prefSize.height = CONTENT_HEIGHT;
         content.setPreferredSize(prefSize);
 
-        list.add(content);
+        listContents.add(content);
         pnlContent.add(content);
-    }
+    } //put(String[] values)
     public void put(String value) {
         put( new String[]{value} );
     }
+    public void put() {
+        put( new String[]{""} );
+    }
+
+    public String[][] get() {
+        String[][] aryValues = new String[listContents.size()][columns];
+
+        for (int i=0; i<listContents.size(); i++) {
+            aryValues[i] = listContents.get(i).getTexts();
+        }
+
+        return aryValues;
+    }
+
+    public String[] get(int index) {
+        try {
+            return listContents.get(index).getTexts();
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
 
     public void removeContent(int index) {
-        pnlContent.remove( list.get(index) );
-        list.remove(index);
+        pnlContent.remove( listContents.get(index) );
+        listContents.remove(index);
 
-        for (int i=index; i<list.size(); i++) {
-            list.get(i).setIndex(i);
+        for (int i=index; i<listContents.size(); i++) {
+            listContents.get(i).setIndex(i);
         }
         revalidate();
     }
@@ -196,23 +241,21 @@ class ListContent extends JPanel {
 
     //변수
     private int index;
-    private String[] aryValue;
 
     public ListContent(ListBox root, int index, String[] values) {
         super();
 
         //초기화
         this.index = index;
-        aryValue = values;
-        INDEX_WIDTH = (int)(getPreferredSize().getWidth() * 0.1);
+        INDEX_WIDTH = (int)(getPreferredSize().getWidth() * 0.1d);
         aryTextField = new JTextField[values.length];
         setLayout( new GridBagLayout() );
 
         //인덱스 라벨
-        lblIndex = new JLabel(Integer.toString(index), SwingConstants.CENTER);
+        lblIndex = new JLabel(Integer.toString(index + 1), SwingConstants.CENTER);
         lblIndex.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        lblIndex.setPreferredSize( new Dimension( INDEX_WIDTH, (int)getPreferredSize().getHeight() ) );
         add( lblIndex, GbcFactory.createGbc(0, 0, 0.1d, 1.0d) );
+        lblIndex.setPreferredSize( new Dimension( INDEX_WIDTH, (int)getPreferredSize().getHeight() ) );
 
         //콘텐츠 텍스트 필드
         pnl.setLayout( new GridLayout(1, 0) );
@@ -220,15 +263,16 @@ class ListContent extends JPanel {
         for (int i=0; i<values.length; i++) {
             JTextField tf = new JTextField(0);
             Dimension prefferedSize = new Dimension( (int)getPreferredSize().getWidth(), getHeight() );
-            
+
             tf.setPreferredSize(prefferedSize);
             tf.setHorizontalAlignment(JTextField.CENTER);
             tf.setText(values[i]);
             tf.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
             tf.addFocusListener( new FocusAdapter() {
                 @Override
                 public void focusLost(FocusEvent e) {
-                    if ( tf.getText().isBlank() ) {
+                    if ( isEmpty() ) {
                         root.removeContent( getIndex() );
                         revalidate();
                     }
@@ -258,8 +302,35 @@ class ListContent extends JPanel {
         return index;
     }
 
-    public String[] getValues() {
+    public void setTexts(String[] values) {
+        for (int i=0; i<aryTextField.length; i++) {
+            String strValue = "";
+            if (i < values.length) {
+                strValue = values[i];
+            }
+            aryTextField[i].setText(strValue);
+        }
+    }
+
+    public String[] getTexts() {
+        if (aryTextField.length <= 0) {
+            return null;
+        }
+
+        String[] aryValue = new String[aryTextField.length];
+        for (int i=0; i<aryTextField.length; i++) {
+            aryValue[i] = aryTextField[i].getText();
+        }
         return aryValue;
+    }
+
+    public boolean isEmpty() {
+        for (JTextField tf : aryTextField) {
+            if ( tf.getText().isBlank() == false ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void showIndex(boolean b) {
