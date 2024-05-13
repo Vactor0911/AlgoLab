@@ -3,7 +3,6 @@ package algolab;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-
 import javax.swing.*;
 
 /**
@@ -125,6 +124,7 @@ class ListBox extends JScrollPane {
     //변수
     private ArrayList<ListContent> listContents = new ArrayList<>();
     private final int columns;
+    private boolean showIndex = true;
 
     /**
      * {@code columns}개의 열을 갖는 리스트 박스를 생성한다. {@code columns}는 리스트 박스가 생성된 이후에는 수정될 수 없다.
@@ -203,7 +203,7 @@ class ListBox extends JScrollPane {
         }
 
         //ListContent 생성 및 삽입
-        ListContent content = new ListContent(this, listContents.size(), fixedValues);
+        ListContent content = new ListContent(this, listContents.size(), fixedValues, showIndex);
         Dimension prefSize = content.getPreferredSize();
         prefSize.height = CONTENT_HEIGHT;
         content.setPreferredSize(prefSize);
@@ -271,6 +271,17 @@ class ListBox extends JScrollPane {
         revalidate();
     }
 
+    /**
+     * 저장된 데이터에 인덱스 번호를 표시할지 설정한다.
+     * @param b {@code true}라면 인덱스 번호를 리스트 박스 왼쪽에 표시한다. {@code false}라면 인덱스 번호를 숨긴다.
+     */
+    public void showIndex(boolean b) {
+        showIndex = b;
+        for (ListContent comp : listContents) {
+            comp.showIndex(b);
+        }
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -293,7 +304,7 @@ class ListContent extends JPanel {
     //변수
     private int index;
 
-    public ListContent(ListBox root, int index, String[] values) {
+    public ListContent(ListBox root, int index, String[] values, boolean showIndex) {
         super();
 
         //초기화
@@ -307,6 +318,7 @@ class ListContent extends JPanel {
         lblIndex.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         add( lblIndex, GbcFactory.createGbc(0, 0, 0.1d, 1.0d) );
         lblIndex.setPreferredSize( new Dimension( INDEX_WIDTH, (int)getPreferredSize().getHeight() ) );
+        lblIndex.setVisible(showIndex);
 
         //콘텐츠 텍스트 필드
         pnl.setLayout( new GridLayout(1, 0) );
@@ -410,7 +422,7 @@ class ListContent extends JPanel {
     }
 
     /**
-     * 인덱스 번호를 표시할지 설정한다.
+     * 저장된 데이터에 인덱스 번호를 표시할지 설정한다.
      * @param b {@code true}라면 인덱스 번호를 리스트 박스 왼쪽에 표시한다. {@code false}라면 인덱스 번호를 숨긴다.
      */
     public void showIndex(boolean b) {
