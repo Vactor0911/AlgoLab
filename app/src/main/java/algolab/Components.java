@@ -3,8 +3,10 @@ package algolab;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.jar.JarEntry;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.*;
 
 /**
  * 버튼의 기본적인 속성을 지정해주는 클래스이다.
@@ -125,6 +127,7 @@ class ListBox extends JScrollPane {
     //변수
     private ArrayList<ListContent> listContents = new ArrayList<>();
     private final int columns;
+    private boolean showIndex = true;
 
     /**
      * {@code columns}개의 열을 갖는 리스트 박스를 생성한다. {@code columns}는 리스트 박스가 생성된 이후에는 수정될 수 없다.
@@ -203,7 +206,7 @@ class ListBox extends JScrollPane {
         }
 
         //ListContent 생성 및 삽입
-        ListContent content = new ListContent(this, listContents.size(), fixedValues);
+        ListContent content = new ListContent(this, listContents.size(), fixedValues, showIndex);
         Dimension prefSize = content.getPreferredSize();
         prefSize.height = CONTENT_HEIGHT;
         content.setPreferredSize(prefSize);
@@ -271,6 +274,17 @@ class ListBox extends JScrollPane {
         revalidate();
     }
 
+    /**
+     * 저장된 데이터에 인덱스 번호를 표시할지 설정한다.
+     * @param b {@code true}라면 인덱스 번호를 리스트 박스 왼쪽에 표시한다. {@code false}라면 인덱스 번호를 숨긴다.
+     */
+    public void showIndex(boolean b) {
+        showIndex = b;
+        for (ListContent comp : listContents) {
+            comp.showIndex(b);
+        }
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -293,7 +307,7 @@ class ListContent extends JPanel {
     //변수
     private int index;
 
-    public ListContent(ListBox root, int index, String[] values) {
+    public ListContent(ListBox root, int index, String[] values, boolean showIndex) {
         super();
 
         //초기화
@@ -307,6 +321,7 @@ class ListContent extends JPanel {
         lblIndex.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         add( lblIndex, GbcFactory.createGbc(0, 0, 0.1d, 1.0d) );
         lblIndex.setPreferredSize( new Dimension( INDEX_WIDTH, (int)getPreferredSize().getHeight() ) );
+        lblIndex.setVisible(showIndex);
 
         //콘텐츠 텍스트 필드
         pnl.setLayout( new GridLayout(1, 0) );
@@ -410,10 +425,299 @@ class ListContent extends JPanel {
     }
 
     /**
-     * 인덱스 번호를 표시할지 설정한다.
+     * 저장된 데이터에 인덱스 번호를 표시할지 설정한다.
      * @param b {@code true}라면 인덱스 번호를 리스트 박스 왼쪽에 표시한다. {@code false}라면 인덱스 번호를 숨긴다.
      */
     public void showIndex(boolean b) {
         lblIndex.setVisible(b);
     }
 } //ListContent 클래스
+
+/**
+ * 수정이 불가능한 라벨과 버튼을 드롭 다운 메뉴 방식으로 결합한 객체를 구현한 클래스이다.
+ */
+@SuppressWarnings( {"rawtypes", "unchecked"} )
+class ComboBox extends JComboBox {
+    private DefaultComboBoxModel model;
+     
+    public ComboBox() {
+        model = new DefaultComboBoxModel();
+        setModel(model);
+        setRenderer(new ComboBoxRenderer());
+        setEditor(new ComboBoxEditor());
+        setUI( new ComboBoxUI(this) );
+        setEditable(true);
+    }
+     
+    /**
+     * 콤보 박스에 여러 개의 값을 삽입한다.
+     * @param items 삽입 할 값 들이 저장된 {@code String[][]} 객체.
+     * <p>각각의 값은 크기 2의 {@code String[]} 객체로, {@code 텍스트} 와 {@code 이미지 상대 경로} 를 가진다.
+     */
+    public void addItems(String[][] items) {
+        for (String[] k : items) {
+            model.addElement(k);
+        }
+    }
+
+    /**
+     * 콤보 박스에 한 개의 값을 삽입한다.
+     * @param item 삽입 할 값 들이 저장된 {@code String[]} 객체.
+     * <p>크기는 2이며, {@code 텍스트} 와 {@code 이미지 상대 경로} 를 가진다.
+     */
+    public void addItem(String[] item) {
+        model.addElement(item);
+    }
+
+} //ComboBox 클래스
+
+/**
+ * 콤보 박스에 저장된 원소들을 그려주는 Renderer이다.
+ */
+@SuppressWarnings("rawtypes")
+class ComboBoxRenderer extends JPanel implements ListCellRenderer {
+    private JLabel lblItem = new JLabel();
+     
+    public ComboBoxRenderer() {
+        setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1.0;
+        constraints.insets = new Insets(1, 1, 1, 1);
+         
+        lblItem.setOpaque(true);
+        lblItem.setHorizontalAlignment(JLabel.LEFT);
+         
+        add(lblItem, constraints);
+        setBackground(Color.LIGHT_GRAY);
+    }
+     
+    @Override
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        String[] aryItem = (String[]) value;
+ 
+        //아이콘 설정
+        ImageIcon image = new ImageIcon( Main.getPath(aryItem[1]) );
+        lblItem.setIcon(image);
+
+        //텍스트 설정
+        lblItem.setText( aryItem[0] );
+         
+        if (isSelected) {
+            lblItem.setBackground(Color.LIGHT_GRAY);
+            lblItem.setForeground(Color.BLACK);
+        }
+        else {
+            lblItem.setBackground(Color.WHITE);
+            lblItem.setForeground(Color.BLACK);
+        }
+         
+        return this;
+    }
+ 
+} //ComboBoxRenderer 클래스
+
+/**
+ * 콤보 박스의 선택된 원소를 그려주는 Editor이다.
+ */
+class ComboBoxEditor extends BasicComboBoxEditor {
+    private JPanel pnl = new JPanel();
+    private JLabel lblItem = new JLabel();
+    private String selectedValue;
+    
+    public ComboBoxEditor() {
+        pnl.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1.0;
+        constraints.insets = new Insets(2, 5, 2, 2);
+        
+        lblItem.setOpaque(false);
+        lblItem.setHorizontalAlignment(JLabel.LEFT);
+        lblItem.setForeground(Color.BLACK);
+        
+        pnl.add(lblItem, constraints);
+        pnl.setBackground(Color.LIGHT_GRAY);       
+    }
+    
+    public Component getEditorComponent() {
+        return pnl;
+    }
+    
+    public Object getItem() {
+        return selectedValue;
+    }
+    
+    public void setItem(Object item) {
+        if (item == null) {
+            return;
+        }
+
+        String[] aryItem = (String[]) item;
+
+        lblItem.setText(aryItem[0]);
+
+        ImageIcon image = new ImageIcon( Main.getPath(aryItem[1]) );
+        lblItem.setIcon(image);
+    }
+} //ComboBoxEditor 클래스
+
+/**
+ * 콤보 박스에 사용되는 UI 객체이다.
+ */
+class ComboBoxUI extends BasicComboBoxUI {
+    private ComboBox cb;
+
+    public ComboBoxUI(ComboBox cb) {
+        this.cb = cb;
+    }
+
+    @Override
+    protected JButton createArrowButton() {
+        return new MyArrowButton();
+    }
+
+    @Override
+    protected Rectangle rectangleForCurrentValue() {
+        int buttonWidth = Math.min( (int)(cb.getWidth() * 0.1), cb.getHeight() );
+        arrowButton.setBounds(cb.getWidth() - buttonWidth, 0, buttonWidth, cb.getHeight());
+        return super.rectangleForCurrentValue();
+    }
+
+    private class MyArrowButton extends BasicArrowButton {
+        public MyArrowButton() {
+            super(BasicArrowButton.SOUTH, new Color(225, 225, 225), null, Color.GRAY.darker(), null);
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+        }
+    }
+} //ComboBoxUI 클래스
+
+/**
+ * 데이터를 읽거나 쓰고 이를 표로 시각화할 수 있도록 구현한 클래스이다.
+ */
+class Chart extends JPanel {
+    private static Font fontBold = new Font("Dialog", Font.BOLD, 16);
+
+    private JLabel[] aryRowLabel;
+    private JLabel[] aryColumnLabel;
+    private JLabel[][] aryContentLabel;
+
+    public Chart(int rows, int columns) {
+        aryRowLabel = new JLabel[rows];
+        aryColumnLabel = new JLabel[columns];
+        aryContentLabel = new JLabel[rows][columns];
+
+        setLayout( new GridBagLayout() );
+
+        double weightX = 1d / (double)(columns + 1);
+        double weightY = 0.8d / (double)rows;
+
+        for (int i=0; i<rows+1; i++) { //행
+            for (int j=0; j<columns+1; j++) { //열
+                JLabel lbl = new JLabel("", SwingConstants.CENTER);
+                System.out.println(lbl.getFont());
+                lbl.setBorder( BorderFactory.createLineBorder(Color.BLACK) );
+                lbl.setVisible(false);
+
+                if (i == 0 && j == 0) { //시작점
+                    add( lbl, GbcFactory.createGbc(j, i, weightX, 0.2d) );
+                }
+                else if (j == 0) { //행 제목
+                    aryRowLabel[i-1] = lbl;
+                    add( lbl, GbcFactory.createGbc(j, i, weightX, weightY) );
+                    setLabelTitle(lbl);
+                }
+                else if (i == 0) { //열 제목
+                    aryColumnLabel[j-1] = lbl;
+                    add( lbl, GbcFactory.createGbc(j, i, weightX, 0.2d) );
+                    setLabelTitle(lbl);
+                }
+                else { //내용
+                    aryContentLabel[i-1][j-1] = lbl;
+                    add( lbl, GbcFactory.createGbc(j, i, weightX, weightY) );
+                    lbl.setVisible(true);
+                }
+            }
+        }
+    }
+
+    //가독성 향상용 공통 속성 제어 함수
+    private void setLabelTitle(JLabel lbl) {
+        lbl.setOpaque(true);
+        lbl.setBackground(Color.LIGHT_GRAY);
+        lbl.setFont(fontBold);
+    }
+
+    /**
+     * 표에 값을 삽입한다.
+     * @param aryContent 각 열에 넣고자 하는 값을 저장한 {@code String[]} 객체를 다시 행 별로 저장한 {@code String[][]} 객체
+     * <p>2차원 문자열 배열로써, N행 M열의 값은 {@code aryContent[N][M]}에 위치해야 한다.
+     */
+    public void put(String[][] aryContent) {
+        for (int i=0; i<aryContent.length; i++) {
+            for (int j=0; j<aryContent[i].length; j++) {
+                try {
+                    aryContentLabel[i][j].setText(aryContent[i][j]);
+                    aryContentLabel[i][j].setVisible(true);
+                }
+                catch (Exception e) {}
+            }
+        }
+    }
+
+    /**
+     * 표에 행 제목을 삽입한다.
+     * @param aryRowTitle 각 행마다 삽입하고자 하는 제목을 저장한 {@code String[]} 객체
+     */
+    public void setRowTitle(String[] aryRowTitle) {
+        for (int i=0; i<aryRowLabel.length; i++) {
+            try {
+                aryRowLabel[i].setText(aryRowTitle[i]);
+            }
+            catch (Exception e) {
+                aryRowLabel[i].setText("");
+            }
+            aryRowLabel[i].setVisible(true);
+        }
+    }
+
+    /**
+     * 표에 열 제목을 삽입한다.
+     * @param aryRowTitle 각 열마다 삽입하고자 하는 제목을 저장한 {@code String[]} 객체
+     */
+    public void setColumnTitle(String[] aryColumnTitle) {
+        for (int i=0; i<aryColumnLabel.length; i++) {
+            try {
+                aryColumnLabel[i].setText(aryColumnTitle[i]);
+            }
+            catch (Exception e) {
+                aryColumnLabel[i].setText("");
+            }
+            aryColumnLabel[i].setVisible(true);
+        }
+    }
+
+    /**
+     * 표의 행 제목을 나타내거나 나타내지 않는다.
+     * @param b 행 제목 표시 여부
+     */
+    public void showRowTitle(boolean b) {
+        for (int i=0; i<aryRowLabel.length; i++) {
+            aryRowLabel[i].setVisible(b);
+        }
+    }
+
+    /**
+     * 표의 열 제목을 나타내거나 나타내지 않는다.
+     * @param b 열 제목 표시 여부
+     */
+    public void showColumnTitle(boolean b) {
+        for (int i=0; i<aryColumnLabel.length; i++) {
+            aryColumnLabel[i].setVisible(b);
+        }
+    }
+}
