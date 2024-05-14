@@ -434,6 +434,7 @@ class ListContent extends JPanel {
 /**
  * 수정이 불가능한 라벨과 버튼을 드롭 다운 메뉴 방식으로 결합한 객체를 구현한 클래스이다.
  */
+@SuppressWarnings( {"rawtypes", "unchecked"} )
 class ComboBox extends JComboBox {
     private DefaultComboBoxModel model;
      
@@ -471,6 +472,7 @@ class ComboBox extends JComboBox {
 /**
  * 콤보 박스에 저장된 원소들을 그려주는 Renderer이다.
  */
+@SuppressWarnings("rawtypes")
 class ComboBoxRenderer extends JPanel implements ListCellRenderer {
     private JLabel lblItem = new JLabel();
      
