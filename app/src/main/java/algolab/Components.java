@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.plaf.basic.*;
 
 /**
  * 버튼의 기본적인 속성을 지정해주는 클래스이다.
@@ -429,3 +430,164 @@ class ListContent extends JPanel {
         lblIndex.setVisible(b);
     }
 } //ListContent 클래스
+
+/**
+ * 수정이 불가능한 라벨과 버튼을 드롭 다운 메뉴 방식으로 결합한 객체를 구현한 클래스이다.
+ */
+class ComboBox extends JComboBox {
+    private DefaultComboBoxModel model;
+     
+    public ComboBox() {
+        model = new DefaultComboBoxModel();
+        setModel(model);
+        setRenderer(new ComboBoxRenderer());
+        setEditor(new ComboBoxEditor());
+        setUI( new ComboBoxUI(this) );
+        setEditable(true);
+    }
+     
+    /**
+     * 콤보 박스에 여러 개의 값을 삽입한다.
+     * @param items 삽입 할 값 들이 저장된 {@code String[][]} 객체.
+     * <p>각각의 값은 크기 2의 {@code String[]} 객체로, {@code 텍스트} 와 {@code 이미지 상대 경로} 를 가진다.
+     */
+    public void addItems(String[][] items) {
+        for (String[] k : items) {
+            model.addElement(k);
+        }
+    }
+
+    /**
+     * 콤보 박스에 한 개의 값을 삽입한다.
+     * @param item 삽입 할 값 들이 저장된 {@code String[]} 객체.
+     * <p>크기는 2이며, {@code 텍스트} 와 {@code 이미지 상대 경로} 를 가진다.
+     */
+    public void addItem(String[] item) {
+        model.addElement(item);
+    }
+
+} //ComboBox 클래스
+
+/**
+ * 콤보 박스에 저장된 원소들을 그려주는 Renderer이다.
+ */
+class ComboBoxRenderer extends JPanel implements ListCellRenderer {
+    private JLabel lblItem = new JLabel();
+     
+    public ComboBoxRenderer() {
+        setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1.0;
+        constraints.insets = new Insets(1, 1, 1, 1);
+         
+        lblItem.setOpaque(true);
+        lblItem.setHorizontalAlignment(JLabel.LEFT);
+         
+        add(lblItem, constraints);
+        setBackground(Color.LIGHT_GRAY);
+    }
+     
+    @Override
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        String[] aryItem = (String[]) value;
+ 
+        //아이콘 설정
+        ImageIcon image = new ImageIcon( Main.getPath(aryItem[1]) );
+        lblItem.setIcon(image);
+
+        //텍스트 설정
+        lblItem.setText( aryItem[0] );
+         
+        if (isSelected) {
+            lblItem.setBackground(Color.LIGHT_GRAY);
+            lblItem.setForeground(Color.BLACK);
+        }
+        else {
+            lblItem.setBackground(Color.WHITE);
+            lblItem.setForeground(Color.BLACK);
+        }
+         
+        return this;
+    }
+ 
+} //ComboBoxRenderer 클래스
+
+/**
+ * 콤보 박스의 선택된 원소를 그려주는 Editor이다.
+ */
+class ComboBoxEditor extends BasicComboBoxEditor {
+    private JPanel pnl = new JPanel();
+    private JLabel lblItem = new JLabel();
+    private String selectedValue;
+    
+    public ComboBoxEditor() {
+        pnl.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1.0;
+        constraints.insets = new Insets(2, 5, 2, 2);
+        
+        lblItem.setOpaque(false);
+        lblItem.setHorizontalAlignment(JLabel.LEFT);
+        lblItem.setForeground(Color.BLACK);
+        
+        pnl.add(lblItem, constraints);
+        pnl.setBackground(Color.LIGHT_GRAY);       
+    }
+    
+    public Component getEditorComponent() {
+        return pnl;
+    }
+    
+    public Object getItem() {
+        return selectedValue;
+    }
+    
+    public void setItem(Object item) {
+        if (item == null) {
+            return;
+        }
+
+        String[] aryItem = (String[]) item;
+
+        lblItem.setText(aryItem[0]);
+
+        ImageIcon image = new ImageIcon( Main.getPath(aryItem[1]) );
+        lblItem.setIcon(image);
+    }
+} //ComboBoxEditor 클래스
+
+/**
+ * 콤보 박스에 사용되는 UI 객체이다.
+ */
+class ComboBoxUI extends BasicComboBoxUI {
+    private ComboBox cb;
+
+    public ComboBoxUI(ComboBox cb) {
+        this.cb = cb;
+    }
+
+    @Override
+    protected JButton createArrowButton() {
+        return new MyArrowButton();
+    }
+
+    @Override
+    protected Rectangle rectangleForCurrentValue() {
+        int buttonWidth = Math.min( (int)(cb.getWidth() * 0.1), cb.getHeight() );
+        arrowButton.setBounds(cb.getWidth() - buttonWidth, 0, buttonWidth, cb.getHeight());
+        return super.rectangleForCurrentValue();
+    }
+
+    private class MyArrowButton extends BasicArrowButton {
+        public MyArrowButton() {
+            super(BasicArrowButton.SOUTH, new Color(225, 225, 225), null, Color.GRAY.darker(), null);
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+        }
+    }
+} //ComboBoxUI 클래스
