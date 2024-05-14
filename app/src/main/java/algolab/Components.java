@@ -3,6 +3,8 @@ package algolab;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.jar.JarEntry;
+
 import javax.swing.*;
 import javax.swing.plaf.basic.*;
 
@@ -593,3 +595,112 @@ class ComboBoxUI extends BasicComboBoxUI {
         }
     }
 } //ComboBoxUI 클래스
+
+/**
+ * 데이터를 읽거나 쓰고 이를 표로 시각화할 수 있도록 구현한 클래스이다.
+ */
+class Chart extends JPanel {
+    private static Font fontBold = new Font("Dialog", Font.BOLD, 16);
+
+    private int rows;
+    private int columns;
+
+    private JLabel[] aryRowLabel;
+    private JLabel[] aryColumnLabel;
+    private JLabel[][] aryContentLabel;
+
+    public Chart(int rows, int columns) {
+        this.rows = rows;
+        this.columns = columns;
+        aryRowLabel = new JLabel[rows];
+        aryColumnLabel = new JLabel[columns];
+        aryContentLabel = new JLabel[rows][columns];
+
+        setLayout( new GridBagLayout() );
+
+        double weightX = 1d / (double)(columns + 1);
+        double weightY = 0.8d / (double)rows;
+
+        for (int i=0; i<rows+1; i++) { //행
+            for (int j=0; j<columns+1; j++) { //열
+                JLabel lbl = new JLabel("", SwingConstants.CENTER);
+                System.out.println(lbl.getFont());
+                lbl.setBorder( BorderFactory.createLineBorder(Color.BLACK) );
+                lbl.setVisible(false);
+
+                if (i == 0 && j == 0) { //시작점
+                    add( lbl, GbcFactory.createGbc(j, i, weightX, 0.2d) );
+                }
+                else if (j == 0) { //행 제목
+                    aryRowLabel[i-1] = lbl;
+                    add( lbl, GbcFactory.createGbc(j, i, weightX, weightY) );
+                    setLabelTitle(lbl);
+                }
+                else if (i == 0) { //열 제목
+                    aryColumnLabel[j-1] = lbl;
+                    add( lbl, GbcFactory.createGbc(j, i, weightX, 0.2d) );
+                    setLabelTitle(lbl);
+                }
+                else { //내용
+                    aryContentLabel[i-1][j-1] = lbl;
+                    add( lbl, GbcFactory.createGbc(j, i, weightX, weightY) );
+                    lbl.setVisible(true);
+                }
+            }
+        }
+    }
+
+    private void setLabelTitle(JLabel lbl) {
+        lbl.setOpaque(true);
+        lbl.setBackground(Color.LIGHT_GRAY);
+        lbl.setFont(fontBold);
+    }
+
+    public void put(String[][] aryContent) {
+        for (int i=0; i<aryContent.length; i++) {
+            for (int j=0; j<aryContent[i].length; j++) {
+                try {
+                    aryContentLabel[i][j].setText(aryContent[i][j]);
+                    aryContentLabel[i][j].setVisible(true);
+                }
+                catch (Exception e) {}
+            }
+        }
+    }
+
+    public void setRowTitle(String[] aryRowTitle) {
+        for (int i=0; i<aryRowLabel.length; i++) {
+            try {
+                aryRowLabel[i].setText(aryRowTitle[i]);
+            }
+            catch (Exception e) {
+                aryRowLabel[i].setText("");
+            }
+            aryRowLabel[i].setVisible(true);
+        }
+    }
+
+    public void setColumnTitle(String[] aryColumnTitle) {
+        for (int i=0; i<aryColumnLabel.length; i++) {
+            try {
+                aryColumnLabel[i].setText(aryColumnTitle[i]);
+            }
+            catch (Exception e) {
+                aryColumnLabel[i].setText("");
+            }
+            aryColumnLabel[i].setVisible(true);
+        }
+    }
+
+    public void showRowTitle(boolean b) {
+        for (int i=0; i<aryRowLabel.length; i++) {
+            aryRowLabel[i].setVisible(b);
+        }
+    }
+
+    public void showColumnTitle(boolean b) {
+        for (int i=0; i<aryColumnLabel.length; i++) {
+            aryColumnLabel[i].setVisible(b);
+        }
+    }
+}
