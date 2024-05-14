@@ -602,16 +602,11 @@ class ComboBoxUI extends BasicComboBoxUI {
 class Chart extends JPanel {
     private static Font fontBold = new Font("Dialog", Font.BOLD, 16);
 
-    private int rows;
-    private int columns;
-
     private JLabel[] aryRowLabel;
     private JLabel[] aryColumnLabel;
     private JLabel[][] aryContentLabel;
 
     public Chart(int rows, int columns) {
-        this.rows = rows;
-        this.columns = columns;
         aryRowLabel = new JLabel[rows];
         aryColumnLabel = new JLabel[columns];
         aryContentLabel = new JLabel[rows][columns];
@@ -650,12 +645,18 @@ class Chart extends JPanel {
         }
     }
 
+    //가독성 향상용 공통 속성 제어 함수
     private void setLabelTitle(JLabel lbl) {
         lbl.setOpaque(true);
         lbl.setBackground(Color.LIGHT_GRAY);
         lbl.setFont(fontBold);
     }
 
+    /**
+     * 표에 값을 삽입한다.
+     * @param aryContent 각 열에 넣고자 하는 값을 저장한 {@code String[]} 객체를 다시 행 별로 저장한 {@code String[][]} 객체
+     * <p>2차원 문자열 배열로써, N행 M열의 값은 {@code aryContent[N][M]}에 위치해야 한다.
+     */
     public void put(String[][] aryContent) {
         for (int i=0; i<aryContent.length; i++) {
             for (int j=0; j<aryContent[i].length; j++) {
@@ -668,6 +669,10 @@ class Chart extends JPanel {
         }
     }
 
+    /**
+     * 표에 행 제목을 삽입한다.
+     * @param aryRowTitle 각 행마다 삽입하고자 하는 제목을 저장한 {@code String[]} 객체
+     */
     public void setRowTitle(String[] aryRowTitle) {
         for (int i=0; i<aryRowLabel.length; i++) {
             try {
@@ -680,6 +685,10 @@ class Chart extends JPanel {
         }
     }
 
+    /**
+     * 표에 열 제목을 삽입한다.
+     * @param aryRowTitle 각 열마다 삽입하고자 하는 제목을 저장한 {@code String[]} 객체
+     */
     public void setColumnTitle(String[] aryColumnTitle) {
         for (int i=0; i<aryColumnLabel.length; i++) {
             try {
@@ -692,12 +701,20 @@ class Chart extends JPanel {
         }
     }
 
+    /**
+     * 표의 행 제목을 나타내거나 나타내지 않는다.
+     * @param b 행 제목 표시 여부
+     */
     public void showRowTitle(boolean b) {
         for (int i=0; i<aryRowLabel.length; i++) {
             aryRowLabel[i].setVisible(b);
         }
     }
 
+    /**
+     * 표의 열 제목을 나타내거나 나타내지 않는다.
+     * @param b 열 제목 표시 여부
+     */
     public void showColumnTitle(boolean b) {
         for (int i=0; i<aryColumnLabel.length; i++) {
             aryColumnLabel[i].setVisible(b);
