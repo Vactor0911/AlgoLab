@@ -10,8 +10,7 @@ public class Frame extends JFrame {
     private Button btnLearning = new Button("Learning");
     private Button btnTraining = new Button("Training");
     private Button btnQuiz = new Button("Quiz");
-
-    
+  
     // Sukhen
     private String[] algo = {"Selection Sort", "Insertion Sort", "Bubble Sort", "Quick Sort", "Merge Sort"};
     private JComboBox algoCombo = new JComboBox<>(algo);
