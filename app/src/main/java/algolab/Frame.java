@@ -35,7 +35,6 @@ public class Frame extends JFrame {
         setMinimumSize( new Dimension(600, 400) );
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
         setLayout( new GridBagLayout() );
 
         //메뉴 패널
