@@ -95,15 +95,21 @@ class PracticeScreen extends JPanel {
     } //생성자
 } //PracticeScreen 클래스
 
-class QuizStartPanel extends JPanel {
-    public QuizStartPanel() {
+/**
+ * 퀴즈 시작 메뉴
+ */
+class QuizStartScreen extends JPanel {
+    private JLabel lblQuiz = new JLabel("Quiz", SwingConstants.CENTER);
+    private Button btnStart = new Button("Start");
+
+    public QuizStartScreen() {
         setLayout( new GridBagLayout() );
         // 1행
         add(new JLabel(""), GbcFactory.createGbc(0, 0, 1d, 0.3d, 3, 1));
                     
         //2행
         add(new JLabel(""), GbcFactory.createGbc(0, 1, 0.33d, 0.2d));  
-        add(new JLabel("Quiz", SwingConstants.CENTER), GbcFactory.createGbc(1, 1,0.34d, 0.2d));  
+        add(lblQuiz, GbcFactory.createGbc(1, 1,0.34d, 0.2d));  
         add(new JLabel(""), GbcFactory.createGbc(2, 1, 0.33d, 0.2d));
 
         //3행
@@ -111,20 +117,23 @@ class QuizStartPanel extends JPanel {
 
         //4행
         add(new JLabel(""), GbcFactory.createGbc(0, 3, 0.33d, 0.2d));  
-        add(new Button("Start"), GbcFactory.createGbc(1, 3,0.34d, 0.2d));  
+        add(btnStart, GbcFactory.createGbc(1, 3,0.34d, 0.2d));  
         add(new JLabel(""), GbcFactory.createGbc(2, 3, 0.33d, 0.2d));
 
         //5행
         add(new JLabel(""), GbcFactory.createGbc(0, 4, 1d, 0.3d, 3, 1)); 
     } //생성자
-} //QuizStartPanel 클래스
+} //QuizStartScreen 클래스
 
-class QuizPanel extends JPanel {
+/**
+ * 퀴즈 풀이 메뉴
+ */
+class QuizScreen extends JPanel {
     private JRadioButton jRadioButton1 = new JRadioButton();
     private JRadioButton jRadioButton2 = new JRadioButton(); 
     private JButton jButton = new JButton("Click");
 
-    public QuizPanel() {
+    public QuizScreen() {
         setLayout( new GridBagLayout() );
 
         // 1행
@@ -164,8 +173,11 @@ class QuizPanel extends JPanel {
         super.add(component, constraints);
         ((JComponent)component).setBorder( BorderFactory.createLineBorder(Color.BLACK) );
     }
-} //QuizPanel 클래스
+} //QuizScreen 클래스
 
+/**
+ * 라디오 버튼 연습
+ */
 class QuizTODO extends JPanel {
 
 	// Declaration of object of JRadioButton class. 
