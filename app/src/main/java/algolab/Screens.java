@@ -9,7 +9,6 @@ public class Screens {}
  * 학습하기 메뉴
  */
 class LearningScreen extends JPanel {
-    // SeonJin
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("실습하기");
     private JTabbedPane tabLearn = new JTabbedPane();
@@ -48,15 +47,8 @@ class LearningScreen extends JPanel {
 
         // 4행
         add( new JLabel("graph"), GbcFactory.createGbc(4, 3, 0.3d, 0.45d) );
-    }
-
-    @Override
-    public void add( Component comp, Object obj ) {
-        super.add(comp, obj);
-        JComponent jcomp = (JComponent)comp;
-        jcomp.setBorder(BorderFactory.createLineBorder(Color.black));
-    }
-}
+    } //생성자
+} //LearningScreen 클래스
 
 /**
  * 실습하기 메뉴
@@ -100,5 +92,5 @@ class PracticeScreen extends JPanel {
 
         //4행
         add( controlPanel, GbcFactory.createGbc(3, 3, 0.04d, 0.1d, 2, 1) );
-    }
-}
+    } //생성자
+} //PracticeScreen 클래스
