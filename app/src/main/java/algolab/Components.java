@@ -3,8 +3,6 @@ package algolab;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.jar.JarEntry;
-
 import javax.swing.*;
 import javax.swing.plaf.basic.*;
 
@@ -643,7 +641,7 @@ class Chart extends JPanel {
                 }
             }
         }
-    }
+    } //생성자
 
     //가독성 향상용 공통 속성 제어 함수
     private void setLabelTitle(JLabel lbl) {
@@ -720,4 +718,4 @@ class Chart extends JPanel {
             aryColumnLabel[i].setVisible(b);
         }
     }
-}
+} //Chart 클래스
