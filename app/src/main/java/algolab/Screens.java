@@ -49,3 +49,46 @@ class LearningScreen extends JPanel {
         // 사진은 넣으면 이상하게 변해서 Label로 대체했음
     }
 }
+
+class PracticeScreen extends JPanel {
+    private String[] algo = {"Selection Sort", "Insertion Sort", "Bubble Sort", "Quick Sort", "Merge Sort"};
+    private JComboBox algoCombo = new JComboBox<>(algo);
+    private JButton btnLearn = new JButton("Go Learning");
+    private JLabel grape = new JLabel("Grape");
+    private JTabbedPane tabLearn = new JTabbedPane();
+
+    public PracticeScreen() {
+        //내용 패널
+        setLayout( new GridBagLayout() );
+        tabLearn.addTab("definition", new JLabel(""));
+        tabLearn.addTab("View Code", new JLabel(""));
+        tabLearn.addTab("Time Complexity", new JLabel(""));
+
+        grape.setBorder( BorderFactory.createLineBorder(Color.BLACK));
+
+        // 1행
+        add(algoCombo, GbcFactory.createGbc(0, 0, 0.2d, 0.1d,1,1));
+        add(new JButton("학습하기"), GbcFactory.createGbc(3, 0, 0.25d, 0.1d, 1, 1));  
+        add(new JLabel(""), GbcFactory.createGbc(2, 0, 0.02d, 0.02d, 1, 1));  
+        add(new JLabel(""), GbcFactory.createGbc(4, 0, 0.4d, 0.1d, 1, 1));  
+        add(new JLabel(""), GbcFactory.createGbc(8, 0, 0.01d, 0.01d, 1, 1));
+
+        // 2행
+        add(new JLabel(""), GbcFactory.createGbc(0, 1, 0.25d, 0.08d, 1, 1));
+        add(new JLabel(""), GbcFactory.createGbc(1, 1, 0.25d, 0.08d, 1,1));
+        add(new JLabel(""), GbcFactory.createGbc(2, 1, 0.02d, 0.08d, 1, 1));
+        add(new JLabel(""), GbcFactory.createGbc(3, 1, 0.25d, 0.08d, 1, 1));
+        add(new JLabel(""), GbcFactory.createGbc(8, 1, 0.01d, 0.08d, 1, 1));
+        
+        // 3행
+        add(grape, GbcFactory.createGbc(0, 2, 0.8d, 0.5d,2,5));
+        add(new ListBox(2), GbcFactory.createGbc(3, 2, 0.8d, 0.4d,3,3));
+        add(new JLabel(""), GbcFactory.createGbc(2, 2, 0.04d, 0.1d, 1, 5));
+        add(new JLabel(""), GbcFactory.createGbc(8, 2, 0.01d, 1d, 1, 1));
+
+        //4행
+        add(new JButton("실행하기"), GbcFactory.createGbc(3, 5, 0.01d, 0.02d, 3, 1));
+        add(new JLabel(""), GbcFactory.createGbc(8, 3, 0.01d, 0.01d, 1, 1));
+        add(new JLabel(""), GbcFactory.createGbc(8, 4, 0.01d, 1, 1, 1));
+    }
+}
