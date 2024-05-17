@@ -3,12 +3,11 @@ package algolab;
 import java.awt.*;
 import javax.swing.*;
 
-public class Screens {
-    public JLabel getEmptyLabel() {
-        return new JLabel("");
-    }
-}
+public class Screens {}
 
+/**
+ * 학습하기 메뉴
+ */
 class LearningScreen extends JPanel {
     // SeonJin
     private ComboBox comboAlgorithm = new ComboBox();
@@ -40,22 +39,28 @@ class LearningScreen extends JPanel {
         add( new JLabel(""), GbcFactory.createGbc(4, 0, 0.3d, 0.1) );
 
         // 2행
-        add( new JLabel(""), GbcFactory.createGbc(0, 1, 0.65d, 0.05d, 3, 1) );
-        add( new JLabel(""), GbcFactory.createGbc(3, 1, 0.05d, 0.05d) );
-        add( new JLabel(""), GbcFactory.createGbc(4, 1, 0.3d, 0.05d) );
+        add( new JLabel(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1) );
 
         // 3행
         add( tabLearn, GbcFactory.createGbc(0, 2, 0.65d, 0.85d, 3, 2) );
-        add( new JLabel(""), GbcFactory.createGbc(3, 2, 0.05d, 0.4d) );
+        add( new JLabel(""), GbcFactory.createGbc(3, 2, 0.05d, 0.85d, 1, 2) );
         add( new JLabel("table"), GbcFactory.createGbc(4, 2, 0.05d, 0.4d) );
 
         // 4행
-        add( new JLabel(""), GbcFactory.createGbc(3, 3, 0.05d, 0.5d) );
         add( new JLabel("graph"), GbcFactory.createGbc(4, 3, 0.3d, 0.45d) );
-        // 사진은 넣으면 이상하게 변해서 Label로 대체했음
+    }
+
+    @Override
+    public void add( Component comp, Object obj ) {
+        super.add(comp, obj);
+        JComponent jcomp = (JComponent)comp;
+        jcomp.setBorder(BorderFactory.createLineBorder(Color.black));
     }
 }
 
+/**
+ * 실습하기 메뉴
+ */
 class PracticeScreen extends JPanel {
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("학습하기");
