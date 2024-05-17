@@ -42,12 +42,13 @@ class ButtonBase extends JButton {
 
         //그라데이션 재질 적용
         Graphics2D g2 = (Graphics2D)g.create();
-        g2.setPaint(
-            new GradientPaint(
-                new Point(0, 0), color1, 
-                new Point(0, getHeight() ), color2
-            )
-        );
+        // g2.setPaint(
+        //     new GradientPaint(
+        //         new Point(0, 0), color1, 
+        //         new Point(0, getHeight() ), color2
+        //     )
+        // );
+        g2.setColor(color1);
 
         return g2;
     }
