@@ -445,6 +445,7 @@ class ComboBox extends JComboBox {
         setEditor(new ComboBoxEditor());
         setUI( new ComboBoxUI(this) );
         setEditable(true);
+        setBorder( BorderFactory.createLineBorder(Color.BLACK) );
     }
      
     /**
@@ -577,19 +578,15 @@ class ComboBoxUI extends BasicComboBoxUI {
 
     @Override
     protected Rectangle rectangleForCurrentValue() {
-        int buttonWidth = Math.min( (int)(cb.getWidth() * 0.1), cb.getHeight() );
-        arrowButton.setBounds(cb.getWidth() - buttonWidth, 0, buttonWidth, cb.getHeight());
+        int buttonWidth = Math.min( (int)( (double)cb.getWidth() * 0.1d ), cb.getHeight() );
+        arrowButton.setBounds(cb.getWidth() - buttonWidth - 1, 0, buttonWidth, cb.getHeight());
         return super.rectangleForCurrentValue();
     }
 
     private class MyArrowButton extends BasicArrowButton {
         public MyArrowButton() {
             super(BasicArrowButton.SOUTH, new Color(225, 225, 225), null, Color.GRAY.darker(), null);
-        }
-
-        @Override
-        public void paint(Graphics g) {
-            super.paint(g);
+            setBorder( BorderFactory.createLineBorder(Color.BLACK) );
         }
     }
 } //ComboBoxUI 클래스
