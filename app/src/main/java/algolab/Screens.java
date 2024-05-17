@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Screens {
+
 }
 
 class LearningScreen extends JPanel {
