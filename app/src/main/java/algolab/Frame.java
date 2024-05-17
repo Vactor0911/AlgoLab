@@ -1,18 +1,33 @@
 package algolab;
 
-import java.awt.*; 
-import javax.swing.*; 
-import java.awt.event.*; 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.*;
 
 public class Frame extends JFrame {
+    //주 패널
     private JPanel pnlMenu = new JPanel();
     private JPanel pnlContent = new JPanel();
 
-    private Button btnLearning = new Button("Learning");
-    private Button btnTraining = new Button("Training");
-    private Button btnQuiz = new Button("Quiz");
+    //메뉴 버튼
+    private Button btnLearning = new Button("학습하기");
+    private Button btnTraining = new Button("실습하기");
+    private Button btnQuiz = new Button("퀴즈 풀기");
 
-    // Yerim2
+    //화면 객체
+    private LearningScreen learningScreen = new LearningScreen();
+    private PracticeScreen practiceScreen = new PracticeScreen();
+
+    //기타 객체
+    private CardLayout cardLayout = new CardLayout(10, 10);
+
+    private class ScreenList {
+        public static final String NONE = "none";
+        public static final String LEARNING_SCREEN = "LearningPanel";
+        public static final String PRACTICE_SCREEN = "PracticeScreen";
+    }
 
     public Frame() {
         setTitle("AlgoLab");
@@ -20,22 +35,41 @@ public class Frame extends JFrame {
         setMinimumSize( new Dimension(600, 400) );
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
         setLayout( new GridBagLayout() );
 
         //메뉴 패널
         pnlMenu.setLayout( new GridLayout(3, 1) );
         pnlMenu.setBackground(Color.LIGHT_GRAY);
+
         pnlMenu.add(btnLearning);
         pnlMenu.add(btnTraining);
         pnlMenu.add(btnQuiz);
+
+        btnLearning.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(pnlContent, ScreenList.LEARNING_SCREEN);
+            }
+        });
+        btnTraining.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(pnlContent, ScreenList.PRACTICE_SCREEN);
+            }
+        });
+
         add( pnlMenu, GbcFactory.createGbc(0, 0, 0.2d, 1.0d) );      
 
         //내용 패널
-        pnlContent.setLayout( new BorderLayout() );
-        
+
+        pnlContent.setLayout(cardLayout);
         add( pnlContent, GbcFactory.createGbc(1, 0, 0.8d, 1.0d) );
-        pnlContent.add( new QuizPanel() );
+
+        //내용 삽입
+        pnlContent.add(new JPanel(), ScreenList.NONE);
+        pnlContent.add(learningScreen, ScreenList.LEARNING_SCREEN);
+        pnlContent.add(practiceScreen, ScreenList.PRACTICE_SCREEN);
+        cardLayout.show(pnlContent, ScreenList.LEARNING_SCREEN);
 
         setVisible(true);
     }

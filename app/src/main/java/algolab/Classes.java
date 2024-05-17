@@ -1,6 +1,8 @@
 package algolab;
 
 import java.awt.*;
+import java.awt.event.*;
+import javax.swing.event.*;
 
 class GbcFactory {
     private static GridBagConstraints gbc = new GridBagConstraints();
@@ -60,7 +62,7 @@ class GbcFactory {
     public static GridBagConstraints createGbc(int x, int y) {
         return createGbc(x, y, 1, 1, 1, 1);
     }
-}
+} //GbcFactory 클래스
 
 /**
  * 객체를 세로로 배치할 수 있는 배치 관리자이다.
@@ -87,7 +89,6 @@ class VerticalLayout implements LayoutManager {
     @Override
     public void addLayoutComponent(String name, Component comp) {
     }
-
     @Override
     public void removeLayoutComponent(Component comp) {
     }
@@ -96,17 +97,18 @@ class VerticalLayout implements LayoutManager {
     public Dimension preferredLayoutSize(Container parent) {
         Dimension dimension = new Dimension( getTotalPaddingWidth(parent), getTotalPaddingHeight(parent) );
         MINIMUM_SIZE.height = dimension.height;
-        for(Component c :parent.getComponents()){
-            if( !c.isVisible() ){
+        for ( Component c :parent.getComponents() ) {
+            if ( !c.isVisible() ) {
                 continue;
             }
 
             Dimension preferredSize = c.getPreferredSize();
-            dimension.height += preferredSize.getHeight();
-            if(preferredSize.width > dimension.width){
+            dimension.height += preferredSize.getHeight() + gapY;
+            if (preferredSize.width > dimension.width) {
                 dimension.width = preferredSize.width;
             }
         }
+        dimension.height -= gapY;
         MINIMUM_SIZE.width = dimension.width;
         return dimension;
     }
@@ -115,7 +117,7 @@ class VerticalLayout implements LayoutManager {
         Insets padding = container.getInsets();
         return padding.left + padding.right;
     }
-    private int getTotalPaddingHeight(Container container){
+    private int getTotalPaddingHeight(Container container) {
         Insets padding = container.getInsets();
         return padding.top + padding.bottom;
     }
@@ -129,11 +131,39 @@ class VerticalLayout implements LayoutManager {
     public void layoutContainer(Container parent) {
         Insets padding = parent.getInsets();
         int y = padding.top;
-        for( Component c : parent.getComponents() ){
-            if( c.isVisible() ) {
-                c.setBounds(padding.left, y, parent.getWidth(), c.getPreferredSize().height);
+        int width = parent.getWidth() - padding.left - padding.right;
+        for ( Component c : parent.getComponents() ) {
+            if ( c.isVisible() ) {
+                c.setBounds(padding.left, y, width, c.getPreferredSize().height);
                 y += c.getHeight() + gapY;
            }
         }
     }
-}
+} //VerticalLayout 클래스
+
+/**
+ * DocumentListener 리스너를 상속받는 클래스이다.
+ * 필요한 메소드만 오버라이드하여 사용한다.
+ */
+class DocumentAdapter implements DocumentListener {
+    @Override
+    public void insertUpdate(DocumentEvent e) { }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) { }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) { }
+} //DocumentAdapter 클래스
+
+/**
+ * FocusListener 리스너를 상속받는 클래스이다.
+ * 필요한 메소드만 오버라이드하여 사용한다.
+ */
+class FocusAdapter implements FocusListener {
+    @Override
+    public void focusGained(FocusEvent e) { }
+
+    @Override
+    public void focusLost(FocusEvent e) { }
+} //FocusAdapter 클래스

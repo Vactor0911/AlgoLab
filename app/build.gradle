@@ -27,6 +27,10 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
 // Define jar configuration for building this application.
 jar {
     manifest {
