@@ -4,7 +4,80 @@ import java.awt.*;
 import javax.swing.*; 
 import java.awt.event.*; 
 
-public class Screens extends JFrame{ 
+public class Screens {}
+
+class QuizStartPanel extends JPanel {
+    public QuizStartPanel() {
+        setLayout( new GridBagLayout() );
+        // 1행
+        add(new JLabel(""), GbcFactory.createGbc(0, 0, 1d, 0.3d, 3, 1));
+                    
+        //2행
+        add(new JLabel(""), GbcFactory.createGbc(0, 1, 0.33d, 0.2d));  
+        add(new JLabel("Quiz", SwingConstants.CENTER), GbcFactory.createGbc(1, 1,0.34d, 0.2d));  
+        add(new JLabel(""), GbcFactory.createGbc(2, 1, 0.33d, 0.2d));
+
+        //3행
+        add(new JLabel(""), GbcFactory.createGbc(0, 2, 1d, 0.3d, 3, 1));  
+
+        //4행
+        add(new JLabel(""), GbcFactory.createGbc(0, 3, 0.33d, 0.2d));  
+        add(new Button("Start"), GbcFactory.createGbc(1, 3,0.34d, 0.2d));  
+        add(new JLabel(""), GbcFactory.createGbc(2, 3, 0.33d, 0.2d));
+
+        //5행
+        add(new JLabel(""), GbcFactory.createGbc(0, 4, 1d, 0.3d, 3, 1)); 
+    }
+}
+
+class QuizPanel extends JPanel {
+    private JRadioButton jRadioButton1 = new JRadioButton();
+    private JRadioButton jRadioButton2 = new JRadioButton(); 
+    private JButton jButton = new JButton("Click");
+
+    public QuizPanel() {
+        setLayout( new GridBagLayout() );
+
+        // 1행
+        add( new JLabel("1. bubble"), GbcFactory.createGbc(0, 0, 0.16d, 0.2d) );  
+        add(new JLabel(""), GbcFactory.createGbc(1, 0, 0.16d, 0.2d));  
+        add(new JLabel(""), GbcFactory.createGbc(2,0, 0.16d, 0.2d));
+        add(new JLabel(""), GbcFactory.createGbc(3, 0, 0.16d, 0.2d));
+        add(new JLabel("1/5 문제"), GbcFactory.createGbc(4, 0, 0.16d, 0.2d));
+
+        //2행
+        add(new JLabel(""), GbcFactory.createGbc(0, 1, 0.33d, 0.2d));  
+        add(new JLabel(""), GbcFactory.createGbc(1, 1, 0.33d, 0.2d));  
+        add(new JLabel(""), GbcFactory.createGbc(2, 1, 0.33d, 0.2d));
+        add(new JLabel(""), GbcFactory.createGbc(3, 1, 0.33d, 0.2d));  
+        add(new JLabel(""), GbcFactory.createGbc(4, 1, 0.33d, 0.2d));  
+
+
+        //3행
+        add(new JLabel(""), GbcFactory.createGbc(0, 2, 1d, 0.3d, 3, 1));
+        add(new JLabel(""), GbcFactory.createGbc(1, 2, 1d, 0.3d, 3, 1));    
+        add(new JLabel(""), GbcFactory.createGbc(3, 2, 1d, 0.3d, 3, 1));    
+        add(new JLabel(""), GbcFactory.createGbc(4, 2, 1d, 0.3d, 3, 1));    
+
+
+        //4행
+        add(new JLabel(""), GbcFactory.createGbc(0, 3, 0.33d, 0.2d));  
+        add(new JLabel(""), GbcFactory.createGbc(1, 3,0.34d, 0.2d));  
+        add(new JLabel(""), GbcFactory.createGbc(2, 3, 0.33d, 0.2d));
+
+        //5행
+        add(new JLabel(""), GbcFactory.createGbc(0, 4, 1d, 0.3d, 3, 1)); 
+        jRadioButton1.setText("Test");
+    }
+
+    @Override
+    public void add(Component component, Object constraints) {
+        super.add(component, constraints);
+        ((JComponent)component).setBorder( BorderFactory.createLineBorder(Color.BLACK) );
+    }
+}
+
+class QuizTODO extends JPanel { 
 
 	// Declaration of object of JRadioButton class. 
 	JRadioButton jRadioButton1; 
@@ -22,7 +95,7 @@ public class Screens extends JFrame{
 	JLabel L1; 
 
 	// Constructor of Demo class. 
-	public Screens() 
+	public QuizTODO()
 	{ 
 
 		// Setting layout as null of JFrame. 
@@ -79,23 +152,4 @@ public class Screens extends JFrame{
 		G1.add(jRadioButton1); 
 		G1.add(jRadioButton2); 
 	} 
-} 
-
-class RadioButton { 
-	// Driver code. 
-	public static void main(String args[]) 
-	{ // Creating object of demo class. 
-		Screens f = new Screens(); 
-
-		// Setting Bounds of JFrame. 
-		f.setBounds(100, 100, 400, 200); 
-
-		// Setting Title of frame. 
-		f.setTitle("RadioButtons"); 
-
-		// Setting Visible status of frame as true. 
-		f.setVisible(true); 
-	} 
-} 
-
-
+}
