@@ -3,6 +3,8 @@ package algolab;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.*;
 import javax.swing.plaf.basic.*;
 
@@ -716,3 +718,83 @@ class Chart extends JPanel {
         }
     }
 } //Chart 클래스
+
+class SortingAnimation extends JPanel {
+    private static final int TIMER_PERIOD = 100;
+    private static final float LERP_TIME = 1f;
+    private static final float LERP_STEP = (float)TIMER_PERIOD * 0.001f / LERP_TIME;
+
+    private ArrayList<Bar> listBar = new ArrayList<>();
+
+    public SortingAnimation(int[] aryNumber) {
+        setBorder( BorderFactory.createLineBorder(Color.BLACK) );
+
+        for (int i=0; i<aryNumber.length; i++) {
+            Bar bar = new Bar(i, aryNumber[i]);
+            listBar.add(bar);
+        }
+
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                for (Bar bar : listBar) {
+                    bar.update();
+                }
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, 0, TIMER_PERIOD);
+    } //생성자
+
+    protected class Bar {
+        private int data;
+        private Point position;
+        private Point positionOld;
+        private float lerp = 1f;
+
+        public Bar(int index, int data) {
+            this.data = data;
+            position = new Point(index, 0);
+            positionOld = new Point(index, 0);
+        }
+
+        public int getData() {
+            return data;
+        }
+
+        public void moveTo(int index, boolean hide) {
+            positionOld = position;
+            position.x = index;
+            position.y = (hide ? 1 : 0);
+            lerp = 0f;
+        }
+
+        public void update() {
+            if (lerp < 1f) {
+                lerp = Math.min(lerp + LERP_STEP, 1f);
+            }
+        }
+    } //Bar 클래스
+
+    public Bar[] getBars() {
+        Bar[] aryBar = new Bar[listBar.size()];
+        return listBar.toArray(aryBar);
+    }
+
+    public Point lerpPoint(Point pointFrom, Point pointTo, float lerp) {
+        float fixedLerp = Main.clamp(lerp, 0f, 1f);
+        Point pointLerp = pointTo;
+        pointLerp.x -= pointFrom.x;
+        pointLerp.y -= pointFrom.y;
+
+        pointLerp.x *= fixedLerp;
+        pointLerp.y *= fixedLerp;
+
+        return pointLerp;
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+    }
+} //SortingAnimation 클래스
