@@ -21,10 +21,13 @@ class LearningScreen extends JPanel {
     // 탭 패널에 글씨 세팅해 줄 라벨
     private JLabel definitionLabel = new JLabel(""); // 정의
     private JLabel viewCodeLabel = new JLabel("Select Code"); // 코드 보기
-    private JLabel TimeComplexityLabel = new JLabel(""); // 시간 복잡도
+    private JLabel timeComplexityLabel = new JLabel(""); // 시간 복잡도
 
     // View Code 안에 추가 할 콤보박스
     private ComboBox comboViewCode = new ComboBox();
+
+    // 정의 배열 읽어오기
+    Variable var = new Variable();
 
     public LearningScreen() {
         // 초기화
@@ -49,7 +52,7 @@ class LearningScreen extends JPanel {
         // 탭 패널에 탭 추가
         tabLearn.addTab("정의", definitionLabel);
         tabLearn.addTab("코드", new JPanel(new BorderLayout()));
-        tabLearn.addTab("시간 복잡도", TimeComplexityLabel);
+        tabLearn.addTab("시간 복잡도", timeComplexityLabel);
 
         // 1행
         add(comboAlgorithm, GbcFactory.createGbc(0, 0, 0.5d, 0.1d));
@@ -76,24 +79,24 @@ class LearningScreen extends JPanel {
                 definitionLabel.setText(selectedAlgo.toString());
                 switch (selectedAlgo) {
                     case "버블 정렬":
-                        definitionLabel.setText("버블 정렬: 잔소린 버블버블버블");
-                        TimeComplexityLabel.setText("버블 정렬의 시간 복잡도");
+                        definitionLabel.setText(var.algorithm[0]);
+                        timeComplexityLabel.setText("버블 정렬의 시간 복잡도");
                         break;
                     case "선택 정렬":
-                        definitionLabel.setText("선택 정렬: ?");
-                        TimeComplexityLabel.setText("선택 정렬의 시간 복잡도: ?");
+                        definitionLabel.setText(var.algorithm[1]);
+                        timeComplexityLabel.setText("선택 정렬의 시간 복잡도: ?");
                         break;
                     case "삽입 정렬":
-                        definitionLabel.setText("삽입 정렬: ?");
-                        TimeComplexityLabel.setText("삽입 정렬 시간 복잡도: ?");
+                        definitionLabel.setText(var.algorithm[2]);
+                        timeComplexityLabel.setText("삽입 정렬 시간 복잡도: ?");
                         break;
                     case "퀵 정렬":
-                        definitionLabel.setText("퀵 정렬: ?");
-                        TimeComplexityLabel.setText("퀵 정렬 시간 복잡도: ?");
+                        definitionLabel.setText(var.algorithm[3]);
+                        timeComplexityLabel.setText("퀵 정렬 시간 복잡도: ?");
                         break;
                     case "병합 정렬":
-                        definitionLabel.setText("병합 정렬: ?");
-                        TimeComplexityLabel.setText("병합 정렬 시간 복잡도: ?");
+                        definitionLabel.setText(var.algorithm[4]);
+                        timeComplexityLabel.setText("병합 정렬 시간 복잡도: ?");
                         break;
                 }
 
