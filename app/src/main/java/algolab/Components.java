@@ -443,8 +443,8 @@ class ComboBox extends JComboBox {
     public ComboBox() {
         model = new DefaultComboBoxModel();
         setModel(model);
-        setRenderer(new ComboBoxRenderer());
-        setEditor(new ComboBoxEditor());
+        setRenderer( new ComboBoxRenderer(this) );
+        setEditor( new ComboBoxEditor() );
         setUI( new ComboBoxUI(this) );
         setEditable(true);
         setBorder( BorderFactory.createLineBorder(Color.BLACK) );
@@ -478,8 +478,11 @@ class ComboBox extends JComboBox {
 @SuppressWarnings("rawtypes")
 class ComboBoxRenderer extends JPanel implements ListCellRenderer {
     private JLabel lblItem = new JLabel();
+    private ComboBox comboBox;
      
-    public ComboBoxRenderer() {
+    public ComboBoxRenderer(ComboBox comboBox) {
+        this.comboBox = comboBox;
+
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -503,6 +506,9 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer {
 
         //텍스트 설정
         lblItem.setText( aryItem[0] );
+
+        //크기 설정
+        lblItem.setPreferredSize( new Dimension(getWidth(), comboBox.getHeight() / 2) );
          
         if (isSelected) {
             lblItem.setBackground(Color.LIGHT_GRAY);
@@ -514,6 +520,12 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer {
         }
          
         return this;
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        lblItem.setPreferredSize( new Dimension(getWidth(), comboBox.getHeight() / 2) );
     }
  
 } //ComboBoxRenderer 클래스
@@ -527,6 +539,7 @@ class ComboBoxEditor extends BasicComboBoxEditor {
     private String selectedValue;
     
     public ComboBoxEditor() {
+
         pnl.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
