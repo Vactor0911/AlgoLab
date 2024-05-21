@@ -733,42 +733,65 @@ class Chart extends JPanel {
 } //Chart 클래스
 
 class SortingAnimation extends JPanel {
-    private static final int TIMER_PERIOD = 100;
-    private static final float LERP_TIME = 1f;
-    private static final float LERP_STEP = (float)TIMER_PERIOD * 0.001f / LERP_TIME;
+    //설정
+    private static final int TIMER_PERIOD = 10;
+    private static final float LERP_TIME = 0.5f;
+    private static final float BAR_H_GAP_MULTIPLY = 0.1f;
+    private static final float BAR_MAX_HEIGHT_MULTIPLY = 0.8f;
 
-    private ArrayList<Bar> listBar = new ArrayList<>();
+    private static final Color LINE_COLOR = Color.GRAY;
+    private static final Color BAR_COLOR_NORMAL = Color.GRAY;
+    private static final Color TEXT_COLOR = Color.BLACK;
+
+    //수정 금지
+    private static final float LERP_STEP = (float)TIMER_PERIOD * 0.0001f / LERP_TIME;
+
+    //변수
+    private Bar[] aryBar;
 
     public SortingAnimation(int[] aryNumber) {
         setBorder( BorderFactory.createLineBorder(Color.BLACK) );
 
+        aryBar = new Bar[aryNumber.length];
         for (int i=0; i<aryNumber.length; i++) {
             Bar bar = new Bar(i, aryNumber[i]);
-            listBar.add(bar);
+            aryBar[i] = bar;
         }
 
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                for (Bar bar : listBar) {
+                for (Bar bar : aryBar) {
                     bar.update();
+                    repaint();
                 }
             }
         };
         timer.scheduleAtFixedRate(timerTask, 0, TIMER_PERIOD);
     } //생성자
 
+    private class Pointf {
+        protected float x;
+        protected float y;
+
+        public Pointf(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     protected class Bar {
         private int data;
-        private Point position;
-        private Point positionOld;
-        private float lerp = 1f;
+        private Pointf position;
+        private Pointf positionOld;
+        private float lerp;
 
         public Bar(int index, int data) {
             this.data = data;
-            position = new Point(index, 0);
-            positionOld = new Point(index, 0);
+            position = new Pointf( (float)index, 0f );
+            positionOld = new Pointf( (float)index, 0f );
+            lerp = 1f;
         }
 
         public int getData() {
@@ -776,9 +799,9 @@ class SortingAnimation extends JPanel {
         }
 
         public void moveTo(int index, boolean hide) {
-            positionOld = position;
-            position.x = index;
-            position.y = (hide ? 1 : 0);
+            positionOld = new Pointf(position.x, position.y);
+            position.x = (float)index;
+            position.y = (hide ? 1f : 0f);
             lerp = 0f;
         }
 
@@ -787,27 +810,157 @@ class SortingAnimation extends JPanel {
                 lerp = Math.min(lerp + LERP_STEP, 1f);
             }
         }
+
+        public Pointf getPoint() {
+            return lerpPointf(positionOld, position, lerp);
+        }
     } //Bar 클래스
 
-    public Bar[] getBars() {
-        Bar[] aryBar = new Bar[listBar.size()];
-        return listBar.toArray(aryBar);
+    public void swap(int from, int to) {
+        if (from == to) {
+            return;
+        }
+
+        Bar barFrom = aryBar[from];
+        Bar barTo = aryBar[to];
+        barFrom.moveTo(to, false);
+        barTo.moveTo(from, false);
+
+        aryBar[from] = barTo;
+        aryBar[to] = barFrom;
+
+        sleep();
     }
 
-    public Point lerpPoint(Point pointFrom, Point pointTo, float lerp) {
-        float fixedLerp = Main.clamp(lerp, 0f, 1f);
-        Point pointLerp = pointTo;
-        pointLerp.x -= pointFrom.x;
-        pointLerp.y -= pointFrom.y;
+    public void shift(int from, int to) {
+        if (from == to) {
+            return;
+        }
 
-        pointLerp.x *= fixedLerp;
-        pointLerp.y *= fixedLerp;
+        Bar barPicked = aryBar[from];
+        barPicked.moveTo(from, true);
+        sleep();
+
+        for (int i=from+1; i<=to; i++) {
+            Bar bar1 = aryBar[i-1];
+            Bar bar2 = aryBar[i];
+
+            aryBar[i-1] = bar2;
+            aryBar[i] = bar1;
+
+            bar2.moveTo(i-1, false);
+        }
+        for (int i=from-1; i>=to; i--) {
+            Bar bar1 = aryBar[i+1];
+            Bar bar2 = aryBar[i];
+
+            aryBar[i+1] = bar2;
+            aryBar[i] = bar1;
+
+            bar2.moveTo(i+1, false);
+        }
+        barPicked.moveTo(to, true);
+        sleep();
+
+        barPicked.moveTo(to, false);
+        sleep();
+    }
+
+    public Bar[] getBars() {
+        return aryBar;
+    }
+
+    public int[] getData() {
+        int[] aryData = new int[aryBar.length];
+        for(int i=0; i<aryData.length; i++) {
+            aryData[i] = aryBar[i].getData();
+        }
+        return aryData;
+    }
+
+    public int getMaxData() {
+        if ( aryBar.length <= 0 ) {
+            return 0;
+        }
+
+        int max = aryBar[0].getData();
+        for (int i=1; i<aryBar.length; i++) {
+            if (aryBar[i].getData() > max) {
+                max = aryBar[i].getData();
+            }
+        }
+        return max;
+    }
+
+    private Pointf lerpPointf(Pointf pointFrom, Pointf pointTo, float lerp) {
+        float fixedLerp = Main.clamp(lerp, 0f, 1f);
+
+        Pointf pointDelta = new Pointf(pointTo.x, pointTo.y);
+        pointDelta.x -= pointFrom.x;
+        pointDelta.y -= pointFrom.y;
+
+        pointDelta.x *= fixedLerp;
+        pointDelta.y *= fixedLerp;
+
+        Pointf pointLerp = pointFrom;
+        pointLerp.x += pointDelta.x;
+        pointLerp.y += pointDelta.y;
 
         return pointLerp;
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep( (int)(LERP_TIME * 1100f) );
+        }
+        catch (Exception e) {}
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        //구분선 그리기
+        int lineY = (int)( (float)getHeight() * 0.7f );
+        g.setColor(LINE_COLOR);
+        g.fillRect(0, lineY, getWidth(), 3);
+
+        //막대 그리기
+        if ( aryBar.length <= 0 ) {
+            return;
+        }
+
+        int barWidth = getWidth() / aryBar.length;
+        int barHGap = (int)( (float)barWidth * BAR_H_GAP_MULTIPLY );
+        int barFixedWidth = barWidth - barHGap * 2;
+        int barMidX = barWidth / 2 - barHGap;
+
+        int maxHeight = (int)( (float)lineY * BAR_MAX_HEIGHT_MULTIPLY );
+        int barVGap = lineY - maxHeight;
+        int maxData = getMaxData();
+        int barHeightMul = maxHeight / maxData;
+
+        for (int i=0; i<aryBar.length; i++) {
+            Bar bar = aryBar[i];
+            int barHeight = bar.getData() * barHeightMul;
+
+            int barYMul = barHeight + barVGap;
+
+            Pointf point = bar.getPoint();
+            int barX = (int)(point.x * barWidth);
+            int barY = lineY - barHeight + (int)(point.y * barYMul);
+
+            g.setColor(BAR_COLOR_NORMAL);
+            g.fillRect(barX + barHGap, barY, barFixedWidth, barHeight);
+            g.setColor( BAR_COLOR_NORMAL.darker() );
+            g.drawRect(barX + barHGap, barY, barFixedWidth, barHeight);
+
+            //숫자 그리기
+            int textX = barX + barMidX;
+            int textY = barY + barHeight - 10;
+            g.setColor(TEXT_COLOR);
+            g.setFont( new Font("Dialog", Font.BOLD, 20) );
+            g.drawString(Integer.toString( bar.getData() ), textX, textY);
+        }
     }
 } //SortingAnimation 클래스
