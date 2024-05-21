@@ -26,6 +26,9 @@ class LearningScreen extends JPanel {
     // View Code 안에 추가 할 콤보박스
     private ComboBox comboViewCode = new ComboBox();
 
+    // 차트 클래스
+    Chart c = new Chart(3, 1);
+
     public LearningScreen() {
         // 초기화
         comboAlgorithm.addItems(new String[][] {
@@ -62,12 +65,16 @@ class LearningScreen extends JPanel {
         add(new JLabel(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1));
 
         // 3행
+        tabLearnScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         add(tabLearnScroll, GbcFactory.createGbc(0, 2, 0.65d, 0.85d, 3, 2));
         add(new JLabel(""), GbcFactory.createGbc(3, 2, 0.05d, 0.85d, 1, 2));
-        add(new JLabel("table"), GbcFactory.createGbc(4, 2, 0.05d, 0.4d));
+        add(c, GbcFactory.createGbc(4, 2, 0.3d, 0.4d));
 
         // 4행
-        add(new JLabel("graph"), GbcFactory.createGbc(4, 3, 0.3d, 0.45d));
+        add(new JLabel("graph"), GbcFactory.createGbc(4, 3, 0.3d, 0.5d));
+
+        // 차트 행 제목 초기화
+        c.setRowTitle(new String[] { "최선", "최악", "평균" });
 
         // 학습하기 버튼 리스너 구현
         btnLearn.addActionListener(new ActionListener() {
@@ -78,22 +85,27 @@ class LearningScreen extends JPanel {
                     case "버블 정렬":
                         definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
                         timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
+                        c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
                         break;
                     case "선택 정렬":
                         definitionLabel.setText(Algorithms.SELECTION_SORT.DEFINITION);
                         timeComplexityLabel.setText(Algorithms.SELECTION_SORT.TIME_COMPLEXITY.BEST);
+                        c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
                         break;
                     case "삽입 정렬":
                         definitionLabel.setText(Algorithms.INSERTION_SORT.DEFINITION);
                         timeComplexityLabel.setText(Algorithms.INSERTION_SORT.TIME_COMPLEXITY.BEST);
+                        c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
                         break;
                     case "퀵 정렬":
                         definitionLabel.setText(Algorithms.QUICK_SORT.DEFINITION);
                         timeComplexityLabel.setText(Algorithms.QUICK_SORT.TIME_COMPLEXITY.BEST);
+                        c.put(new String[][] { { "O(n²)" }, { "O(nlogn)" }, { "O(nlogn)" } });
                         break;
                     case "병합 정렬":
                         definitionLabel.setText(Algorithms.MERGE_SORT.DEFINITION);
                         timeComplexityLabel.setText(Algorithms.MERGE_SORT.TIME_COMPLEXITY.BEST);
+                        c.put(new String[][] { { "O(nlogn)" }, { "O(nlogn)" }, { "O(nlogn)" } });
                         break;
                 }
 
@@ -131,16 +143,16 @@ class LearningScreen extends JPanel {
                 Algorithms.Algorithm algo = null;
                 if (selectedAlgo.equals(Algorithms.BUBBLE_SORT.NAME)) {
                     algo = Algorithms.BUBBLE_SORT;
-                }
+                } 
                 else if (selectedAlgo.equals(Algorithms.SELECTION_SORT.NAME)) {
                     algo = Algorithms.SELECTION_SORT;
-                }
+                } 
                 else if (selectedAlgo.equals(Algorithms.INSERTION_SORT.NAME)) {
                     algo = Algorithms.INSERTION_SORT;
-                }
+                } 
                 else if (selectedAlgo.equals(Algorithms.QUICK_SORT.NAME)) {
                     algo = Algorithms.QUICK_SORT;
-                }
+                } 
                 else if (selectedAlgo.equals(Algorithms.MERGE_SORT.NAME)) {
                     algo = Algorithms.MERGE_SORT;
                 }
