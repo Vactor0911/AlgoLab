@@ -173,7 +173,7 @@ class FocusAdapter implements FocusListener {
  */
 class Algorithms {
     protected static final Algorithm BUBBLE_SORT = new Algorithm(
-        null,
+        "버블 정렬",
         "버블 정렬 정의",
         new Algorithm.Code(
             "버블 정렬 의사코드",
@@ -261,3 +261,40 @@ class Algorithms {
         } //TimeComplexity 클래스
     } //Algorithm 클래스
 } //Algorithms 클래스
+
+class CodeParser {
+    public static final int INDENT_SIZE = 10;
+
+    public static String parseCode(String code) {
+        String result = code;
+
+        String[] parsedString = result.split("\n");
+        for(int i=0; i<parsedString.length; i++) {
+            int indents = getIndentCount(parsedString[i]);
+            int pCounts = 0;
+            if (indents > 0) {
+                String str = parsedString[i].replace("\t", "");
+                parsedString[i] = "<p style=\"text-indent: " + (INDENT_SIZE * indents) + "px;\">" + str;
+                pCounts++;
+            }
+
+            if (i != parsedString.length - 1) {
+                for (int j=0; j<pCounts; j++) {
+                    parsedString[i] = parsedString[i] + "</p>";
+                }
+            }
+        }
+        result = String.join("", parsedString);
+        
+        System.out.println(result);
+        return "<html>" + result + "</html>";
+    }
+
+    private static int getIndentCount(String str) {
+        int indents = 0;
+
+        indents = str.length() - str.replace("\t", "").length();
+
+        return indents;
+    }
+} //CodeParser 클래스
