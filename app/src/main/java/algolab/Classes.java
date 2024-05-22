@@ -744,6 +744,15 @@ class Algorithms {
 class CodeParser {
     public static final int INDENT_SIZE = 4;
 
+    /**
+     * JLabel에 삽입되는 문자열에 포함된 \n과 \t 문자를 HTML 문법으로 변환하여 출력한다.
+     * @param code {@code \n}과 {@code \t}가 포함된 JLabel 텍스트
+     * <ul>
+     * <li>{@code \n} : 줄 바꿈을 의미하는 문자이다.
+     * <li>{@code \t} : 한 칸 들여쓰기를 의미하는 문자이다.
+     * </ul>
+     * @return HTML 문법의 코드
+     */
     public static String parseCode(String code) {
         String result = code;
         String strIndent = "";
