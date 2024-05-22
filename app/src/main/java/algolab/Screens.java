@@ -46,6 +46,9 @@ class LearningScreen extends JPanel {
                 { "Python", "" }
         });
 
+        // 탭 가로 스크롤이 항상 보이게
+        tabLearnScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
         // 화면 구성
         setLayout(new GridBagLayout());
 
@@ -65,7 +68,6 @@ class LearningScreen extends JPanel {
         add(new JLabel(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1));
 
         // 3행
-        tabLearnScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         add(tabLearnScroll, GbcFactory.createGbc(0, 2, 0.65d, 0.85d, 3, 2));
         add(new JLabel(""), GbcFactory.createGbc(3, 2, 0.05d, 0.85d, 1, 2));
         add(c, GbcFactory.createGbc(4, 2, 0.3d, 0.4d));
@@ -75,6 +77,7 @@ class LearningScreen extends JPanel {
 
         // 차트 행 제목 초기화
         c.setRowTitle(new String[] { "최선", "최악", "평균" });
+
 
         // 학습하기 버튼 리스너 구현
         btnLearn.addActionListener(new ActionListener() {
@@ -159,19 +162,24 @@ class LearningScreen extends JPanel {
 
                 switch (selectedviewCode) {
                     case "의사코드":
-                        viewCodeLabel.setText(algo.CODE.PSEUDO);
+                        String code = algo.CODE.PSEUDO; // 코드를 저장해 변환 함수를 이용할 문자열
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
                         break;
                     case "C":
-                        viewCodeLabel.setText(algo.CODE.C);
+                        code = algo.CODE.C;
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
                         break;
                     case "C++":
-                        viewCodeLabel.setText(algo.CODE.CPP);
+                        code = algo.CODE.CPP;
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
                         break;
                     case "Java":
-                        viewCodeLabel.setText(algo.CODE.JAVA);
+                        code = algo.CODE.JAVA;
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
                         break;
                     case "Python":
-                        viewCodeLabel.setText(algo.CODE.PYTHON);
+                        code = algo.CODE.PYTHON;
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
                         break;
 
                 }

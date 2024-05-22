@@ -198,51 +198,51 @@ class Algorithms {
             "<html>버블 정렬이란?<br>1. 배열의 두 수(𝑎, 𝑏)를 선택한다.<br>2. 만약 그 두 수가 정렬되었다면 놔두고 아니라면 두 수를 바꾸는 방식으로 진행한다.</html>",
             new Algorithm.Code(
                     "버블 정렬 의사코드",
+                    
+                    "void bubbleSort(int arr[], int n) {\n" +
+                        "\tfor (int i = 0; i < n-1; i++) {\n" +
+                            "\t\tfor (int j = 0; j < n-i-1; j++) {\n" +
+                                "\t\t\tif (arr[j] > arr[j+1]) {\n" +
+                                    "\t\t\t\tint temp = arr[j];\n" +
+                                    "\t\t\t\tarr[j] = arr[j+1];\n" +
+                                    "\t\t\t\tarr[j+1] = temp;\n" +
+                                "\t\t\t}\n" +
+                            "\t\t}\n" +
+                        "\t}\n" +
+                    "}",
 
-                    "void bubbleSort(int arr[], int n) {" +
-                            "for (int i = 0; i < n-1; i++) {" +
-                            "for (int j = 0; j < n-i-1; j++) {" +
-                            "if (arr[j] > arr[j+1]) {" +
-                            "int temp = arr[j];" +
-                            "arr[j] = arr[j+1];" +
-                            "arr[j+1] = temp;" +
-                            "}" +
-                            "}" +
-                            "}" +
-                            "}",
+                    "void bubbleSort(std::vector<int> &arr) {\n" +
+                        "\tint n = arr.size();\n" +
+                        "\tfor (int i = 0; i < n - 1; ++i) {\n" +
+                            "\t\tfor (int j = 0; j < n - i - 1; ++j) {\n" +
+                                "\t\t\tif (arr[j] > arr[j + 1]) {\n" +
+                                    "\t\t\t\tstd::swap(arr[j], arr[j + 1]);\n" +
+                                "\t\t\t}\n" +
+                            "\t\t}\n" +
+                        "\t}\n" +
+                    "}",
 
-                    "void bubbleSort(std::vector<int> &arr) {" +
-                            "int n = arr.size();" +
-                            "for (int i = 0; i < n - 1; ++i) {" +
-                            "for (int j = 0; j < n - i - 1; ++j) {" +
-                            "if (arr[j] > arr[j + 1]) {" +
-                            "std::swap(arr[j], arr[j + 1]);" +
-                            "}" +
-                            "}" +
-                            "}" +
-                            "}",
+                    "public class BubbleSort {\n" +
+                        "\tpublic static void bubbleSort(int[] arr) {\n" +
+                            "\t\tint n = arr.length;\n" +
+                            "\t\tfor (int i = 0; i < n - 1; ++i) {\n" +
+                                "\t\t\tfor (int j = 0; j < n - i - 1; ++j) {\n" +
+                                    "\t\t\t\tif (arr[j] > arr[j + 1]) {\n" +
+                                        "\t\t\t\t\t\tint temp = arr[j];\n" +
+                                        "\t\t\t\t\t\tarr[j] = arr[j + 1];\n" +
+                                        "\t\t\t\t\t\tarr[j + 1] = temp;\n" +
+                                    "\t\t\t\t}\n" +
+                                "\t\t\t}\n" +
+                            "\t\t}\n" +
+                        "\t}\n" +
+                    "}",
 
-                    "public class BubbleSort {" +
-                            "public static void bubbleSort(int[] arr) {" +
-                            "int n = arr.length;" +
-                            "for (int i = 0; i < n - 1; ++i) {" +
-                            "for (int j = 0; j < n - i - 1; ++j) {" +
-                            "if (arr[j] > arr[j + 1]) {" +
-                            "int temp = arr[j];" +
-                            "arr[j] = arr[j + 1];" +
-                            "arr[j + 1] = temp;" +
-                            "}" +
-                            "}" +
-                            "}" +
-                            "}" +
-                            "}",
-
-                    "def bubble_sort(arr):" +
-                            "n = len(arr)" +
-                            "for i in range(n - 1):" +
-                            "for j in range(n - i - 1):" +
-                            "if arr[j] > arr[j + 1]:" +
-                            "arr[j], arr[j + 1] = arr[j + 1], arr[j]"
+                    "def bubble_sort(arr):\n" +
+                        "\tn = len(arr)\n" +
+                        "\tfor i in range(n - 1):\n" +
+                            "\t\tfor j in range(n - i - 1):\n" +
+                                "\t\t\tif arr[j] > arr[j + 1]:\n" +
+                                    "\t\t\t\tarr[j], arr[j + 1] = arr[j + 1], arr[j]"
 
             ),
             new Algorithm.TimeComplexity(
@@ -256,57 +256,57 @@ class Algorithms {
             new Algorithm.Code(
                     "선택 정렬 의사코드",
                     
-                    "void selectionSort(int arr[], int n) {" +
-                            "int i, j, min_idx;" +
-                            "for (i = 0; i < n-1; i++) {" +
-                            "min_idx = i;" +
-                            "for (j = i+1; j < n; j++) {" +
-                            "if (arr[j] < arr[min_idx]) {" +
-                            "min_idx = j;" +
-                            "}" +
-                            "}" +
-                            "int temp = arr[min_idx];" +
-                            "arr[min_idx] = arr[i];" +
-                            "arr[i] = temp;" +
-                            "}" +
-                            "}",
+                    "void selectionSort(int arr[], int n) {\n" +
+                        "\tint i, j, min_idx;\n" +
+                        "\tfor (i = 0; i < n-1; i++) {\n" +
+                            "\t\tmin_idx = i;\n" +
+                                "\t\tfor (j = i+1; j < n; j++) {\n" +
+                                    "\t\t\tif (arr[j] < arr[min_idx]) {\n" +
+                                        "\t\t\t\tmin_idx = j;\n" +
+                                    "\t\t\t}\n" +
+                                "}\t\t\n" +
+                            "\t\tint temp = arr[min_idx];\n" +
+                            "\t\tarr[min_idx] = arr[i];\n" +
+                            "\t\tarr[i] = temp;\n" +
+                        "\t}\n" +
+                    "}",
 
-                    "void selectionSort(std::vector<int> &arr) {" +
-                            "int n = arr.size();" +
-                            "for (int i = 0; i < n - 1; ++i) {" +
-                            "int min_idx = i;" +
-                            "for (int j = i + 1; j < n; ++j) {" +
-                            "if (arr[j] < arr[min_idx]) {" +
-                            "min_idx = j;" +
-                            "}" +
-                            "}" +
-                            "std::swap(arr[i], arr[min_idx]);" +
-                            "}" +
-                            "}",
+                    "void selectionSort(std::vector<int> &arr) {\n" +
+                        "\tint n = arr.size();\n" +
+                        "\tfor (int i = 0; i < n - 1; ++i) {\n" +
+                            "\t\tint min_idx = i;\n" +
+                            "\t\tfor (int j = i + 1; j < n; ++j) {\n" +
+                                "\t\t\tif (arr[j] < arr[min_idx]) {\n" +
+                                    "\t\t\t\tmin_idx = j;\n" +
+                                "\t\t\t}\n" +
+                            "\t\t}\n" +
+                            "\t\tstd::swap(arr[i], arr[min_idx]);\n" +
+                        "\t}\n" +
+                    "}",
 
-                    "public static void selectionSort(int[] arr) {" +
-                            "int n = arr.length;" +
-                            "for (int i = 0; i < n - 1; ++i) {" +
-                            "int min_idx = i;" +
-                            "for (int j = i + 1; j < n; ++j) {" +
-                            "if (arr[j] < arr[min_idx]) {" +
-                            "min_idx = j;" +
-                            "}" +
-                            "}" +
-                            "int temp = arr[min_idx];" +
-                            "arr[min_idx] = arr[i];" +
-                            "arr[i] = temp;" +
-                            "}" +
-                            "}",
+                    "public static void selectionSort(int[] arr) {\n" +
+                        "\tint n = arr.length;;\n" +
+                        "\tfor (int i = 0; i < n - 1; ++i) {;\n" +
+                            "\t\tint min_idx = i;;\n" +
+                            "\t\tfor (int j = i + 1; j < n; ++j) {\n" +
+                                "\t\t\tif (arr[j] < arr[min_idx]) {\n" +
+                                    "\t\t\t\tmin_idx = j;\n" +
+                                "\t\t\t}\n" +
+                            "\t\t}\n" +
+                            "\t\tint temp = arr[min_idx];\n" +
+                            "\t\tarr[min_idx] = arr[i];\n" +
+                            "\t\tarr[i] = temp;\n" +
+                        "\t}\n" +
+                    "}",
 
-                    "def selection_sort(arr):" +
-                            "n = len(arr)" +
-                            "for i in range(n - 1):" +
-                            "min_idx = i" +
-                            "for j in range(i + 1, n):" +
-                            "if arr[j] < arr[min_idx]:" +
-                            "min_idx = j" +
-                            "arr[i], arr[min_idx] = arr[min_idx], arr[i]"),
+                    "def selection_sort(arr):\n" +
+                        "\tn = len(arr)\n" +
+                        "\tfor i in range(n - 1):\n" +
+                            "\t\tmin_idx = i\n" +
+                            "\t\tfor j in range(i + 1, n):\n" +
+                                "\t\t\tif arr[j] < arr[min_idx]:\n" +
+                                    "\t\t\t\tmin_idx = j\n" +
+                            "\t\tarr[i], arr[min_idx] = arr[min_idx], arr[i]"),
             new Algorithm.TimeComplexity(
                     "선택 정렬 최선 시간복잡도",
                     "선택 정렬 최악 시간복잡도",
@@ -382,7 +382,6 @@ class Algorithms {
                         "\t*a = *b;\n" +
                         "\t*b = t;\n" +
                     "}\n" +
-                    "\n" +
                     "int partition(int arr[], int low, int high) {\n" +
                         "\tint pivot = arr[high];\n" +
                         "\tint i = low - 1;\n" +
@@ -410,7 +409,6 @@ class Algorithms {
                         "\ta = b;\n" +
                         "\tb = t;\n" +
                     "}\n" +
-                    "\n" +
                     "int partition(int arr[], int low, int high) {\n" +
                         "\tint pivot = arr[high];\n" +
                         "\tint i = low - 1;\n" +
@@ -621,7 +619,7 @@ class Algorithms {
                             "\t\tmergeSort(arr, m + 1, r);\n" +
                             "\n" +
                             "\t\tmerge(arr, l, m, r);\n" +
-                        "\t}" +
+                        "\t}\n" +
                     "}",
 
                     "def merge(arr, l, m, r):\n" +
