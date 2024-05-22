@@ -742,38 +742,19 @@ class Algorithms {
 } //Algorithms 클래스
 
 class CodeParser {
-    public static final int INDENT_SIZE = 10;
+    public static final int INDENT_SIZE = 4;
 
     public static String parseCode(String code) {
         String result = code;
-
-        String[] parsedString = result.split("\n");
-        for(int i=0; i<parsedString.length; i++) {
-            int indents = getIndentCount(parsedString[i]);
-            int pCounts = 0;
-            if (indents > 0) {
-                String str = parsedString[i].replace("\t", "");
-                parsedString[i] = "<p style=\"text-indent: " + (INDENT_SIZE * indents) + "px;\">" + str;
-                pCounts++;
-            }
-
-            if (i != parsedString.length - 1) {
-                for (int j=0; j<pCounts; j++) {
-                    parsedString[i] = parsedString[i] + "</p>";
-                }
-            }
+        String strIndent = "";
+        for (int i=0; i<INDENT_SIZE; i++) {
+            strIndent += "&nbsp;";
         }
-        result = String.join("", parsedString);
+
+        result = result.replace("\n", "<br>");
+        result = result.replace("\t", strIndent);
         
         System.out.println(result);
-        return "<html>" + result + "</html>";
-    }
-
-    private static int getIndentCount(String str) {
-        int indents = 0;
-
-        indents = str.length() - str.replace("\t", "").length();
-
-        return indents;
+        return "<html><body>" + result + "</body></html>";
     }
 } //CodeParser 클래스
