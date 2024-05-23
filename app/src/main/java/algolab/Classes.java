@@ -167,3 +167,97 @@ class FocusAdapter implements FocusListener {
     @Override
     public void focusLost(FocusEvent e) { }
 } //FocusAdapter 클래스
+
+/**
+ * 여러 알고리즘의 세부 정보가 저장된 클래스이다.
+ */
+class Algorithms {
+    protected static final Algorithm BUBBLE_SORT = new Algorithm(
+        null,
+        "버블 정렬 정의",
+        new Algorithm.Code(
+            "버블 정렬 의사코드",
+            "버블 정렬 C 언어",
+            "버블 정렬 C++ 언어",
+            "버블 정렬 Java 언어",
+            "버블 정렬 Python 언어"
+        ),
+        new Algorithm.TimeComplexity(
+            "버블 정렬 최선 시간복잡도",
+            "버블 정렬 최악 시간복잡도",
+            "버블 정렬 평균 시간복잡도"
+        )
+    );
+
+    /**
+     * 알고리즘이 저장할 세부 정보의 구조를 구현한 클래스이다.
+     */
+    protected static class Algorithm {
+        protected final String NAME;
+        protected final String DEFINITION;
+        protected final Code CODE;
+        protected final TimeComplexity TIME_COMPLEXITY;
+
+        /**
+         * 새로운 알고리즘 데이터를 생성한다.
+         * @param name 알고리즘의 이름
+         * @param definition 알고리즘의 정의
+         * @param code {@code Code} 형태의 알고리즘 예시 코드
+         * @param timeComplexity {@code TimeComplexity} 형태의 알고리즘 시간복잡도
+         */
+        private Algorithm(String name, String definition, Code code, TimeComplexity timeComplexity) {
+            NAME = name;
+            DEFINITION = definition;
+            CODE = code;
+            TIME_COMPLEXITY = timeComplexity;
+        }
+
+        /**
+         * 알고리즘의 세부 정보 중 예시 코드의 구조를 구현한 클래스이다.
+         */
+        protected static class Code {
+            protected final String PSEUDO;
+            protected final String C;
+            protected final String CPP;
+            protected final String JAVA;
+            protected final String PYTHON;
+
+            /**
+             * 새로운 예시 코드 데이터를 생성한다.
+             * @param pseudo 의사코드
+             * @param c C 언어 코드
+             * @param cpp C++ 언어 코드
+             * @param java Java 언어 코드
+             * @param python Python 언어 코드
+             */
+            private Code(String pseudo, String c, String cpp, String java, String python) {
+                PSEUDO = pseudo;
+                C = c;
+                CPP = cpp;
+                JAVA = java;
+                PYTHON = python;
+            }
+        } //Code 클래스
+
+        /**
+         * 알고리즘의 세부 정보 중 시간복잡도의 구조를 구현한 클래스이다.
+         */
+        protected static class TimeComplexity {
+            protected final String BEST;
+            protected final String WORST;
+            protected final String AVERAGE;
+
+            /**
+             * 새로운 시간복잡도 데이터를 생성한다.
+             * @param best 최선 시간복잡도
+             * @param worst 최악 시간복잡도
+             * @param average 평균 시간복잡도
+             */
+            private TimeComplexity(String best, String worst, String average) {
+                BEST = best;
+                WORST = worst;
+                AVERAGE = average;
+            }
+        } //TimeComplexity 클래스
+    } //Algorithm 클래스
+} //Algorithms 클래스
