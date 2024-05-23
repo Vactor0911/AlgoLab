@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
+import javax.swing.plaf.TabbedPaneUI;
 import javax.swing.plaf.basic.*;
 
 /**
@@ -964,3 +965,16 @@ class SortingAnimation extends JPanel {
         }
     }
 } //SortingAnimation 클래스
+
+class TabbedPane extends JTabbedPane {
+    private static final Color COLOR = new Color(220, 220, 220);
+
+    public TabbedPane() {
+        UIManager.put("TabbedPane.selected", Color.LIGHT_GRAY.darker() );
+        setBackground( Color.LIGHT_GRAY );
+        UIManager.put("TabbedPane.contentAreaColor", COLOR);
+        UIManager.put("TabbedPane.shadow", COLOR);
+        setUI( new javax.swing.plaf.basic.BasicTabbedPaneUI() );
+        setBorder( BorderFactory.createLineBorder(Color.GRAY) );
+    }
+} //TabbedPane 클래스
