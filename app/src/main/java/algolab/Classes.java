@@ -763,7 +763,6 @@ class CodeParser {
         result = result.replace("\n", "<br>");
         result = result.replace("\t", strIndent);
         
-        System.out.println(result);
         return "<html><body>" + result + "</body></html>";
     }
 } //CodeParser 클래스
