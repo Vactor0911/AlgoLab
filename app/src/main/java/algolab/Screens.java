@@ -14,7 +14,7 @@ public class Screens {
 class LearningScreen extends JPanel {
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("실습하기");
-    private JTabbedPane tabLearn = new JTabbedPane();
+    private TabbedPane tabLearn = new TabbedPane();
 
     JScrollPane tabLearnScroll = new JScrollPane(tabLearn); // 스크롤 패널
 
