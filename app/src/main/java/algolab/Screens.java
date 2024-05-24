@@ -5,6 +5,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+
 public class Screens {
 }
 
@@ -14,20 +16,23 @@ public class Screens {
 class LearningScreen extends JPanel {
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("실습하기");
-    private JTabbedPane tabLearn = new JTabbedPane();
+    private TabbedPane tabLearn = new TabbedPane();
 
     JScrollPane tabLearnScroll = new JScrollPane(tabLearn); // 스크롤 패널
 
     // 탭 패널에 글씨 세팅해 줄 라벨
     private JLabel definitionLabel = new JLabel(""); // 정의
-    private JLabel viewCodeLabel = new JLabel("Select Code"); // 코드 보기
+    private JLabel viewCodeLabel = new JLabel(""); // 코드 보기
     private JLabel timeComplexityLabel = new JLabel(""); // 시간 복잡도
 
     // View Code 안에 추가 할 콤보박스
     private ComboBox comboViewCode = new ComboBox();
 
-    // 정의 배열 읽어오기
-    Variable var = new Variable();
+    // 차트 클래스
+    Chart c = new Chart(3, 1);
+
+    // 구조체 접근을 위한 변수 초기화
+    private Algorithms.Algorithm algo = Algorithms.BUBBLE_SORT;
 
     public LearningScreen() {
         // 초기화
@@ -39,12 +44,15 @@ class LearningScreen extends JPanel {
                 { "병합 정렬", "" }
         });
         comboViewCode.addItems(new String[][] {
-            { "의사코드", "" },
-            { "C", "" },
-            { "C++", "" },
-            { "Java", "" },
-            { "Python", "" }
+                { "의사코드", "" },
+                { "C", "" },
+                { "C++", "" },
+                { "Java", "" },
+                { "Python", "" }
         });
+
+        // 탭 가로 스크롤이 항상 보이게
+        tabLearnScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         // 화면 구성
         setLayout(new GridBagLayout());
@@ -53,6 +61,19 @@ class LearningScreen extends JPanel {
         tabLearn.addTab("정의", definitionLabel);
         tabLearn.addTab("코드", new JPanel(new BorderLayout()));
         tabLearn.addTab("시간 복잡도", timeComplexityLabel);
+
+        // 콤보 박스 초기화
+        comboAlgorithm.setSelectedIndex(0);
+        comboViewCode.setSelectedIndex(0);
+
+        // 버블 정렬 화면으로 초기화
+        definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
+        timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
+        c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
+
+        // 탭 패널 초기화
+        viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
+
 
         // 1행
         add(comboAlgorithm, GbcFactory.createGbc(0, 0, 0.5d, 0.1d));
@@ -67,148 +88,135 @@ class LearningScreen extends JPanel {
         // 3행
         add(tabLearnScroll, GbcFactory.createGbc(0, 2, 0.65d, 0.85d, 3, 2));
         add(new JLabel(""), GbcFactory.createGbc(3, 2, 0.05d, 0.85d, 1, 2));
-        add(new JLabel("table"), GbcFactory.createGbc(4, 2, 0.05d, 0.4d));
+        add(c, GbcFactory.createGbc(4, 2, 0.3d, 0.4d));
 
         // 4행
-        add(new JLabel("graph"), GbcFactory.createGbc(4, 3, 0.3d, 0.45d));
+        add(new JLabel("graph"), GbcFactory.createGbc(4, 3, 0.3d, 0.5d));
 
-        // 학습하기 버튼 리스너 구현
+        // 차트 행 제목 초기화
+        c.setRowTitle(new String[] { "최선", "최악", "평균" });
+
+        // 실습하기 버튼 리스너 구현
         btnLearn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String selectedAlgo = ((String[])comboAlgorithm.getSelectedItem())[0]; // 알고리즘 콤보박스에서 선택된 아이템
-                definitionLabel.setText(selectedAlgo.toString());
-                switch (selectedAlgo) {
-                    case "버블 정렬":
-                        definitionLabel.setText(var.algorithm[0]);
-                        timeComplexityLabel.setText("버블 정렬의 시간 복잡도");
-                        break;
-                    case "선택 정렬":
-                        definitionLabel.setText(var.algorithm[1]);
-                        timeComplexityLabel.setText("선택 정렬의 시간 복잡도: ?");
-                        break;
-                    case "삽입 정렬":
-                        definitionLabel.setText(var.algorithm[2]);
-                        timeComplexityLabel.setText("삽입 정렬 시간 복잡도: ?");
-                        break;
-                    case "퀵 정렬":
-                        definitionLabel.setText(var.algorithm[3]);
-                        timeComplexityLabel.setText("퀵 정렬 시간 복잡도: ?");
-                        break;
-                    case "병합 정렬":
-                        definitionLabel.setText(var.algorithm[4]);
-                        timeComplexityLabel.setText("병합 정렬 시간 복잡도: ?");
-                        break;
-                }
-
             }
         });
 
-        // View Code 탭 마우스 리스너 추가
-        tabLearn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int selectedIndex = tabLearn.getSelectedIndex();
-                if (tabLearn.getTitleAt(selectedIndex).equals("코드")) {
-                    JPanel viewCodePanel = (JPanel) tabLearn.getComponentAt(selectedIndex);
-                    if (viewCodePanel.getComponentCount() == 0) { // 콤보박스가 아직 추가되지 않았을 때만 추가
-                        JScrollPane scrollPane = new JScrollPane(viewCodeLabel); // 라벨을 감싸는 스크롤 추가
-                        viewCodePanel.add(comboViewCode, BorderLayout.NORTH);
-                        viewCodePanel.add(scrollPane, BorderLayout.CENTER); // 스크롤 패널 추가
-                        viewCodePanel.revalidate();
-                        viewCodePanel.repaint();
-                    }
-                }
-            }
-        });
-        // View Code의 콤보박스 리스너 추가
-        comboViewCode.addItemListener(new ItemListener() {
+        // 콤보박스 내용이 바뀌면 라벨 업데이트
+        comboAlgorithm.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    String selectedAlgo = ((String[])comboAlgorithm.getSelectedItem())[0]; // 알고리즘 콤보박스에서 선택된 아이템
-                    String selectedviewCode = ((String[])comboViewCode.getSelectedItem())[0]; // View Code 콤보박스에서 선택된 아이템
+                    String selectedAlgo = ((String[]) comboAlgorithm.getSelectedItem())[0];
                     switch (selectedAlgo) {
                         case "버블 정렬":
-                            switch (selectedviewCode) {
-                                case "C":
-                                    viewCodeLabel.setText("버블 정렬의 C 코드");
-                                    break;
-                                case "C++":
-                                    viewCodeLabel.setText("버블 정렬의 C++ 코드");
-                                    break;
-                                case "Java":
-                                    viewCodeLabel.setText("버블 정렬의 Java를 Java봐!");
-                                    break;
-                                case "의사코드":
-                                    viewCodeLabel.setText("버블 정렬의 의사코드");
-                                    break;
-                            }
+                            definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.BUBBLE_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "선택 정렬":
-                            switch (selectedviewCode) {
-                                case "C":
-                                    viewCodeLabel.setText("선택 정렬의 C 코드");
-                                    break;
-                                case "C++":
-                                    viewCodeLabel.setText("선택 정렬의 C++ 코드");
-                                    break;
-                                case "Java":
-                                    viewCodeLabel.setText("선택 정렬의 Java를 Java봐!");
-                                    break;
-                                case "의사코드":
-                                    viewCodeLabel.setText("선택 정렬의 의사코드");
-                                    break;
-                            }
+                            definitionLabel.setText(Algorithms.SELECTION_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.SELECTION_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.SELECTION_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "삽입 정렬":
-                            switch (selectedviewCode) {
-                                case "C":
-                                    viewCodeLabel.setText("삽입 정렬의 C 코드");
-                                    break;
-                                case "C++":
-                                    viewCodeLabel.setText("삽입 정렬의 C++ 코드");
-                                    break;
-                                case "Java":
-                                    viewCodeLabel.setText("삽입 정렬의 Java를 Java봐!");
-                                    break;
-                                case "의사코드":
-                                    viewCodeLabel.setText("삽입 정렬의 의사코드");
-                                    break;
-                            }
+                            definitionLabel.setText(Algorithms.INSERTION_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.INSERTION_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.INSERTION_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "퀵 정렬":
-                            switch (selectedviewCode) {
-                                case "C":
-                                    viewCodeLabel.setText("퀵 정렬의 C 코드");
-                                    break;
-                                case "C++":
-                                    viewCodeLabel.setText("퀵 정렬의 C++ 코드");
-                                    break;
-                                case "Java":
-                                    viewCodeLabel.setText("퀵 정렬의 Java를 Java봐!");
-                                    break;
-                                case "의사코드":
-                                    viewCodeLabel.setText("퀵 정렬의 의사코드");
-                                    break;
-                            }
+                            definitionLabel.setText(Algorithms.QUICK_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.QUICK_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(n²)" }, { "O(nlogn)" }, { "O(nlogn)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.QUICK_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "병합 정렬":
-                            switch (selectedviewCode) {
-                                case "C":
-                                    viewCodeLabel.setText("병합 정렬의 C 코드");
-                                    break;
-                                case "C++":
-                                    viewCodeLabel.setText("병합 정렬의 C++ 코드");
-                                    break;
-                                case "Java":
-                                    viewCodeLabel.setText("병합 정렬의 Java를 Java봐!");
-                                    break;
-                                case "의사코드":
-                                    viewCodeLabel.setText("병합 정렬의 의사코드");
-                                    break;
-                            }
+                            definitionLabel.setText(Algorithms.MERGE_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.MERGE_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(nlogn)" }, { "O(nlogn)" }, { "O(nlogn)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.MERGE_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                     }
+                }
+            }
+        });
+
+        // 코드 탭 리스너 추가
+        tabLearn.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int selectedIndex = tabLearn.getSelectedIndex();
+                if (!tabLearn.getTitleAt(selectedIndex).equals("코드")) {
+                    return;
+                }
+                JPanel viewCodePanel = (JPanel) tabLearn.getComponentAt(selectedIndex);
+                if (viewCodePanel.getComponentCount() != 0) {
+                    return;
+                }
+                // 콤보박스가 아직 추가되지 않았을 때만 추가
+                JScrollPane scrollPane = new JScrollPane(viewCodeLabel); // 라벨을 감싸는 스크롤 추가
+                viewCodePanel.setLayout(new GridBagLayout()); // 콤보박스 크기 조정을 위해 그리드백 레이아웃 적용
+                viewCodePanel.add(comboViewCode, GbcFactory.createGbc(0, 0, 1.0d, 0.12d));
+                viewCodePanel.add(scrollPane, GbcFactory.createGbc(0, 1, 1.0d, 0.88d));
+                viewCodePanel.revalidate();
+                viewCodePanel.repaint();
+            }
+        });
+
+        // 코드 탭 콤보박스 리스너 추가
+        comboViewCode.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() != ItemEvent.SELECTED) {
+                    return;
+                }
+                String selectedAlgo = ((String[]) comboAlgorithm.getSelectedItem())[0]; // 알고리즘 콤보박스에서 선택된 아이템
+                String selectedviewCode = ((String[]) comboViewCode.getSelectedItem())[0]; // View Code 콤보박스에서 선택된 아이템
+                if (selectedAlgo.equals(Algorithms.BUBBLE_SORT.NAME)) {
+                    algo = Algorithms.BUBBLE_SORT;
+                } else if (selectedAlgo.equals(Algorithms.SELECTION_SORT.NAME)) {
+                    algo = Algorithms.SELECTION_SORT;
+                } else if (selectedAlgo.equals(Algorithms.INSERTION_SORT.NAME)) {
+                    algo = Algorithms.INSERTION_SORT;
+                } else if (selectedAlgo.equals(Algorithms.QUICK_SORT.NAME)) {
+                    algo = Algorithms.QUICK_SORT;
+                } else if (selectedAlgo.equals(Algorithms.MERGE_SORT.NAME)) {
+                    algo = Algorithms.MERGE_SORT;
+                }
+                switch (selectedviewCode) {
+                    case "의사코드":
+                        String code = algo.CODE.PSEUDO; // 코드를 저장해 변환 함수를 이용할 문자열
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
+                        break;
+                    case "C":
+                        code = algo.CODE.C;
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
+                        break;
+                    case "C++":
+                        code = algo.CODE.CPP;
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
+                        break;
+                    case "Java":
+                        code = algo.CODE.JAVA;
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
+                        break;
+                    case "Python":
+                        code = algo.CODE.PYTHON;
+                        viewCodeLabel.setText(CodeParser.parseCode(code));
+                        break;
                 }
             }
         });
@@ -222,9 +230,10 @@ class LearningScreen extends JPanel {
 class PracticeScreen extends JPanel {
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("학습하기");
-    private JLabel graph = new JLabel("막대 그래프");
-    private ListBox listBoxArray = new ListBox(1);
-    private JLabel controlPanel = new JLabel("조작 패널");
+    private SortingAnimation graph = new SortingAnimation();
+    private JPanel pnlControl = new JPanel();
+    private ListBox listBox = new ListBox(1);
+    private Button btnInsert = new Button("입력하기");
 
     public PracticeScreen() {
         // 초기화
@@ -236,7 +245,6 @@ class PracticeScreen extends JPanel {
                 { "병합 정렬", "" }
         });
         graph.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        controlPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         // 화면 구성
         setLayout(new GridBagLayout());
@@ -254,10 +262,20 @@ class PracticeScreen extends JPanel {
         // 3행
         add(graph, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
         add(new JLabel(""), GbcFactory.createGbc(2, 2, 0.05d, 0.85d, 1, 2));
-        add(listBoxArray, GbcFactory.createGbc(3, 2, 0.4d, 0.75d, 2, 1));
+        add(pnlControl, GbcFactory.createGbc(3, 2, 0.4d, 0.8d, 2, 1));
 
-        // 4행
-        add(controlPanel, GbcFactory.createGbc(3, 3, 0.04d, 0.1d, 2, 1));
+        //조작 패널
+        pnlControl.setLayout( new GridBagLayout() );
+        pnlControl.add( listBox, GbcFactory.createGbc(0, 0, 1d, 0.9d) );
+        pnlControl.add( btnInsert, GbcFactory.createGbc(0, 1, 1d, 0.1d) );
+
+        //입력하기 버튼
+        btnInsert.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //#TODO: 사용자가 입력한 배열 원소 중 정수가 아닌 것이 탐색되면 경고 메시지와 함께 문제되는 항목 하이라이트
+            }
+        });
     } // 생성자
 } // PracticeScreen 클래스
 

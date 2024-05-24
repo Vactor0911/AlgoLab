@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
+import javax.swing.plaf.TabbedPaneUI;
 import javax.swing.plaf.basic.*;
 
 /**
@@ -280,6 +281,24 @@ class ListBox extends JScrollPane {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * 리스트에 저장된 모든 항목을 반환한다.
+     * @return {@code ListContent[]} 형태의 항목 배열
+     */
+    public ListContent[] getContent() {
+        ListContent[] aryContents = new ListContent[listContents.size()];
+        return listContents.toArray(aryContents);
+    }
+
+    /**
+     * 리스트에 저장된 값 중 {@code index}번째 행의 항목을 반환한다.
+     * @param index 반환하고자 하는 행의 인덱스
+     * @return {@code ListContent} 형태의 항목 객체
+     */
+    public ListContent getContent(int index) {
+        return listContents.get(index);
     }
 
     /**
@@ -772,42 +791,68 @@ class Chart extends JPanel {
 } // Chart 클래스
 
 class SortingAnimation extends JPanel {
-    private static final int TIMER_PERIOD = 100;
-    private static final float LERP_TIME = 1f;
-    private static final float LERP_STEP = (float) TIMER_PERIOD * 0.001f / LERP_TIME;
+    //설정
+    private static final int TIMER_PERIOD = 10;
+    private static final float LERP_TIME = 0.5f;
+    private static final float BAR_H_GAP_MULTIPLY = 0.1f;
+    private static final float BAR_MAX_HEIGHT_MULTIPLY = 0.8f;
 
-    private ArrayList<Bar> listBar = new ArrayList<>();
+    private static final Color LINE_COLOR = Color.GRAY;
+    private static final Color BAR_COLOR_NORMAL = Color.GRAY;
+    private static final Color TEXT_COLOR = Color.BLACK;
+
+    //수정 금지
+    private static final float LERP_STEP = (float)TIMER_PERIOD * 0.0001f / LERP_TIME;
+
+    //변수
+    private Bar[] aryBar;
 
     public SortingAnimation(int[] aryNumber) {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        for (int i = 0; i < aryNumber.length; i++) {
+        aryBar = new Bar[aryNumber.length];
+        for (int i=0; i<aryNumber.length; i++) {
             Bar bar = new Bar(i, aryNumber[i]);
-            listBar.add(bar);
+            aryBar[i] = bar;
         }
 
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                for (Bar bar : listBar) {
+                for (Bar bar : aryBar) {
                     bar.update();
+                    repaint();
                 }
             }
         };
         timer.scheduleAtFixedRate(timerTask, 0, TIMER_PERIOD);
-    } // 생성자
+    }
+    public SortingAnimation() {
+        this( new int[]{} );
+    } //생성자
+
+    private class Pointf {
+        protected float x;
+        protected float y;
+
+        public Pointf(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
 
     protected class Bar {
         private int data;
-        private Point position;
-        private Point positionOld;
-        private float lerp = 1f;
+        private Pointf position;
+        private Pointf positionOld;
+        private float lerp;
 
         public Bar(int index, int data) {
             this.data = data;
-            position = new Point(index, 0);
-            positionOld = new Point(index, 0);
+            position = new Pointf( (float)index, 0f );
+            positionOld = new Pointf( (float)index, 0f );
+            lerp = 1f;
         }
 
         public int getData() {
@@ -815,9 +860,9 @@ class SortingAnimation extends JPanel {
         }
 
         public void moveTo(int index, boolean hide) {
-            positionOld = position;
-            position.x = index;
-            position.y = (hide ? 1 : 0);
+            positionOld = new Pointf(position.x, position.y);
+            position.x = (float)index;
+            position.y = (hide ? 1f : 0f);
             lerp = 0f;
         }
 
@@ -826,51 +871,449 @@ class SortingAnimation extends JPanel {
                 lerp = Math.min(lerp + LERP_STEP, 1f);
             }
         }
-    } // Bar 클래스
 
-    public Bar[] getBars() {
-        Bar[] aryBar = new Bar[listBar.size()];
-        return listBar.toArray(aryBar);
+        public Pointf getPoint() {
+            return lerpPointf(positionOld, position, lerp);
+        }
+    } //Bar 클래스
+
+    public void swap(int from, int to) {
+        if (from == to) {
+            return;
+        }
+
+        Bar barFrom = aryBar[from];
+        Bar barTo = aryBar[to];
+        barFrom.moveTo(to, false);
+        barTo.moveTo(from, false);
+
+        aryBar[from] = barTo;
+        aryBar[to] = barFrom;
+
+        sleep();
     }
 
-    public Point lerpPoint(Point pointFrom, Point pointTo, float lerp) {
-        float fixedLerp = Main.clamp(lerp, 0f, 1f);
-        Point pointLerp = pointTo;
-        pointLerp.x -= pointFrom.x;
-        pointLerp.y -= pointFrom.y;
+    public void shift(int from, int to) {
+        if (from == to) {
+            return;
+        }
 
-        pointLerp.x *= fixedLerp;
-        pointLerp.y *= fixedLerp;
+        Bar barPicked = aryBar[from];
+        barPicked.moveTo(from, true);
+        sleep();
+
+        for (int i=from+1; i<=to; i++) {
+            Bar bar1 = aryBar[i-1];
+            Bar bar2 = aryBar[i];
+
+            aryBar[i-1] = bar2;
+            aryBar[i] = bar1;
+
+            bar2.moveTo(i-1, false);
+        }
+        for (int i=from-1; i>=to; i--) {
+            Bar bar1 = aryBar[i+1];
+            Bar bar2 = aryBar[i];
+
+            aryBar[i+1] = bar2;
+            aryBar[i] = bar1;
+
+            bar2.moveTo(i+1, false);
+        }
+        barPicked.moveTo(to, true);
+        sleep();
+
+        barPicked.moveTo(to, false);
+        sleep();
+    }
+
+    public Bar[] getBars() {
+        return aryBar;
+    }
+
+    public int[] getData() {
+        int[] aryData = new int[aryBar.length];
+        for(int i=0; i<aryData.length; i++) {
+            aryData[i] = aryBar[i].getData();
+        }
+        return aryData;
+    }
+
+    public int getMaxData() {
+        if ( aryBar.length <= 0 ) {
+            return 0;
+        }
+
+        int max = aryBar[0].getData();
+        for (int i=1; i<aryBar.length; i++) {
+            if (aryBar[i].getData() > max) {
+                max = aryBar[i].getData();
+            }
+        }
+        return max;
+    }
+
+    private Pointf lerpPointf(Pointf pointFrom, Pointf pointTo, float lerp) {
+        float fixedLerp = Main.clamp(lerp, 0f, 1f);
+
+        Pointf pointDelta = new Pointf(pointTo.x, pointTo.y);
+        pointDelta.x -= pointFrom.x;
+        pointDelta.y -= pointFrom.y;
+
+        pointDelta.x *= fixedLerp;
+        pointDelta.y *= fixedLerp;
+
+        Pointf pointLerp = pointFrom;
+        pointLerp.x += pointDelta.x;
+        pointLerp.y += pointDelta.y;
 
         return pointLerp;
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep( (int)(LERP_TIME * 1100f) );
+        }
+        catch (Exception e) {}
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-    }
 
-    // JTabbedPane 객체 UI 수정
-    private static class ColorPanel extends JPanel implements ActionListener {
+        //구분선 그리기
+        int lineY = (int)( (float)getHeight() * 0.7f );
+        g.setColor(LINE_COLOR);
+        g.fillRect(0, lineY, getWidth(), 3);
 
-        private final Timer timer = new Timer(1000, this);
-        private Color color;
-        private int mask;
-        private JLabel label = new JLabel("Stackoverflow!");
-
-        public ColorPanel(Color color) {
-            super(true);
-            this.color = color;
-            this.mask = color.getRGB();
-            this.setBackground(color);
-            label.setForeground(color);
-            this.add(label);
+        //막대 그리기
+        if ( aryBar.length <= 0 ) {
+            return;
         }
 
-        //@Override
-        public void actionPerformed(ActionEvent e) {
-            this.setBackground(color);
+        int barWidth = getWidth() / aryBar.length;
+        int barHGap = (int)( (float)barWidth * BAR_H_GAP_MULTIPLY );
+        int barFixedWidth = barWidth - barHGap * 2;
+        int barMidX = barWidth / 2 - barHGap;
+
+        int maxHeight = (int)( (float)lineY * BAR_MAX_HEIGHT_MULTIPLY );
+        int barVGap = lineY - maxHeight;
+        int maxData = getMaxData();
+        int barHeightMul = maxHeight / maxData;
+
+        for (int i=0; i<aryBar.length; i++) {
+            Bar bar = aryBar[i];
+            int barHeight = bar.getData() * barHeightMul;
+
+            int barYMul = barHeight + barVGap;
+
+            Pointf point = bar.getPoint();
+            int barX = (int)(point.x * barWidth);
+            int barY = lineY - barHeight + (int)(point.y * barYMul);
+
+            g.setColor(BAR_COLOR_NORMAL);
+            g.fillRect(barX + barHGap, barY, barFixedWidth, barHeight);
+            g.setColor( BAR_COLOR_NORMAL.darker() );
+            g.drawRect(barX + barHGap, barY, barFixedWidth, barHeight);
+
+            //숫자 그리기
+            int textX = barX + barMidX;
+            int textY = barY + barHeight - 10;
+            g.setColor(TEXT_COLOR);
+            g.setFont( new Font("Dialog", Font.BOLD, 20) );
+            g.drawString(Integer.toString( bar.getData() ), textX, textY);
         }
     }
+} //SortingAnimation 클래스
 
-} // SortingAnimation 클래스
+class TabbedPane extends JTabbedPane {
+    private static final Color COLOR = new Color(220, 220, 220);
+
+    public TabbedPane() {
+        UIManager.put("TabbedPane.selected", Color.LIGHT_GRAY.darker() );
+        setBackground( Color.LIGHT_GRAY );
+        UIManager.put("TabbedPane.contentAreaColor", COLOR);
+        UIManager.put("TabbedPane.shadow", COLOR);
+        setUI( new javax.swing.plaf.basic.BasicTabbedPaneUI() );
+        setBorder( BorderFactory.createLineBorder(Color.GRAY) );
+    }
+} //TabbedPane 클래스
+
+class MessageBox extends JDialog implements ActionListener {
+	private static final long serialVersionUID = 1L;
+	//버튼 타입 id
+	static final int btnOK = 1;
+	static final int btnOK_CANCEL = 2;
+	static final int btnYES_NO = 3;
+	//버튼 클릭 id
+	static final int idOK = 1;
+	static final int idCANCEL = 2;
+	static final int idYES = 3;
+	static final int idNO = 4;
+	//아이콘 id
+	static final int iconINFORMATION = 1;
+	static final int iconQUESTION = 2;
+	static final int iconEXCLAMATION = 3;
+	static final int iconERROR = 4;
+	
+	private final ImageIcon iconInformation = new ImageIcon( Main.getPath("/Images/Information.png") );
+	private final ImageIcon iconQuestion = new ImageIcon( Main.getPath("/Images/Question.png") );
+	private final ImageIcon iconExclamation = new ImageIcon( Main.getPath("/Images/Exclamation.png") );
+	private final ImageIcon iconError = new ImageIcon( Main.getPath("/Images/Error.png") );
+	
+	private final Font font = new Font("Dialog", Font.PLAIN, 15);
+	
+	private JPanel pnlSouth = new JPanel();
+	private JPanel pnlCenter = new JPanel();
+	private JPanel pnlCenterMain = new JPanel();
+	private Button btnOk = new Button("확인");
+	private Button btnCancel = new Button("취소");
+	private Button btnYes = new Button("예");
+	private Button btnNo = new Button("아니오");
+	
+	private JFrame frame;
+	private JDialog dialog;
+	private int answer = 0;
+	private String msg;
+	private int btnType;
+	private int iconType;
+	
+	/**
+     * JFrame 위에 메시지 박스를 생성한다.
+     * @param frame {@code JFrame} 형태의 부모 프레임 객체
+     * @param msg 표시할 문자열
+     * @param btnType 표시할 버튼 레이아웃 종류
+     * @param iconType 표시할 아이콘 레이아웃 종류
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #iconINFORMATION}, {@link #iconQUESTION}, {@link #iconEXCLAMATION}, {@link #iconERROR}
+     */
+	public MessageBox(JFrame frame, String msg, int btnType, int iconType) {
+		super(frame, frame.getTitle(), true);
+		this.frame = frame;
+		this.msg = msg;
+		this.btnType = btnType;
+		this.iconType = iconType;
+		setLocation( frame.getLocation() );
+		draw();
+	}
+	
+	/**
+     * JDialog 위에 메시지 박스를 생성한다.
+     * @param dialog {@code JDialog} 형태의 부모 프레임 객체
+     * @param msg 표시할 문자열
+     * @param btnType 표시할 버튼 레이아웃 종류
+     * @param iconType 표시할 아이콘 레이아웃 종류
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #iconINFORMATION}, {@link #iconQUESTION}, {@link #iconEXCLAMATION}, {@link #iconERROR}
+     */
+	public MessageBox(JDialog dialog, String msg, int btnType, int iconType) {
+		super(dialog, dialog.getTitle(), true);
+		this.dialog = dialog;
+		this.msg = msg;
+		this.btnType = btnType;
+		this.iconType = iconType;
+		setLocation( dialog.getLocation() );
+		draw();
+	}
+	
+
+	/**
+	 * 메시지 박스 대화상자를 그린다.
+	 */
+	public void draw() {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setResizable(false);
+		
+		JPanel pnlBase = new JPanel();
+		pnlBase.setLayout( new BorderLayout() );
+		pnlBase.setBackground(null);
+		add(pnlBase);
+		
+		//버튼 객체 설정
+		Button[] aryBtn = { btnOk, btnCancel, btnYes, btnNo };
+		for (int i=0; i<aryBtn.length; i++) {
+			Dimension size = new Dimension(80, 30);
+			aryBtn[i].setPreferredSize(size);
+			aryBtn[i].setMinimumSize(size);
+			aryBtn[i].setFont(font);
+			aryBtn[i].addActionListener(this);
+		}
+
+		//버튼
+		pnlBase.add(pnlSouth, BorderLayout.SOUTH);
+		pnlSouth.setLayout( new FlowLayout(FlowLayout.CENTER, 5, 10) );
+		pnlSouth.setBackground( new Color(220, 220, 220) );
+		switch (btnType) {
+			case btnOK:
+				pnlSouth.add(btnOk);
+				break;
+			case btnOK_CANCEL:
+				pnlSouth.add(btnOk);
+				pnlSouth.add(btnCancel);
+				break;
+			case btnYES_NO:
+				pnlSouth.add(btnYes);
+				pnlSouth.add(btnNo);
+				break;
+			default:
+				return;
+		}
+		
+		//메시지
+		pnlCenterMain.setLayout( new BorderLayout(5, 0) );
+		pnlCenterMain.setBorder( BorderFactory.createEmptyBorder(10, 20, 10, 20) );
+		pnlBase.add(pnlCenterMain, BorderLayout.CENTER);
+		
+		String[] aryMsg = msg.split("\n");
+		pnlCenter.setLayout( new GridLayout(aryMsg.length, 1, 0, 0) );
+		pnlCenterMain.add(pnlCenter, BorderLayout.CENTER);
+		
+		for (int i=0; i<aryMsg.length; i++) {
+			JLabel lbl = new JLabel(aryMsg[i], SwingConstants.LEFT);
+			lbl.setFont(font);
+			pnlCenter.add(lbl);
+		}
+		
+		pack();
+		
+		//아이콘
+		Image icon = null;
+		switch (iconType) {
+			case iconINFORMATION:
+				icon = iconInformation.getImage();
+				break;
+			case iconQUESTION:
+				icon = iconQuestion.getImage();
+				break;
+			case iconEXCLAMATION:
+				icon = iconExclamation.getImage();
+				break;
+			case iconERROR:
+				icon = iconError.getImage();
+				break;
+			default:
+				return;
+		}
+		
+		int size = pnlCenterMain.getHeight();
+		icon = icon.getScaledInstance(size, size, Image.SCALE_SMOOTH);
+		JLabel lblIcon = new JLabel( new ImageIcon(icon) );
+		lblIcon.setPreferredSize( new Dimension(size, size) );
+		pnlCenterMain.add(lblIcon, BorderLayout.WEST);
+		
+		pack();
+		
+		//대화상자를 화면 정중앙에 위치
+		int x = 0;
+		int y = 0;
+		Window wnd;
+		if (frame != null) { //부모가 JFrame
+			wnd = frame;
+		}
+		else { //부모가 JDialog
+			wnd = dialog;
+		}
+		x = wnd.getX() + (int)(wnd.getWidth() * 0.5) - (int)(getWidth() * 0.5);
+		y = wnd.getY() + (int)(wnd.getHeight() * 0.5) - (int)(getHeight() * 0.5);
+		setLocation(x, y);
+		
+		setVisible(true);
+	} //draw()
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param frame - 대화상자를 귀속시킬 JFrame 프레임
+	 * @param msg - 표시할 메시지
+	 * @param btnType - 표시할 버튼 레이아웃
+	 * @param iconType - 표시할 아이콘
+	 * @return 클릭한 버튼의 id
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #iconINFORMATION}, {@link #iconQUESTION}, {@link #iconEXCLAMATION}, {@link #iconERROR}
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JFrame frame, String msg, int btnType, int iconType) {
+		MessageBox ob = new MessageBox(frame, msg, btnType, iconType);
+		return ob.answer;
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param frame - 대화상자를 귀속시킬 JFrame 프레임
+	 * @param msg - 표시할 메시지
+	 * @param btnType - 표시할 버튼 레이아웃
+	 * @return 클릭한 버튼의 id
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JFrame frame, String msg, int btnType) {
+		return show(frame, msg, btnType, iconINFORMATION);
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param frame - 대화상자를 귀속시킬 JFrame 프레임
+	 * @param msg - 표시할 메시지
+	 * @return 클릭한 버튼의 id
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JFrame frame, String msg) {
+		return show(frame, msg, btnOK, iconINFORMATION);
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param dialog - 대화상자를 귀속시킬 JDialog 프레임
+	 * @param msg - 표시할 메시지
+	 * @param btnType - 표시할 버튼 레이아웃
+	 * @param iconType - 표시할 아이콘
+	 * @return 클릭한 버튼의 id
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #iconINFORMATION}, {@link #iconQUESTION}, {@link #iconEXCLAMATION}, {@link #iconERROR}
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JDialog dialog, String msg, int btnType, int iconType) {
+		MessageBox ob = new MessageBox(dialog, msg, btnType, iconType);
+		return ob.answer;
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param dialog - 대화상자를 귀속시킬 JDialog 프레임
+	 * @param msg - 표시할 메시지
+	 * @param btnType - 표시할 버튼 레이아웃
+	 * @return 클릭한 버튼의 id
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JDialog dialog, String msg, int btnType) {
+		return show(dialog, msg, btnType, iconINFORMATION);
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param dialog - 대화상자를 귀속시킬 JDialog 프레임
+	 * @param msg - 표시할 메시지
+	 * @return 클릭한 버튼의 id
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JDialog dialog, String msg) {
+		return show(dialog, msg, btnOK, iconINFORMATION);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if( e.getSource().equals(btnOk) ) {
+			answer = idOK;
+		}
+		else if ( e.getSource().equals(btnCancel) ) {
+			answer = idCANCEL;
+		}
+		else if ( e.getSource().equals(btnYes) ) {
+			answer = idYES;
+		}
+		else if ( e.getSource().equals(btnNo) ) {
+			answer = idNO;
+		}
+		this.dispatchEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+	}
+} //MessageBox 클래스
