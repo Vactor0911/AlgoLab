@@ -22,7 +22,7 @@ class LearningScreen extends JPanel {
 
     // 탭 패널에 글씨 세팅해 줄 라벨
     private JLabel definitionLabel = new JLabel(""); // 정의
-    private JLabel viewCodeLabel = new JLabel("원하는 언어를 선택하세요."); // 코드 보기
+    private JLabel viewCodeLabel = new JLabel(""); // 코드 보기
     private JLabel timeComplexityLabel = new JLabel(""); // 시간 복잡도
 
     // View Code 안에 추가 할 콤보박스
@@ -30,6 +30,9 @@ class LearningScreen extends JPanel {
 
     // 차트 클래스
     Chart c = new Chart(3, 1);
+
+    // 구조체 접근을 위한 변수 초기화
+    private Algorithms.Algorithm algo = Algorithms.BUBBLE_SORT;
 
     public LearningScreen() {
         // 초기화
@@ -59,10 +62,7 @@ class LearningScreen extends JPanel {
         tabLearn.addTab("코드", new JPanel(new BorderLayout()));
         tabLearn.addTab("시간 복잡도", timeComplexityLabel);
 
-        // 정의 탭 설명 라벨
-        definitionLabel.setText("원하는 알고리즘을 선택하세요.");
-
-        // 콤보 박스를 선택 해제된 상태로 초기화
+        // 콤보 박스 초기화
         comboAlgorithm.setSelectedIndex(0);
         comboViewCode.setSelectedIndex(0);
 
@@ -70,6 +70,10 @@ class LearningScreen extends JPanel {
         definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
         timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
         c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
+
+        // 탭 패널 초기화
+        viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
+
 
         // 1행
         add(comboAlgorithm, GbcFactory.createGbc(0, 0, 0.5d, 0.1d));
@@ -98,7 +102,7 @@ class LearningScreen extends JPanel {
             }
         });
 
-        // 콤보박스 내용이 바뀌면 실시간으로 라벨 업데이트
+        // 콤보박스 내용이 바뀌면 라벨 업데이트
         comboAlgorithm.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -109,35 +113,48 @@ class LearningScreen extends JPanel {
                             definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
                             timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.BUBBLE_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "선택 정렬":
                             definitionLabel.setText(Algorithms.SELECTION_SORT.DEFINITION);
                             timeComplexityLabel.setText(Algorithms.SELECTION_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.SELECTION_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "삽입 정렬":
                             definitionLabel.setText(Algorithms.INSERTION_SORT.DEFINITION);
                             timeComplexityLabel.setText(Algorithms.INSERTION_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.INSERTION_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "퀵 정렬":
                             definitionLabel.setText(Algorithms.QUICK_SORT.DEFINITION);
                             timeComplexityLabel.setText(Algorithms.QUICK_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(nlogn)" }, { "O(nlogn)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.QUICK_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "병합 정렬":
                             definitionLabel.setText(Algorithms.MERGE_SORT.DEFINITION);
                             timeComplexityLabel.setText(Algorithms.MERGE_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(nlogn)" }, { "O(nlogn)" }, { "O(nlogn)" } });
+                            comboViewCode.setSelectedIndex(0);
+                            algo = Algorithms.MERGE_SORT;
+                            viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                     }
                 }
-
             }
-
         });
 
-        // View Code 리스너 추가
+        // 코드 탭 리스너 추가
         tabLearn.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -159,7 +176,7 @@ class LearningScreen extends JPanel {
             }
         });
 
-        // View Code의 콤보박스 리스너 추가
+        // 코드 탭 콤보박스 리스너 추가
         comboViewCode.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -168,7 +185,6 @@ class LearningScreen extends JPanel {
                 }
                 String selectedAlgo = ((String[]) comboAlgorithm.getSelectedItem())[0]; // 알고리즘 콤보박스에서 선택된 아이템
                 String selectedviewCode = ((String[]) comboViewCode.getSelectedItem())[0]; // View Code 콤보박스에서 선택된 아이템
-                Algorithms.Algorithm algo = null;
                 if (selectedAlgo.equals(Algorithms.BUBBLE_SORT.NAME)) {
                     algo = Algorithms.BUBBLE_SORT;
                 } else if (selectedAlgo.equals(Algorithms.SELECTION_SORT.NAME)) {
@@ -201,7 +217,6 @@ class LearningScreen extends JPanel {
                         code = algo.CODE.PYTHON;
                         viewCodeLabel.setText(CodeParser.parseCode(code));
                         break;
-
                 }
             }
         });
