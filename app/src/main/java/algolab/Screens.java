@@ -14,7 +14,7 @@ public class Screens {
 class LearningScreen extends JPanel {
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("실습하기");
-    private JTabbedPane tabLearn = new JTabbedPane();
+    private TabbedPane tabLearn = new TabbedPane();
 
     JScrollPane tabLearnScroll = new JScrollPane(tabLearn); // 스크롤 패널
 
@@ -195,9 +195,10 @@ class LearningScreen extends JPanel {
 class PracticeScreen extends JPanel {
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("학습하기");
-    private JLabel graph = new JLabel("막대 그래프");
-    private ListBox listBoxArray = new ListBox(1);
-    private JLabel controlPanel = new JLabel("조작 패널");
+    private SortingAnimation graph = new SortingAnimation();
+    private JPanel pnlControl = new JPanel();
+    private ListBox listBox = new ListBox(1);
+    private Button btnInsert = new Button("입력하기");
 
     public PracticeScreen() {
         // 초기화
@@ -209,7 +210,6 @@ class PracticeScreen extends JPanel {
                 { "병합 정렬", "" }
         });
         graph.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        controlPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         // 화면 구성
         setLayout(new GridBagLayout());
@@ -227,10 +227,20 @@ class PracticeScreen extends JPanel {
         // 3행
         add(graph, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
         add(new JLabel(""), GbcFactory.createGbc(2, 2, 0.05d, 0.85d, 1, 2));
-        add(listBoxArray, GbcFactory.createGbc(3, 2, 0.4d, 0.75d, 2, 1));
+        add(pnlControl, GbcFactory.createGbc(3, 2, 0.4d, 0.8d, 2, 1));
 
-        // 4행
-        add(controlPanel, GbcFactory.createGbc(3, 3, 0.04d, 0.1d, 2, 1));
+        //조작 패널
+        pnlControl.setLayout( new GridBagLayout() );
+        pnlControl.add( listBox, GbcFactory.createGbc(0, 0, 1d, 0.9d) );
+        pnlControl.add( btnInsert, GbcFactory.createGbc(0, 1, 1d, 0.1d) );
+
+        //입력하기 버튼
+        btnInsert.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //#TODO: 사용자가 입력한 배열 원소 중 정수가 아닌 것이 탐색되면 경고 메시지와 함께 문제되는 항목 하이라이트
+            }
+        });
     } // 생성자
 } // PracticeScreen 클래스
 
