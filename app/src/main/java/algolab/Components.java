@@ -1000,3 +1000,282 @@ class TabbedPane extends JTabbedPane {
         setBorder( BorderFactory.createLineBorder(Color.GRAY) );
     }
 } //TabbedPane 클래스
+
+class MessageBox extends JDialog implements ActionListener {
+	private static final long serialVersionUID = 1L;
+	//버튼 타입 id
+	static final int btnOK = 1;
+	static final int btnOK_CANCEL = 2;
+	static final int btnYES_NO = 3;
+	//버튼 클릭 id
+	static final int idOK = 1;
+	static final int idCANCEL = 2;
+	static final int idYES = 3;
+	static final int idNO = 4;
+	//아이콘 id
+	static final int iconINFORMATION = 1;
+	static final int iconQUESTION = 2;
+	static final int iconEXCLAMATION = 3;
+	static final int iconERROR = 4;
+	
+	private final ImageIcon iconInformation = new ImageIcon( Main.getPath("/Images/Information.png") );
+	private final ImageIcon iconQuestion = new ImageIcon( Main.getPath("/Images/Question.png") );
+	private final ImageIcon iconExclamation = new ImageIcon( Main.getPath("/Images/Exclamation.png") );
+	private final ImageIcon iconError = new ImageIcon( Main.getPath("/Images/Error.png") );
+	
+	private final Font font = new Font("Dialog", Font.PLAIN, 15);
+	
+	private JPanel pnlSouth = new JPanel();
+	private JPanel pnlCenter = new JPanel();
+	private JPanel pnlCenterMain = new JPanel();
+	private Button btnOk = new Button("확인");
+	private Button btnCancel = new Button("취소");
+	private Button btnYes = new Button("예");
+	private Button btnNo = new Button("아니오");
+	
+	private JFrame frame;
+	private JDialog dialog;
+	private int answer = 0;
+	private String msg;
+	private int btnType;
+	private int iconType;
+	
+	/**
+     * JFrame 위에 메시지 박스를 생성한다.
+     * @param frame {@code JFrame} 형태의 부모 프레임 객체
+     * @param msg 표시할 문자열
+     * @param btnType 표시할 버튼 레이아웃 종류
+     * @param iconType 표시할 아이콘 레이아웃 종류
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #iconINFORMATION}, {@link #iconQUESTION}, {@link #iconEXCLAMATION}, {@link #iconERROR}
+     */
+	public MessageBox(JFrame frame, String msg, int btnType, int iconType) {
+		super(frame, frame.getTitle(), true);
+		this.frame = frame;
+		this.msg = msg;
+		this.btnType = btnType;
+		this.iconType = iconType;
+		setLocation( frame.getLocation() );
+		draw();
+	}
+	
+	/**
+     * JDialog 위에 메시지 박스를 생성한다.
+     * @param dialog {@code JDialog} 형태의 부모 프레임 객체
+     * @param msg 표시할 문자열
+     * @param btnType 표시할 버튼 레이아웃 종류
+     * @param iconType 표시할 아이콘 레이아웃 종류
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #iconINFORMATION}, {@link #iconQUESTION}, {@link #iconEXCLAMATION}, {@link #iconERROR}
+     */
+	public MessageBox(JDialog dialog, String msg, int btnType, int iconType) {
+		super(dialog, dialog.getTitle(), true);
+		this.dialog = dialog;
+		this.msg = msg;
+		this.btnType = btnType;
+		this.iconType = iconType;
+		setLocation( dialog.getLocation() );
+		draw();
+	}
+	
+
+	/**
+	 * 메시지 박스 대화상자를 그린다.
+	 */
+	public void draw() {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setResizable(false);
+		
+		JPanel pnlBase = new JPanel();
+		pnlBase.setLayout( new BorderLayout() );
+		pnlBase.setBackground(null);
+		add(pnlBase);
+		
+		//버튼 객체 설정
+		Button[] aryBtn = { btnOk, btnCancel, btnYes, btnNo };
+		for (int i=0; i<aryBtn.length; i++) {
+			Dimension size = new Dimension(80, 30);
+			aryBtn[i].setPreferredSize(size);
+			aryBtn[i].setMinimumSize(size);
+			aryBtn[i].setFont(font);
+			aryBtn[i].addActionListener(this);
+		}
+
+		//버튼
+		pnlBase.add(pnlSouth, BorderLayout.SOUTH);
+		pnlSouth.setLayout( new FlowLayout(FlowLayout.CENTER, 5, 10) );
+		pnlSouth.setBackground( new Color(220, 220, 220) );
+		switch (btnType) {
+			case btnOK:
+				pnlSouth.add(btnOk);
+				break;
+			case btnOK_CANCEL:
+				pnlSouth.add(btnOk);
+				pnlSouth.add(btnCancel);
+				break;
+			case btnYES_NO:
+				pnlSouth.add(btnYes);
+				pnlSouth.add(btnNo);
+				break;
+			default:
+				return;
+		}
+		
+		//메시지
+		pnlCenterMain.setLayout( new BorderLayout(5, 0) );
+		pnlCenterMain.setBorder( BorderFactory.createEmptyBorder(10, 20, 10, 20) );
+		pnlBase.add(pnlCenterMain, BorderLayout.CENTER);
+		
+		String[] aryMsg = msg.split("\n");
+		pnlCenter.setLayout( new GridLayout(aryMsg.length, 1, 0, 0) );
+		pnlCenterMain.add(pnlCenter, BorderLayout.CENTER);
+		
+		for (int i=0; i<aryMsg.length; i++) {
+			JLabel lbl = new JLabel(aryMsg[i], SwingConstants.LEFT);
+			lbl.setFont(font);
+			pnlCenter.add(lbl);
+		}
+		
+		pack();
+		
+		//아이콘
+		Image icon = null;
+		switch (iconType) {
+			case iconINFORMATION:
+				icon = iconInformation.getImage();
+				break;
+			case iconQUESTION:
+				icon = iconQuestion.getImage();
+				break;
+			case iconEXCLAMATION:
+				icon = iconExclamation.getImage();
+				break;
+			case iconERROR:
+				icon = iconError.getImage();
+				break;
+			default:
+				return;
+		}
+		
+		int size = pnlCenterMain.getHeight();
+		icon = icon.getScaledInstance(size, size, Image.SCALE_SMOOTH);
+		JLabel lblIcon = new JLabel( new ImageIcon(icon) );
+		lblIcon.setPreferredSize( new Dimension(size, size) );
+		pnlCenterMain.add(lblIcon, BorderLayout.WEST);
+		
+		pack();
+		
+		//대화상자를 화면 정중앙에 위치
+		int x = 0;
+		int y = 0;
+		Window wnd;
+		if (frame != null) { //부모가 JFrame
+			wnd = frame;
+		}
+		else { //부모가 JDialog
+			wnd = dialog;
+		}
+		x = wnd.getX() + (int)(wnd.getWidth() * 0.5) - (int)(getWidth() * 0.5);
+		y = wnd.getY() + (int)(wnd.getHeight() * 0.5) - (int)(getHeight() * 0.5);
+		setLocation(x, y);
+		
+		setVisible(true);
+	} //draw()
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param frame - 대화상자를 귀속시킬 JFrame 프레임
+	 * @param msg - 표시할 메시지
+	 * @param btnType - 표시할 버튼 레이아웃
+	 * @param iconType - 표시할 아이콘
+	 * @return 클릭한 버튼의 id
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #iconINFORMATION}, {@link #iconQUESTION}, {@link #iconEXCLAMATION}, {@link #iconERROR}
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JFrame frame, String msg, int btnType, int iconType) {
+		MessageBox ob = new MessageBox(frame, msg, btnType, iconType);
+		return ob.answer;
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param frame - 대화상자를 귀속시킬 JFrame 프레임
+	 * @param msg - 표시할 메시지
+	 * @param btnType - 표시할 버튼 레이아웃
+	 * @return 클릭한 버튼의 id
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JFrame frame, String msg, int btnType) {
+		return show(frame, msg, btnType, iconINFORMATION);
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param frame - 대화상자를 귀속시킬 JFrame 프레임
+	 * @param msg - 표시할 메시지
+	 * @return 클릭한 버튼의 id
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JFrame frame, String msg) {
+		return show(frame, msg, btnOK, iconINFORMATION);
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param dialog - 대화상자를 귀속시킬 JDialog 프레임
+	 * @param msg - 표시할 메시지
+	 * @param btnType - 표시할 버튼 레이아웃
+	 * @param iconType - 표시할 아이콘
+	 * @return 클릭한 버튼의 id
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #iconINFORMATION}, {@link #iconQUESTION}, {@link #iconEXCLAMATION}, {@link #iconERROR}
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JDialog dialog, String msg, int btnType, int iconType) {
+		MessageBox ob = new MessageBox(dialog, msg, btnType, iconType);
+		return ob.answer;
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param dialog - 대화상자를 귀속시킬 JDialog 프레임
+	 * @param msg - 표시할 메시지
+	 * @param btnType - 표시할 버튼 레이아웃
+	 * @return 클릭한 버튼의 id
+     * @see {@link #btnOK}, {@link #btnOK_CANCEL}, {@link #btnYES_NO}
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JDialog dialog, String msg, int btnType) {
+		return show(dialog, msg, btnType, iconINFORMATION);
+	}
+	
+	/**
+	 * 메시지 박스 대화상자를 생성한다.
+	 * @param dialog - 대화상자를 귀속시킬 JDialog 프레임
+	 * @param msg - 표시할 메시지
+	 * @return 클릭한 버튼의 id
+     * @see {@link #idOK}, {@link #idCANCEL}, {@link #idYES}, {@link #idNO}
+	 */
+	public static int show(JDialog dialog, String msg) {
+		return show(dialog, msg, btnOK, iconINFORMATION);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if( e.getSource().equals(btnOk) ) {
+			answer = idOK;
+		}
+		else if ( e.getSource().equals(btnCancel) ) {
+			answer = idCANCEL;
+		}
+		else if ( e.getSource().equals(btnYes) ) {
+			answer = idYES;
+		}
+		else if ( e.getSource().equals(btnNo) ) {
+			answer = idNO;
+		}
+		this.dispatchEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+	}
+} //MessageBox 클래스
