@@ -233,6 +233,14 @@ class PracticeScreen extends JPanel {
         pnlControl.setLayout( new GridBagLayout() );
         pnlControl.add( listBox, GbcFactory.createGbc(0, 0, 1d, 0.9d) );
         pnlControl.add( btnInsert, GbcFactory.createGbc(0, 1, 1d, 0.1d) );
+
+        //입력하기 버튼
+        btnInsert.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //#TODO: 사용자가 입력한 배열 원소 중 정수가 아닌 것이 탐색되면 경고 메시지와 함께 문제되는 항목 하이라이트
+            }
+        });
     } // 생성자
 } // PracticeScreen 클래스
 
