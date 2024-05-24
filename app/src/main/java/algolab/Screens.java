@@ -57,6 +57,9 @@ class LearningScreen extends JPanel {
         tabLearn.addTab("코드", new JPanel(new BorderLayout()));
         tabLearn.addTab("시간 복잡도", timeComplexityLabel);
 
+        // 정의 탭 설명 라벨
+        definitionLabel.setText("원하는 알고리즘을 선택 후 원하는 탭을 클릭하세요.");
+
         // 1행
         add(comboAlgorithm, GbcFactory.createGbc(0, 0, 0.5d, 0.1d));
         add(new JLabel(""), GbcFactory.createGbc(1, 0, 0.05d, 0.1d));
@@ -79,39 +82,48 @@ class LearningScreen extends JPanel {
         c.setRowTitle(new String[] { "최선", "최악", "평균" });
 
 
-        // 학습하기 버튼 리스너 구현
+        // 실습하기 버튼 리스너 구현
         btnLearn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String selectedAlgo = ((String[]) comboAlgorithm.getSelectedItem())[0]; // 알고리즘 콤보박스에서 선택된 아이템
-                definitionLabel.setText(selectedAlgo.toString());
-                switch (selectedAlgo) {
-                    case "버블 정렬":
-                        definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
-                        timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
-                        c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
-                        break;
-                    case "선택 정렬":
-                        definitionLabel.setText(Algorithms.SELECTION_SORT.DEFINITION);
-                        timeComplexityLabel.setText(Algorithms.SELECTION_SORT.TIME_COMPLEXITY.BEST);
-                        c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
-                        break;
-                    case "삽입 정렬":
-                        definitionLabel.setText(Algorithms.INSERTION_SORT.DEFINITION);
-                        timeComplexityLabel.setText(Algorithms.INSERTION_SORT.TIME_COMPLEXITY.BEST);
-                        c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
-                        break;
-                    case "퀵 정렬":
-                        definitionLabel.setText(Algorithms.QUICK_SORT.DEFINITION);
-                        timeComplexityLabel.setText(Algorithms.QUICK_SORT.TIME_COMPLEXITY.BEST);
-                        c.put(new String[][] { { "O(n²)" }, { "O(nlogn)" }, { "O(nlogn)" } });
-                        break;
-                    case "병합 정렬":
-                        definitionLabel.setText(Algorithms.MERGE_SORT.DEFINITION);
-                        timeComplexityLabel.setText(Algorithms.MERGE_SORT.TIME_COMPLEXITY.BEST);
-                        c.put(new String[][] { { "O(nlogn)" }, { "O(nlogn)" }, { "O(nlogn)" } });
-                        break;
-                }
+            }
+        });
 
+        // 정의 , 시간 복잡도 탭 마우스 리스너 추가
+        tabLearn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedIndex = tabLearn.getSelectedIndex();
+                if (tabLearn.getTitleAt(selectedIndex).equals("정의") || tabLearn.getTitleAt(selectedIndex).equals("시간 복잡도")) {
+                    String selectedAlgo = ((String[]) comboAlgorithm.getSelectedItem())[0]; // 알고리즘 콤보박스에서 선택된 아이템
+                    definitionLabel.setText(selectedAlgo.toString());
+                    switch (selectedAlgo) {
+                        case "버블 정렬":
+                            definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
+                            break;
+                        case "선택 정렬":
+                            definitionLabel.setText(Algorithms.SELECTION_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.SELECTION_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
+                            break;
+                        case "삽입 정렬":
+                            definitionLabel.setText(Algorithms.INSERTION_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.INSERTION_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
+                            break;
+                        case "퀵 정렬":
+                            definitionLabel.setText(Algorithms.QUICK_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.QUICK_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(n²)" }, { "O(nlogn)" }, { "O(nlogn)" } });
+                            break;
+                        case "병합 정렬":
+                            definitionLabel.setText(Algorithms.MERGE_SORT.DEFINITION);
+                            timeComplexityLabel.setText(Algorithms.MERGE_SORT.TIME_COMPLEXITY.BEST);
+                            c.put(new String[][] { { "O(nlogn)" }, { "O(nlogn)" }, { "O(nlogn)" } });
+                            break;
+                    }
+                }
             }
         });
 
