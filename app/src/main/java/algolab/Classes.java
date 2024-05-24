@@ -173,7 +173,7 @@ class FocusAdapter implements FocusListener {
  */
 class Algorithms {
     protected static final Algorithm BUBBLE_SORT = new Algorithm(
-        null,
+        "버블 정렬",
         "버블 정렬 정의",
         new Algorithm.Code(
             "버블 정렬 의사코드",
