@@ -263,6 +263,24 @@ class ListBox extends JScrollPane {
     }
 
     /**
+     * 리스트에 저장된 모든 항목을 반환한다.
+     * @return {@code ListContent[]} 형태의 항목 배열
+     */
+    public ListContent[] getContent() {
+        ListContent[] aryContents = new ListContent[listContents.size()];
+        return listContents.toArray(aryContents);
+    }
+
+    /**
+     * 리스트에 저장된 값 중 {@code index}번째 행의 항목을 반환한다.
+     * @param index 반환하고자 하는 행의 인덱스
+     * @return {@code ListContent} 형태의 항목 객체
+     */
+    public ListContent getContent(int index) {
+        return listContents.get(index);
+    }
+
+    /**
      * 리스트에서 {@code index}번째 행을 삭제한다.
      * @param index 삭제하고자 하는 행의 인덱스
      */
@@ -286,6 +304,7 @@ class ListBox extends JScrollPane {
             comp.showIndex(b);
         }
     }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -770,6 +789,9 @@ class SortingAnimation extends JPanel {
             }
         };
         timer.scheduleAtFixedRate(timerTask, 0, TIMER_PERIOD);
+    }
+    public SortingAnimation() {
+        this( new int[]{} );
     } //생성자
 
     private class Pointf {
