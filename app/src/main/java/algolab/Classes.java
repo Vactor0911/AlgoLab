@@ -766,3 +766,74 @@ class CodeParser {
         return "<html><body>" + result + "</body></html>";
     }
 } //CodeParser 클래스
+
+class SortManager {
+    public static final int BUBBLE_SORT = 1;
+    public static final int SELECTION_SORT = 2;
+    public static final int INSERTION_SORT = 3;
+    public static final int QUICK_SORT = 4;
+    public static final int MERGE_SORT = 5;
+
+    private SortingAnimation animation;
+    private SortingAlgorithm algorithm;
+
+    public SortManager(SortingAnimation animation, int sortType) {
+        this.animation = animation;
+    }
+
+    public void start() {
+        algorithm.sort(animation);
+    }
+
+    public void pause(boolean pause) {
+        algorithm.pause(pause);
+    }
+
+    public void stop() {
+        algorithm.stop();
+    }
+
+    private abstract class SortingAlgorithm {
+        public abstract void sort(SortingAnimation anim);
+    
+        public void pause(boolean pause) {
+    
+        }
+    
+        public void stop() {
+    
+        }
+    } //SortingAlgorithm 클래스
+
+    private class BubbleSort extends SortingAlgorithm {
+        @Override
+        public void sort(SortingAnimation anim) {
+        }
+    } //BubbleSort 클래스
+
+    private class SelectionSort extends SortingAlgorithm {
+        @Override
+        public void sort(SortingAnimation anim) {
+        }
+    } //SelectionSort 클래스
+
+    private class InsertionSort extends SortingAlgorithm {
+        @Override
+        public void sort(SortingAnimation anim) {
+        }
+    } //InsertionSort 클래스
+
+    private class QuickSort extends SortingAlgorithm {
+        @Override
+        public void sort(SortingAnimation anim) {
+        }
+    } //QuickSort 클래스
+
+    private class MergeSort extends SortingAlgorithm {
+        @Override
+        public void sort(SortingAnimation anim) {
+        }
+    } //MergeSort 클래스
+
+    
+} //SortManager 클래스
