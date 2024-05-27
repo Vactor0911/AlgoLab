@@ -773,7 +773,7 @@ class CodeParser {
 /**
  * 정렬 애니메이션을 구동시키기 위한 작동부가 구현된 클래스이다.
  */
-abstract class SortManager {
+class SortManager {
     public static final int BUBBLE_SORT = 1;
     public static final int SELECTION_SORT = 2;
     public static final int INSERTION_SORT = 3;
