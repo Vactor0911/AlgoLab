@@ -20,9 +20,9 @@ class LearningScreen extends JPanel {
 
 
     // 탭 패널에 추가 할 패널
-    private JPanel pn1 = new JPanel();
-    private JPanel pn2 = new JPanel();
-    private JPanel pn3 = new JPanel();
+    private JPanel definitionPanel = new JPanel();
+    private JPanel viewCodePanel = new JPanel();
+    private JPanel timeComplexityPanel = new JPanel();
 
 
     // 탭 패널에 글씨 세팅해 줄 라벨
@@ -60,18 +60,18 @@ class LearningScreen extends JPanel {
         setLayout(new GridBagLayout());
 
         // 탭 패널에 탭 추가 및 스크롤 추가
-        pn1.setLayout(new BorderLayout());
-        pn1.add(definitionLabel);
-        JScrollPane tabLearnScroll1 = new JScrollPane(pn1); // 스크롤 패널
+        definitionPanel.setLayout(new BorderLayout());
+        definitionPanel.add(definitionLabel);
+        JScrollPane tabLearnScroll1 = new JScrollPane(definitionPanel); // 스크롤 패널
 
-        pn2.setLayout(new BorderLayout());
+        viewCodePanel.setLayout(new BorderLayout());
 
-        pn3.setLayout(new BorderLayout());
-        pn3.add(timeComplexityLabel);
-        JScrollPane tabLearnScroll3 = new JScrollPane(pn3);
+        timeComplexityPanel.setLayout(new BorderLayout());
+        timeComplexityPanel.add(timeComplexityLabel);
+        JScrollPane tabLearnScroll3 = new JScrollPane(timeComplexityPanel);
 
         tabLearn.addTab("정의", tabLearnScroll1);
-        tabLearn.addTab("코드", pn2);
+        tabLearn.addTab("코드", viewCodePanel);
         tabLearn.addTab("시간 복잡도", tabLearnScroll3);
 
         // 탭 가로 스크롤이 항상 보이게
