@@ -229,6 +229,7 @@ class PracticeScreen extends JPanel {
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("학습하기");
     private SortingAnimation animation = new SortingAnimation();
+    private SortManager manager;
     private JPanel pnlControl = new JPanel();
     private ListBox listBox = new ListBox(1);
     private Button btnInsert = new Button("입력하기");
@@ -280,8 +281,7 @@ class PracticeScreen extends JPanel {
         pnlProcess.add(btnResume);
         pnlProcess.add(btnStop);
 
-        CardLayout cardLayout = new CardLayout();
-        pnlControl.setLayout(cardLayout);
+        pnlControl.setLayout( new CardLayout() );
         pnlControl.add(pnlInsert, "insert");
         pnlControl.add(pnlProcess, "process");
 
@@ -325,12 +325,41 @@ class PracticeScreen extends JPanel {
                 //막대 그래프 초기화
                 remove(animation);
                 animation = new SortingAnimation(array);
-                System.out.println(animation.getValue(0));
+                manager = new SortManager(animation, SortManager.BUBBLE_SORT);
                 add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
-                cardLayout.show(pnlControl, "process");
+                ( (CardLayout) pnlControl.getLayout() ).show(pnlControl, "process");
             }
-        });
+        }); //btnInsert 액션 리스너
+
+        MyControlListener listener = new MyControlListener();
+        btnStart.addActionListener(listener);
+        btnPause.addActionListener(listener);
+        btnResume.addActionListener(listener);
+        btnStop.addActionListener(listener);
     } // 생성자
+
+    private class MyControlListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if ( e.getSource().equals(btnStart) ) {
+                manager.start();
+            }
+            else if ( e.getSource().equals(btnPause) ) {
+                manager.pause();
+            }
+            else if ( e.getSource().equals(btnResume) ) {
+                manager.resume();
+            }
+            else {
+                manager.stop();
+                remove(animation);
+                animation = new SortingAnimation();
+                manager = null;
+                add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
+                ( (CardLayout) pnlControl.getLayout() ).show(pnlControl, "insert");
+            }
+        }
+    }
 } // PracticeScreen 클래스
 
 /**
