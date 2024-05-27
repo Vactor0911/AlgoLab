@@ -62,6 +62,11 @@ class LearningScreen extends JPanel {
         tabLearn.addTab("코드", new JPanel(new BorderLayout()));
         tabLearn.addTab("시간 복잡도", timeComplexityLabel);
 
+        // # ************** 스크롤 배경 색 및 스크롤 색상 변경 기능 ***************** #
+        tabLearnScroll.getVerticalScrollBar().setBackground(Color.BLACK);
+        tabLearnScroll.getHorizontalScrollBar().setBackground(Color.BLACK);
+        //https://stackoverflow.com/questions/16373459/java-jscrollbar-design
+
         // 콤보 박스 초기화
         comboAlgorithm.setSelectedIndex(0);
         comboViewCode.setSelectedIndex(0);
