@@ -741,6 +741,9 @@ class Algorithms {
     } //Algorithm 클래스
 } //Algorithms 클래스
 
+/**
+ * JLabel에서 줄바꿈과 들여쓰기를 구현하기 위해 문자열을 HTML 문법으로 파싱하는 클래스이다.
+ */
 class CodeParser {
     public static final int INDENT_SIZE = 4;
 
@@ -766,3 +769,134 @@ class CodeParser {
         return "<html><body>" + result + "</body></html>";
     }
 } //CodeParser 클래스
+
+/**
+ * 정렬 애니메이션을 구동시키기 위한 작동부가 구현된 클래스이다.
+ */
+abstract class SortManager {
+    public static final int BUBBLE_SORT = 1;
+    public static final int SELECTION_SORT = 2;
+    public static final int INSERTION_SORT = 3;
+    public static final int QUICK_SORT = 4;
+    public static final int MERGE_SORT = 5;
+
+    private SortingAnimation animation;
+    private SortingRunnable runnable;
+
+    public SortManager(SortingAnimation animation, int sortType) {
+        this.animation = animation;
+        switch (sortType) {
+            case BUBBLE_SORT:
+                runnable = new BubbleSort(animation);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void start() {
+        runnable.start();
+    }
+
+    public void pause() {
+        runnable.pause();
+    }
+
+    public void resume() {
+        runnable.resume();
+    }
+
+    public void stop() {
+        runnable.stop();
+    }
+
+    private abstract class SortingRunnable implements Runnable {
+        protected volatile boolean isRunning = true;
+        protected volatile boolean paused = false;
+        protected final Object pauseLock = new Object();
+
+        protected SortingAnimation animation;
+
+        public SortingRunnable(SortingAnimation animation) {
+            this.animation = animation;
+        }
+
+        @Override
+        public abstract void run();
+
+        public void start() {
+            new Thread(this).start();
+        }
+
+        public void pause() {
+            paused = true;
+        }
+
+        public void resume() {
+            synchronized (pauseLock) {
+                paused = false;
+                pauseLock.notifyAll();
+            }
+        }
+
+        public void stop() {
+            isRunning = false;
+            resume();
+        }
+    } //SortAlgoritm 클래스
+
+    private class BubbleSort extends SortingRunnable {
+
+        public BubbleSort(SortingAnimation anim) {
+            super(anim);
+        }
+
+        @Override
+        public void run() {
+            while (isRunning) {
+                synchronized (pauseLock) {
+                    if (!isRunning) {
+                        break;
+                    }
+                    if (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (InterruptedException ex) {
+                            break;
+                        }
+                        if (!isRunning) {
+                            break;
+                        }
+                    }
+                }
+    
+                //구현부
+                int n = animation.getLength();
+                for (int i = 0; i < n-1; i++) {
+                    for (int j = 0; j < n-i-1; j++) {
+                        if ( animation.getValue(j) > animation.getValue(j+1) ) {
+                            // 현재 요소와 다음 요소의 위치를 바꿉니다
+                            animation.swap(j, j+1);
+                            // int temp = array[j];
+                            // array[j] = array[j+1];
+                            // array[j+1] = temp;
+                        }
+                    }
+                }
+            }
+        }
+    } //BubbleSort 클래스
+    
+} //SortManager 클래스
+
+// int n = array.length;
+// for (int i = 0; i < n-1; i++) {
+//     for (int j = 0; j < n-i-1; j++) {
+//         if (array[j] > array[j+1]) {
+//             // 현재 요소와 다음 요소의 위치를 바꿉니다
+//             int temp = array[j];
+//             array[j] = array[j+1];
+//             array[j+1] = temp;
+//         }
+//     }
+// }

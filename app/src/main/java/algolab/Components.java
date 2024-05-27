@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
-import javax.swing.plaf.TabbedPaneUI;
+import javax.swing.border.Border;
 import javax.swing.plaf.basic.*;
 
 /**
@@ -301,6 +301,10 @@ class ListBox extends JScrollPane {
         return listContents.get(index);
     }
 
+    public int getLength() {
+        return listContents.size();
+    }
+
     /**
      * 리스트에서 {@code index}번째 행을 삭제한다.
      * 
@@ -361,6 +365,8 @@ class ListContent extends JPanel {
 
         // 인덱스 라벨
         lblIndex = new JLabel(Integer.toString(index + 1), SwingConstants.CENTER);
+        lblIndex.setOpaque(true);
+        lblIndex.setBackground(Color.LIGHT_GRAY);
         lblIndex.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         add(lblIndex, GbcFactory.createGbc(0, 0, 0.1d, 1.0d));
         lblIndex.setPreferredSize(new Dimension(INDEX_WIDTH, (int) getPreferredSize().getHeight()));
@@ -481,6 +487,21 @@ class ListContent extends JPanel {
      */
     public void showIndex(boolean b) {
         lblIndex.setVisible(b);
+    }
+
+    public void setAlert(boolean b) {
+        Color color = (b == true ? Color.RED : Color.BLACK);
+        Color backColor = (b == true ? Color.PINK : Color.LIGHT_GRAY);
+        Border border = BorderFactory.createLineBorder(color);
+
+        lblIndex.setBackground(backColor);
+        lblIndex.setForeground(color);
+        lblIndex.setBorder(border);
+
+        for (JTextField tf : aryTextField) {
+            tf.setForeground(color);
+            tf.setBorder(border);
+        }
     }
 } // ListContent 클래스
 
@@ -843,20 +864,20 @@ class SortingAnimation extends JPanel {
     }
 
     protected class Bar {
-        private int data;
+        private int value;
         private Pointf position;
         private Pointf positionOld;
         private float lerp;
 
-        public Bar(int index, int data) {
-            this.data = data;
+        public Bar(int index, int value) {
+            this.value = value;
             position = new Pointf( (float)index, 0f );
             positionOld = new Pointf( (float)index, 0f );
             lerp = 1f;
         }
 
-        public int getData() {
-            return data;
+        public int getValue() {
+            return value;
         }
 
         public void moveTo(int index, boolean hide) {
@@ -891,7 +912,7 @@ class SortingAnimation extends JPanel {
         aryBar[to] = barFrom;
 
         sleep();
-    }
+    } //swap()
 
     public void shift(int from, int to) {
         if (from == to) {
@@ -925,18 +946,30 @@ class SortingAnimation extends JPanel {
 
         barPicked.moveTo(to, false);
         sleep();
+    } //shift()
+
+    public int getLength() {
+        return aryBar.length;
+    }
+
+    public int getValue(int index) {
+        return aryBar[index].getValue();
+    }
+
+    public int[] getValues() {
+        int[] aryData = new int[aryBar.length];
+        for(int i=0; i<aryData.length; i++) {
+            aryData[i] = aryBar[i].getValue();
+        }
+        return aryData;
+    }
+
+    public Bar getBar(int index) {
+        return aryBar[index];
     }
 
     public Bar[] getBars() {
         return aryBar;
-    }
-
-    public int[] getData() {
-        int[] aryData = new int[aryBar.length];
-        for(int i=0; i<aryData.length; i++) {
-            aryData[i] = aryBar[i].getData();
-        }
-        return aryData;
     }
 
     public int getMaxData() {
@@ -944,10 +977,10 @@ class SortingAnimation extends JPanel {
             return 0;
         }
 
-        int max = aryBar[0].getData();
+        int max = aryBar[0].getValue();
         for (int i=1; i<aryBar.length; i++) {
-            if (aryBar[i].getData() > max) {
-                max = aryBar[i].getData();
+            if (aryBar[i].getValue() > max) {
+                max = aryBar[i].getValue();
             }
         }
         return max;
@@ -1003,7 +1036,7 @@ class SortingAnimation extends JPanel {
 
         for (int i=0; i<aryBar.length; i++) {
             Bar bar = aryBar[i];
-            int barHeight = bar.getData() * barHeightMul;
+            int barHeight = bar.getValue() * barHeightMul;
 
             int barYMul = barHeight + barVGap;
 
@@ -1021,7 +1054,7 @@ class SortingAnimation extends JPanel {
             int textY = barY + barHeight - 10;
             g.setColor(TEXT_COLOR);
             g.setFont( new Font("Dialog", Font.BOLD, 20) );
-            g.drawString(Integer.toString( bar.getData() ), textX, textY);
+            g.drawString(Integer.toString( bar.getValue() ), textX, textY);
         }
     }
 } //SortingAnimation 클래스

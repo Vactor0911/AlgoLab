@@ -5,8 +5,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-
 public class Screens {
 }
 
@@ -230,10 +228,14 @@ class LearningScreen extends JPanel {
 class PracticeScreen extends JPanel {
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("학습하기");
-    private SortingAnimation graph = new SortingAnimation();
+    private SortingAnimation animation = new SortingAnimation();
     private JPanel pnlControl = new JPanel();
     private ListBox listBox = new ListBox(1);
     private Button btnInsert = new Button("입력하기");
+    private Button btnStart = new Button("시작");
+    private Button btnPause = new Button("일시정지");
+    private Button btnResume = new Button("이어하기");
+    private Button btnStop = new Button("중지");
 
     public PracticeScreen() {
         // 초기화
@@ -244,7 +246,8 @@ class PracticeScreen extends JPanel {
                 { "퀵 정렬", "" },
                 { "병합 정렬", "" }
         });
-        graph.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        animation.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        pnlControl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         // 화면 구성
         setLayout(new GridBagLayout());
@@ -260,20 +263,71 @@ class PracticeScreen extends JPanel {
         add(new JLabel(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1));
 
         // 3행
-        add(graph, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
+        add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
         add(new JLabel(""), GbcFactory.createGbc(2, 2, 0.05d, 0.85d, 1, 2));
         add(pnlControl, GbcFactory.createGbc(3, 2, 0.4d, 0.8d, 2, 1));
 
         //조작 패널
-        pnlControl.setLayout( new GridBagLayout() );
-        pnlControl.add( listBox, GbcFactory.createGbc(0, 0, 1d, 0.9d) );
-        pnlControl.add( btnInsert, GbcFactory.createGbc(0, 1, 1d, 0.1d) );
+        JPanel pnlInsert = new JPanel();
+        pnlInsert.setLayout( new GridBagLayout() );
+        pnlInsert.add( listBox, GbcFactory.createGbc(0, 0, 1d, 0.9d) );
+        pnlInsert.add( btnInsert, GbcFactory.createGbc(0, 1, 1d, 0.1d) );
+
+        JPanel pnlProcess = new JPanel();
+        pnlProcess.setLayout( new VerticalLayout() );
+        pnlProcess.add(btnStart);
+        pnlProcess.add(btnPause);
+        pnlProcess.add(btnResume);
+        pnlProcess.add(btnStop);
+
+        CardLayout cardLayout = new CardLayout();
+        pnlControl.setLayout(cardLayout);
+        pnlControl.add(pnlInsert, "insert");
+        pnlControl.add(pnlProcess, "process");
 
         //입력하기 버튼
         btnInsert.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //#TODO: 사용자가 입력한 배열 원소 중 정수가 아닌 것이 탐색되면 경고 메시지와 함께 문제되는 항목 하이라이트
+                //잘못된 값 입력 예외 처리
+                if (listBox.getLength() <= 0) {
+                    MessageBox.show(Main.getFrame(), "배열에 값을 입력해주세요!", MessageBox.btnOK, MessageBox.iconERROR);
+                    return;
+                }
+
+                boolean flagError = false;
+
+                for (int i=0; i<listBox.getLength(); i++) {
+                    boolean isString = true;
+                    try {
+                        Integer.parseInt(listBox.get(i)[0]);
+                        isString = false;
+                    }
+                    catch (Exception exception) {}
+
+                    if (isString) {
+                        flagError = true;
+                    }
+                    listBox.getContent(i).setAlert(isString);
+                }
+
+                if (flagError) {
+                    MessageBox.show(Main.getFrame(), "배열에는 정수만 입력할 수 있습니다!", MessageBox.btnOK, MessageBox.iconERROR);
+                    return;
+                }
+
+                //정상 값 입력
+                int[] array = new int[listBox.getLength()];
+                for (int i=0; i<array.length; i++) {
+                    array[i] = Integer.parseInt(listBox.get(i)[0]);
+                }
+
+                //막대 그래프 초기화
+                remove(animation);
+                animation = new SortingAnimation(array);
+                System.out.println(animation.getValue(0));
+                add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
+                cardLayout.show(pnlControl, "process");
             }
         });
     } // 생성자
