@@ -894,7 +894,6 @@ class SortManager {
     
                 //구현부
                 int n = animation.getLength();
-                System.out.println(n);
                 if (i < n-1) {
                     if (j < n-i-1) {
                         if ( animation.getValue(j) > animation.getValue(j+1) ) {
@@ -912,7 +911,7 @@ class SortManager {
                     break;
                 }
             }
-        }
+        } //run()
     } //BubbleSort 클래스
 
     private class SelectionSort extends SortingRunnable {
@@ -945,8 +944,6 @@ class SortManager {
     
                 //구현부
                 int n = animation.getLength();
-        
-                // 배열 전체를 순회하며 최소값을 찾아서 해당 위치와 현재 위치의 값을 교환
                 if (i < n - 1) {
                     if (j < n) {
                         if (animation.getValue(j) < animation.getValue(minIndex)) {
@@ -968,7 +965,7 @@ class SortManager {
                     break;
                 }
             }
-        } 
-    }
+        } //run()
+    } //SelectionSort 클래스
     
 } //SortManager 클래스
