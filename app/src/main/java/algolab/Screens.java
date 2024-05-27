@@ -18,7 +18,12 @@ class LearningScreen extends JPanel {
     private Button btnLearn = new Button("실습하기");
     private TabbedPane tabLearn = new TabbedPane();
 
-    JScrollPane tabLearnScroll = new JScrollPane(tabLearn); // 스크롤 패널
+
+    // 탭 패널에 추가 할 패널
+    private JPanel pn1 = new JPanel();
+    private JPanel pn2 = new JPanel();
+    private JPanel pn3 = new JPanel();
+
 
     // 탭 패널에 글씨 세팅해 줄 라벨
     private JLabel definitionLabel = new JLabel(""); // 정의
@@ -51,16 +56,28 @@ class LearningScreen extends JPanel {
                 { "Python", "" }
         });
 
-        // 탭 가로 스크롤이 항상 보이게
-        tabLearnScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-
         // 화면 구성
         setLayout(new GridBagLayout());
 
-        // 탭 패널에 탭 추가
-        tabLearn.addTab("정의", definitionLabel);
-        tabLearn.addTab("코드", new JPanel(new BorderLayout()));
-        tabLearn.addTab("시간 복잡도", timeComplexityLabel);
+        // 탭 패널에 탭 추가 및 스크롤 추가
+        pn1.setLayout(new BorderLayout());
+        pn1.add(definitionLabel);
+        JScrollPane tabLearnScroll1 = new JScrollPane(pn1); // 스크롤 패널
+
+        pn2.setLayout(new BorderLayout());
+
+        pn3.setLayout(new BorderLayout());
+        pn3.add(timeComplexityLabel);
+        JScrollPane tabLearnScroll3 = new JScrollPane(pn3);
+
+        tabLearn.addTab("정의", tabLearnScroll1);
+        tabLearn.addTab("코드", pn2);
+        tabLearn.addTab("시간 복잡도", tabLearnScroll3);
+
+        // 탭 가로 스크롤이 항상 보이게
+        tabLearnScroll1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        tabLearnScroll1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        tabLearnScroll3.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         // 콤보 박스 초기화
         comboAlgorithm.setSelectedIndex(0);
@@ -86,7 +103,7 @@ class LearningScreen extends JPanel {
         add(new JLabel(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1));
 
         // 3행
-        add(tabLearnScroll, GbcFactory.createGbc(0, 2, 0.65d, 0.85d, 3, 2));
+        add(tabLearn, GbcFactory.createGbc(0, 2, 0.65d, 0.85d, 3, 2));
         add(new JLabel(""), GbcFactory.createGbc(3, 2, 0.05d, 0.85d, 1, 2));
         add(c, GbcFactory.createGbc(4, 2, 0.3d, 0.4d));
 
