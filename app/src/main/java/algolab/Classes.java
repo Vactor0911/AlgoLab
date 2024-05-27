@@ -763,6 +763,8 @@ class CodeParser {
             strIndent += "&nbsp;";
         }
 
+        result = result.replace("<", "&lt;");
+        result = result.replace(">", "&gt;");
         result = result.replace("\n", "<br>");
         result = result.replace("\t", strIndent);
         
