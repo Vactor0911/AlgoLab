@@ -795,7 +795,7 @@ class SortManager {
     }
 
     public void start() {
-        runnable.start();
+        new Thread(runnable).start();
     }
 
     public void pause() {
@@ -824,10 +824,6 @@ class SortManager {
         @Override
         public abstract void run();
 
-        public void start() {
-            new Thread(this).start();
-        }
-
         public void pause() {
             paused = true;
         }
@@ -853,6 +849,7 @@ class SortManager {
 
         @Override
         public void run() {
+            int i = 0;
             while (isRunning) {
                 synchronized (pauseLock) {
                     if (!isRunning) {
@@ -872,17 +869,14 @@ class SortManager {
     
                 //구현부
                 int n = animation.getLength();
-                for (int i = 0; i < n-1; i++) {
+                if (i < n-1) {
                     for (int j = 0; j < n-i-1; j++) {
                         if ( animation.getValue(j) > animation.getValue(j+1) ) {
-                            // 현재 요소와 다음 요소의 위치를 바꿉니다
                             animation.swap(j, j+1);
-                            // int temp = array[j];
-                            // array[j] = array[j+1];
-                            // array[j+1] = temp;
                         }
                     }
                 }
+                i++;
             }
         }
     } //BubbleSort 클래스
