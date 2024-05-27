@@ -325,9 +325,18 @@ class PracticeScreen extends JPanel {
                 //막대 그래프 초기화
                 remove(animation);
                 animation = new SortingAnimation(array);
-                manager = new SortManager(animation, SortManager.BUBBLE_SORT);
+                switch ( comboAlgorithm.getSelectedIndex() ) {
+                    case 0:
+                        manager = new SortManager(animation, SortManager.BUBBLE_SORT);
+                        break;
+                    case 1:
+                    manager = new SortManager(animation, SortManager.SELECTION_SORT);
+                    default:
+                        break;
+                }
                 add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
                 ( (CardLayout) pnlControl.getLayout() ).show(pnlControl, "process");
+                comboAlgorithm.setEnabled(false);
             }
         }); //btnInsert 액션 리스너
 
@@ -341,6 +350,11 @@ class PracticeScreen extends JPanel {
     private class MyControlListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            if (manager == null) {
+                reset();
+                return;
+            }
+
             if ( e.getSource().equals(btnStart) ) {
                 manager.start();
             }
@@ -352,12 +366,17 @@ class PracticeScreen extends JPanel {
             }
             else {
                 manager.stop();
-                remove(animation);
-                animation = new SortingAnimation();
                 manager = null;
-                add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
-                ( (CardLayout) pnlControl.getLayout() ).show(pnlControl, "insert");
+                reset();
             }
+        }
+
+        private void reset() {
+            remove(animation);
+            animation = new SortingAnimation();
+            add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
+            ( (CardLayout) pnlControl.getLayout() ).show(pnlControl, "insert");
+            comboAlgorithm.setEnabled(true);
         }
     }
 } // PracticeScreen 클래스
