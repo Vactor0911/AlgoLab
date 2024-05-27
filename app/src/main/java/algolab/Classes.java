@@ -12,6 +12,8 @@ import java.awt.event.FocusListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.checkerframework.checker.units.qual.min;
+
 class GbcFactory {
     private static GridBagConstraints gbc = new GridBagConstraints();
 
@@ -782,8 +784,14 @@ class SortManager {
     public static final int QUICK_SORT = 4;
     public static final int MERGE_SORT = 5;
 
+    public static final int START = 11;
+    public static final int PAUSE = 12;
+    public static final int RESUME = 13;
+    public static final int STOP = 14;
+
     private SortingAnimation animation;
     private SortingRunnable runnable;
+    private int status = STOP;
 
     public SortManager(SortingAnimation animation, int sortType) {
         this.animation = animation;
@@ -791,25 +799,39 @@ class SortManager {
             case BUBBLE_SORT:
                 runnable = new BubbleSort(animation);
                 break;
+            case SELECTION_SORT:
+                runnable = new SelectionSort(animation);
             default:
                 break;
         }
     }
 
     public void start() {
-        new Thread(runnable).start();
+        if (status == STOP) {
+            new Thread(runnable).start();
+            status = START;
+        }
     }
 
     public void pause() {
-        runnable.pause();
+        if (status == START || status == RESUME) {
+            runnable.pause();
+            status = PAUSE;
+        }
     }
 
     public void resume() {
-        runnable.resume();
+        if (status == PAUSE) {
+            runnable.resume();
+            status = RESUME;
+        }
     }
 
     public void stop() {
-        runnable.stop();
+        if (status != STOP) {
+            runnable.stop();
+            status = STOP;
+        }
     }
 
     private abstract class SortingRunnable implements Runnable {
@@ -874,9 +896,7 @@ class SortManager {
                 int n = animation.getLength();
                 System.out.println(n);
                 if (i < n-1) {
-                    System.out.println("I >> " + i);
                     if (j < n-i-1) {
-                        System.out.println("J >>" + j);
                         if ( animation.getValue(j) > animation.getValue(j+1) ) {
                             animation.swap(j, j+1);
                         }
@@ -894,5 +914,61 @@ class SortManager {
             }
         }
     } //BubbleSort 클래스
+
+    private class SelectionSort extends SortingRunnable {
+
+        public SelectionSort(SortingAnimation anim) {
+            super(anim);
+        }
+
+        @Override
+        public void run() {
+            int i = 0;
+            int j = i + 1;
+            int minIndex = i;
+            while (isRunning) {
+                synchronized (pauseLock) {
+                    if (!isRunning) {
+                        break;
+                    }
+                    if (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (InterruptedException ex) {
+                            break;
+                        }
+                        if (!isRunning) {
+                            break;
+                        }
+                    }
+                }
+    
+                //구현부
+                int n = animation.getLength();
+        
+                // 배열 전체를 순회하며 최소값을 찾아서 해당 위치와 현재 위치의 값을 교환
+                if (i < n - 1) {
+                    if (j < n) {
+                        if (animation.getValue(j) < animation.getValue(minIndex)) {
+                            minIndex = j;
+                        }
+                        j++;
+                        continue;
+                    }
+                    else{
+                        if (minIndex != i) {
+                            animation.swap(i, minIndex);
+                        }
+                        j = i + 1;
+                        i++;
+                        minIndex = i;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        } 
+    }
     
 } //SortManager 클래스
