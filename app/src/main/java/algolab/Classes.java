@@ -850,6 +850,7 @@ class SortManager {
         @Override
         public void run() {
             int i = 0;
+            int j = 0;
             while (isRunning) {
                 synchronized (pauseLock) {
                     if (!isRunning) {
@@ -869,28 +870,27 @@ class SortManager {
     
                 //구현부
                 int n = animation.getLength();
+                System.out.println(n);
                 if (i < n-1) {
-                    for (int j = 0; j < n-i-1; j++) {
+                    System.out.println("I >> " + i);
+                    if (j < n-i-1) {
+                        System.out.println("J >>" + j);
                         if ( animation.getValue(j) > animation.getValue(j+1) ) {
                             animation.swap(j, j+1);
                         }
                     }
+                    else{
+                        j = 0;
+                        i++;
+                        continue;
+                    }
+                    j++;
                 }
-                i++;
+                else {
+                    break;
+                }
             }
         }
     } //BubbleSort 클래스
     
 } //SortManager 클래스
-
-// int n = array.length;
-// for (int i = 0; i < n-1; i++) {
-//     for (int j = 0; j < n-i-1; j++) {
-//         if (array[j] > array[j+1]) {
-//             // 현재 요소와 다음 요소의 위치를 바꿉니다
-//             int temp = array[j];
-//             array[j] = array[j+1];
-//             array[j+1] = temp;
-//         }
-//     }
-// }
