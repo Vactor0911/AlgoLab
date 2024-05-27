@@ -18,12 +18,10 @@ class LearningScreen extends JPanel {
     private Button btnLearn = new Button("실습하기");
     private TabbedPane tabLearn = new TabbedPane();
 
-
     // 탭 패널에 추가 할 패널
-    private JPanel definitionPanel = new JPanel();
-    private JPanel viewCodePanel = new JPanel();
-    private JPanel timeComplexityPanel = new JPanel();
-
+    private JPanel definitionTabPanel = new JPanel();
+    private JPanel viewCodeTabPanel = new JPanel();
+    private JPanel timeComplexityTabPanel = new JPanel();
 
     // 탭 패널에 글씨 세팅해 줄 라벨
     private JLabel definitionLabel = new JLabel(""); // 정의
@@ -32,9 +30,14 @@ class LearningScreen extends JPanel {
 
     // View Code 안에 추가 할 콤보박스
     private ComboBox comboViewCode = new ComboBox();
+    // View Code 안에 코드를 보여 줄 패널
+    private JPanel viewCodePanel = new JPanel();
 
     // 차트 클래스
     Chart c = new Chart(3, 1);
+
+    // 그래프 테스트
+    SortingAnimation graph = new SortingAnimation(new int[] {5, 2, 4, 1, 3});
 
     // 구조체 접근을 위한 변수 초기화
     private Algorithms.Algorithm algo = Algorithms.BUBBLE_SORT;
@@ -59,25 +62,24 @@ class LearningScreen extends JPanel {
         // 화면 구성
         setLayout(new GridBagLayout());
 
-        // 탭 패널에 탭 추가 및 스크롤 추가
-        definitionPanel.setLayout(new BorderLayout());
-        definitionPanel.add(definitionLabel);
-        JScrollPane tabLearnScroll1 = new JScrollPane(definitionPanel); // 스크롤 패널
+        // 탭 패널 초기화 및 스크롤 추가
+        definitionTabPanel.setLayout(new BorderLayout());
+        definitionTabPanel.add(definitionLabel);
+        JScrollPane definitionScroll = new JScrollPane(definitionTabPanel);
 
-        viewCodePanel.setLayout(new BorderLayout());
+        viewCodeTabPanel.setLayout(new BorderLayout());
 
-        timeComplexityPanel.setLayout(new BorderLayout());
-        timeComplexityPanel.add(timeComplexityLabel);
-        JScrollPane tabLearnScroll3 = new JScrollPane(timeComplexityPanel);
+        timeComplexityTabPanel.setLayout(new BorderLayout());
+        timeComplexityTabPanel.add(timeComplexityLabel);
+        JScrollPane timeComplexityScroll = new JScrollPane(timeComplexityTabPanel);
 
-        tabLearn.addTab("정의", tabLearnScroll1);
-        tabLearn.addTab("코드", viewCodePanel);
-        tabLearn.addTab("시간 복잡도", tabLearnScroll3);
+        tabLearn.addTab("정의", definitionScroll);
+        tabLearn.addTab("코드", viewCodeTabPanel);
+        tabLearn.addTab("시간 복잡도", timeComplexityScroll);
 
         // 탭 가로 스크롤이 항상 보이게
-        tabLearnScroll1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        tabLearnScroll1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        tabLearnScroll3.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        definitionScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        timeComplexityScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         // 콤보 박스 초기화
         comboAlgorithm.setSelectedIndex(0);
@@ -90,7 +92,6 @@ class LearningScreen extends JPanel {
 
         // 탭 패널 초기화
         viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
-
 
         // 1행
         add(comboAlgorithm, GbcFactory.createGbc(0, 0, 0.5d, 0.1d));
@@ -108,7 +109,7 @@ class LearningScreen extends JPanel {
         add(c, GbcFactory.createGbc(4, 2, 0.3d, 0.4d));
 
         // 4행
-        add(new JLabel("graph"), GbcFactory.createGbc(4, 3, 0.3d, 0.5d));
+        add(graph, GbcFactory.createGbc(4, 3, 0.3d, 0.5d));
 
         // 차트 행 제목 초기화
         c.setRowTitle(new String[] { "최선", "최악", "평균" });
@@ -179,17 +180,20 @@ class LearningScreen extends JPanel {
                 if (!tabLearn.getTitleAt(selectedIndex).equals("코드")) {
                     return;
                 }
-                JPanel viewCodePanel = (JPanel) tabLearn.getComponentAt(selectedIndex);
-                if (viewCodePanel.getComponentCount() != 0) {
+                JPanel viewCodeTabPanel = (JPanel) tabLearn.getComponentAt(selectedIndex);
+                if (viewCodeTabPanel.getComponentCount() != 0) {
                     return;
                 }
                 // 콤보박스가 아직 추가되지 않았을 때만 추가
-                JScrollPane scrollPane = new JScrollPane(viewCodeLabel); // 라벨을 감싸는 스크롤 추가
-                viewCodePanel.setLayout(new GridBagLayout()); // 콤보박스 크기 조정을 위해 그리드백 레이아웃 적용
-                viewCodePanel.add(comboViewCode, GbcFactory.createGbc(0, 0, 1.0d, 0.12d));
-                viewCodePanel.add(scrollPane, GbcFactory.createGbc(0, 1, 1.0d, 0.88d));
-                viewCodePanel.revalidate();
-                viewCodePanel.repaint();
+                viewCodePanel.setLayout(new BorderLayout());
+                viewCodePanel.add(viewCodeLabel);
+                JScrollPane viewCodeScroll = new JScrollPane(viewCodePanel); // 패널을 감싸는 스크롤 추가
+                viewCodeScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); // 가로 스크롤이 항상 보이게
+                viewCodeTabPanel.setLayout(new GridBagLayout()); // 콤보박스 크기 조정을 위해 그리드백 레이아웃 적용
+                viewCodeTabPanel.add(comboViewCode, GbcFactory.createGbc(0, 0, 1.0d, 0.12d));
+                viewCodeTabPanel.add(viewCodeScroll, GbcFactory.createGbc(0, 1, 1.0d, 0.88d));
+                viewCodeTabPanel.revalidate();
+                viewCodeTabPanel.repaint();
             }
         });
 

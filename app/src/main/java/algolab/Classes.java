@@ -263,7 +263,7 @@ class Algorithms {
 
     protected static final Algorithm SELECTION_SORT = new Algorithm(
             "선택 정렬",
-            "<html>선택 정렬이란?<br/>1. 배열에서 최솟값을 찾는다.<br/>2. 최솟값을 맨 앞에 위치한 값과 교체한다.<br/>맨 처음 위치를 뺀 나머지 리스트를 같은 방법으로 교체한다.　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　</html>",
+            "<html>선택 정렬이란?<br/>1. 배열에서 최솟값을 찾는다.<br/>2. 최솟값을 맨 앞에 위치한 값과 교체한다.<br/>맨 처음 위치를 뺀 나머지 리스트를 같은 방법으로 교체한다.</html>",
             new Algorithm.Code(
                 "selectionSort(arr):\n" +
                     "\tn = length of arr\n" +
