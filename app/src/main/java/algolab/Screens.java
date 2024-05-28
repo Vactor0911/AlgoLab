@@ -4,8 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import java.util.*;
+import java.util.List;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+
+import algolab.Frame.ScreenList;
 
 public class Screens {
 }
@@ -306,8 +310,10 @@ class PracticeScreen extends JPanel {
 class QuizStartScreen extends JPanel {
     private JLabel lblQuiz = new JLabel("Quiz", SwingConstants.CENTER);
     private Button btnStart = new Button("Start");
+    private JPanel pnlContent;
 
-    public QuizStartScreen() {
+    public QuizStartScreen(JPanel pnlContent) {
+        this.pnlContent = pnlContent;
         setLayout(new GridBagLayout());
         // 1행
         add(new JLabel(""), GbcFactory.createGbc(0, 0, 1d, 0.3d, 3, 1));
@@ -327,6 +333,14 @@ class QuizStartScreen extends JPanel {
 
         // 5행
         add(new JLabel(""), GbcFactory.createGbc(0, 4, 1d, 0.3d, 3, 1));
+
+        btnStart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
+                cardLayout.show(pnlContent, ScreenList.QUIZ_SCREEN);
+            }
+        });
     } // 생성자
 } // QuizStartScreen 클래스
 
@@ -334,41 +348,47 @@ class QuizStartScreen extends JPanel {
  * 퀴즈 풀이 메뉴
  */
 class QuizScreen extends JPanel {
-    private JRadioButton jRadioButton1 = new JRadioButton();
-    private JRadioButton jRadioButton2 = new JRadioButton();
-    private JButton jButton = new JButton("Click");
+    private JPanel panel = new JPanel();
+    private JLabel quizLabel = new JLabel("");
+    private JTextField answerEdit = new JTextField();
+    private JButton answerBtn = new JButton("정답 제출");
+    HashMap<String, String> quiz = new HashMap<String, String>(); // 퀴즈와 답을 담을 HashMap
+    Random random = new Random();
+    String randomQuestion = ""; // 랜덤으로 선정된 문제를 담을 문자열
+    String quizQuestion = ""; // quiz HashMap에서 key를 찾을 때 사용되는 문자열
 
     public QuizScreen() {
         setLayout(new GridBagLayout());
+        panel.setLayout(new BorderLayout());
+        panel.add(quizLabel, BorderLayout.CENTER);
 
-        // 1행
-        add(new JLabel("1. bubble"), GbcFactory.createGbc(0, 0, 0.16d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(1, 0, 0.16d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(2, 0, 0.16d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(3, 0, 0.16d, 0.2d));
-        add(new JLabel("1/5 문제"), GbcFactory.createGbc(4, 0, 0.16d, 0.2d));
+        // 문제 추가 함수 호출
+        putQuiz();
+        // 랜덤 퀴즈 설정 함수 호출
+        showRandomQuestion();
 
-        // 2행
-        add(new JLabel(""), GbcFactory.createGbc(0, 1, 0.33d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(1, 1, 0.33d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(2, 1, 0.33d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(3, 1, 0.33d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(4, 1, 0.33d, 0.2d));
+         // 1행
+         add(panel, GbcFactory.createGbc(0, 0, 1d, 0.9d, 2, 1));
 
-        // 3행
-        add(new JLabel(""), GbcFactory.createGbc(0, 2, 1d, 0.3d, 3, 1));
-        add(new JLabel(""), GbcFactory.createGbc(1, 2, 1d, 0.3d, 3, 1));
-        add(new JLabel(""), GbcFactory.createGbc(3, 2, 1d, 0.3d, 3, 1));
-        add(new JLabel(""), GbcFactory.createGbc(4, 2, 1d, 0.3d, 3, 1));
+         // 2행
+         add(answerEdit, GbcFactory.createGbc(0, 1, 0.7d, 0.1d));
+         add(answerBtn, GbcFactory.createGbc(1, 1, 0.3d, 0.1d));
 
-        // 4행
-        add(new JLabel(""), GbcFactory.createGbc(0, 3, 0.33d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(1, 3, 0.34d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(2, 3, 0.33d, 0.2d));
-
-        // 5행
-        add(new JLabel(""), GbcFactory.createGbc(0, 4, 1d, 0.3d, 3, 1));
-        jRadioButton1.setText("Test");
+         answerBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {          
+                String userAnswer = answerEdit.getText(); // 사용자가 입력한 답안
+                if (userAnswer.equals(quizQuestion)){
+                    MessageBox.show(Main.getFrame(), "정답입니다!", MessageBox.btnOK, MessageBox.iconINFORMATION);
+                    answerEdit.setText("");
+                    showRandomQuestion();
+                }
+                else {
+                    MessageBox.show(Main.getFrame(), "오답입니다.", MessageBox.btnOK, MessageBox.iconERROR);
+                }
+            }
+         });
+                
     } // 생성자
 
     @Override
@@ -376,6 +396,39 @@ class QuizScreen extends JPanel {
         super.add(component, constraints);
         ((JComponent) component).setBorder(BorderFactory.createLineBorder(Color.BLACK));
     }
+
+    private void showRandomQuestion() { // 랜덤 퀴즈 함수
+        // 퀴즈 크기만큼 랜덤 정수 생성
+        int randomIndex = random.nextInt(quiz.size());
+        // HashMap의 keySet을 리스트에 저장
+        List<String> questionList = new ArrayList<>(quiz.keySet());
+        // 랜덤으로 문제(key)를 리스트에서 갖고와서 문자열에 넣기
+        randomQuestion  = questionList.get(randomIndex);
+        // 랜덤 문제를 quiz에서 해당하는 key를 찾고 quizLabel에 설정
+        quizQuestion = quiz.get(randomQuestion);
+        quizLabel.setText(randomQuestion);
+    }
+
+    private void putQuiz() { // 문제 추가 메소드
+        // 문제 및 답안 추가
+        quiz.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 1회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "2, 1, 13, 5, 30");
+        quiz.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 2회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "1, 2, 5, 13, 30");
+
+
+        quiz.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 37, 17, 40, 35");
+        quiz.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 37, 40, 35");
+        quiz.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 35, 40, 37");
+
+        quiz.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 8, 4, 9, 7");
+        quiz.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
+        quiz.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
+        
+        quiz.put("<html>[2, 14, 51, 80, 43]를 퀵 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?(피벗은 51로 한다.)<br>2, 14, 51, 80, 43 식으로 정답을 입력하세요.</html>", "2, 14, 43, 51, 80");
+
+        quiz.put("<html>버블, 선택, 삽입, 퀵, 합병 정렬 중 최선 시간 복잡도가 O(nlogn)인 정렬은?<br>ex) 'OO 정렬' 식으로 정답을 입력하세요.</html>", "합병 정렬");
+
+    }
+
 } // QuizScreen 클래스
 
 /**
