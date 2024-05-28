@@ -515,8 +515,8 @@ class ComboBox extends JComboBox {
     public ComboBox() {
         model = new DefaultComboBoxModel();
         setModel(model);
-        setRenderer(new ComboBoxRenderer(this));
-        setEditor(new ComboBoxEditor());
+        setRenderer( new ComboBoxRenderer(this) );
+        setEditor( new ComboBoxEditor(this) );
         setUI(new ComboBoxUI(this));
         setEditable(true);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -545,6 +545,13 @@ class ComboBox extends JComboBox {
      */
     public void addItem(String[] item) {
         model.addElement(item);
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        ComboBoxEditor editor = (ComboBoxEditor)getEditor();
+        editor.update();
     }
 
 } // ComboBox 클래스
@@ -591,7 +598,8 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer {
         if (isSelected) {
             lblItem.setBackground(Color.LIGHT_GRAY);
             lblItem.setForeground(Color.BLACK);
-        } else {
+        }
+        else {
             lblItem.setBackground(Color.WHITE);
             lblItem.setForeground(Color.BLACK);
         }
@@ -614,8 +622,10 @@ class ComboBoxEditor extends BasicComboBoxEditor {
     private JPanel pnl = new JPanel();
     private JLabel lblItem = new JLabel();
     private String selectedValue;
+    private ComboBox comboBox;
 
-    public ComboBoxEditor() {
+    public ComboBoxEditor(ComboBox comboBox) {
+        this.comboBox = comboBox;
 
         pnl.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -650,6 +660,14 @@ class ComboBoxEditor extends BasicComboBoxEditor {
 
         ImageIcon image = new ImageIcon(Main.getPath(aryItem[1]));
         lblItem.setIcon(image);
+    }
+
+    public void update() {
+        Color color = Color.LIGHT_GRAY;
+        if ( comboBox.isEnabled() == false ) {
+            color = color.darker();
+        }
+        pnl.setBackground(color);
     }
 } // ComboBoxEditor 클래스
 
@@ -706,7 +724,6 @@ class Chart extends JPanel {
         for (int i = 0; i < rows + 1; i++) { // 행
             for (int j = 0; j < columns + 1; j++) { // 열
                 JLabel lbl = new JLabel("", SwingConstants.CENTER);
-                System.out.println(lbl.getFont());
                 lbl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 lbl.setVisible(false);
 
@@ -1034,6 +1051,9 @@ class SortingAnimation extends JPanel {
         int maxData = getMaxData();
         int barHeightMul = maxHeight / maxData;
 
+        int fontSize = barFixedWidth / 2;
+        Font font = new Font("Dialog", Font.BOLD, fontSize);
+
         for (int i=0; i<aryBar.length; i++) {
             Bar bar = aryBar[i];
             int barHeight = bar.getValue() * barHeightMul;
@@ -1050,10 +1070,13 @@ class SortingAnimation extends JPanel {
             g.drawRect(barX + barHGap, barY, barFixedWidth, barHeight);
 
             //숫자 그리기
-            int textX = barX + barMidX;
+            //TODO: 가변형 폰트 크기를 가지도록 구현
+            String strValue = Integer.toString( bar.getValue() );
+            int fontOffset = (int)Math.ceil((strValue.length()-1) * fontSize * 0.25d);
+            int textX = barX + barFixedWidth / 2 - fontOffset;
             int textY = barY + barHeight - 10;
             g.setColor(TEXT_COLOR);
-            g.setFont( new Font("Dialog", Font.BOLD, 20) );
+            g.setFont(font);
             g.drawString(Integer.toString( bar.getValue() ), textX, textY);
         }
     }
