@@ -801,6 +801,10 @@ class SortManager {
                 break;
             case SELECTION_SORT:
                 runnable = new SelectionSort(animation);
+                break;
+            case INSERTION_SORT:
+                runnable = new InsertionSort(animation);
+                break;
             default:
                 break;
         }
@@ -899,13 +903,13 @@ class SortManager {
                         if ( animation.getValue(j) > animation.getValue(j+1) ) {
                             animation.swap(j, j+1);
                         }
+                        j++;
                     }
                     else{
                         j = 0;
                         i++;
                         continue;
                     }
-                    j++;
                 }
                 else {
                     break;
@@ -967,5 +971,58 @@ class SortManager {
             }
         } //run()
     } //SelectionSort 클래스
+
+    private class InsertionSort extends SortingRunnable {
+        //TODO: invalid
+
+        public InsertionSort(SortingAnimation anim) {
+            super(anim);
+        }
+
+        @Override
+        public void run() {
+            int i = 1;
+            int j = 0;
+            while (isRunning) {
+                synchronized (pauseLock) {
+                    if (!isRunning) {
+                        break;
+                    }
+                    if (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (InterruptedException ex) {
+                            break;
+                        }
+                        if (!isRunning) {
+                            break;
+                        }
+                    }
+                }
+    
+                //구현부
+                int n = animation.getLength();
+                if (i < n) {
+                    if (j < n-1) {
+                        if ( animation.getValue(i) < animation.getValue(j) ) {
+                            animation.shift(i, j);
+                            j = 0;
+                            i++;
+                            continue;
+                        }
+                        j++;
+                    }
+                    else {
+                        j = 0;
+                        i++;
+                        continue;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        } //run()
+    } //InsertionSort 클래스
     
 } //SortManager 클래스
