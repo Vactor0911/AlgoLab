@@ -12,6 +12,8 @@ import java.awt.event.FocusListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.checkerframework.checker.units.qual.min;
+
 class GbcFactory {
     private static GridBagConstraints gbc = new GridBagConstraints();
 
@@ -197,52 +199,63 @@ class Algorithms {
             "버블 정렬",
             "<html>버블 정렬이란?<br>1. 배열의 두 수(𝑎, 𝑏)를 선택한다.<br>2. 만약 그 두 수가 정렬되었다면 놔두고 아니라면 두 수를 바꾸는 방식으로 진행한다.</html>",
             new Algorithm.Code(
-                    "버블 정렬 의사코드",
-                    
-                    "void bubbleSort(int arr[], int n) {\n" +
-                        "\tfor (int i = 0; i < n-1; i++) {\n" +
-                            "\t\tfor (int j = 0; j < n-i-1; j++) {\n" +
-                                "\t\t\tif (arr[j] > arr[j+1]) {\n" +
-                                    "\t\t\t\tint temp = arr[j];\n" +
-                                    "\t\t\t\tarr[j] = arr[j+1];\n" +
-                                    "\t\t\t\tarr[j+1] = temp;\n" +
-                                "\t\t\t}\n" +
-                            "\t\t}\n" +
-                        "\t}\n" +
-                    "}",
+                "bubbleSort(arr):\n" +
+                    "\t n = length of arr\n" +
+                    "\t for i from 0 to n-1:\n" +
+                        "\t\t for j from 0 to n-i-2:\n" +
+                            "\t\t\t if arr[j] > arr[j + 1]:\n" +
+                                "\t\t\t\t temp = arr[j]\n" +
+                                "\t\t\t\t arr[j] = arr[j + 1]\n" +
+                                "\t\t\t\t arr[j + 1] = temp\n" +
+                            "\t\t\t end if\n" +
+                        "\t\t end for\n" +
+                    "\t end for\n" +
+                "end bubbleSort",
+                
+                "void bubbleSort(int arr[], int n) {\n" +
+                    "\tfor (int i = 0; i < n-1; i++) {\n" +
+                        "\t\tfor (int j = 0; j < n-i-1; j++) {\n" +
+                            "\t\t\tif (arr[j] > arr[j+1]) {\n" +
+                                "\t\t\t\tint temp = arr[j];\n" +
+                                "\t\t\t\tarr[j] = arr[j+1];\n" +
+                                "\t\t\t\tarr[j+1] = temp;\n" +
+                            "\t\t\t}\n" +
+                        "\t\t}\n" +
+                    "\t}\n" +
+                "}",
 
-                    "void bubbleSort(std::vector<int> &arr) {\n" +
-                        "\tint n = arr.size();\n" +
-                        "\tfor (int i = 0; i < n - 1; ++i) {\n" +
-                            "\t\tfor (int j = 0; j < n - i - 1; ++j) {\n" +
-                                "\t\t\tif (arr[j] > arr[j + 1]) {\n" +
-                                    "\t\t\t\tstd::swap(arr[j], arr[j + 1]);\n" +
-                                "\t\t\t}\n" +
-                            "\t\t}\n" +
-                        "\t}\n" +
-                    "}",
+                "void bubbleSort(std::vector<int> &arr) {\n" +
+                    "\tint n = arr.size();\n" +
+                    "\tfor (int i = 0; i < n - 1; ++i) {\n" +
+                        "\t\tfor (int j = 0; j < n - i - 1; ++j) {\n" +
+                            "\t\t\tif (arr[j] > arr[j + 1]) {\n" +
+                                "\t\t\t\tstd::swap(arr[j], arr[j + 1]);\n" +
+                            "\t\t\t}\n" +
+                        "\t\t}\n" +
+                    "\t}\n" +
+                "}",
 
-                    "public class BubbleSort {\n" +
-                        "\tpublic static void bubbleSort(int[] arr) {\n" +
-                            "\t\tint n = arr.length;\n" +
-                            "\t\tfor (int i = 0; i < n - 1; ++i) {\n" +
-                                "\t\t\tfor (int j = 0; j < n - i - 1; ++j) {\n" +
-                                    "\t\t\t\tif (arr[j] > arr[j + 1]) {\n" +
-                                        "\t\t\t\t\t\tint temp = arr[j];\n" +
-                                        "\t\t\t\t\t\tarr[j] = arr[j + 1];\n" +
-                                        "\t\t\t\t\t\tarr[j + 1] = temp;\n" +
-                                    "\t\t\t\t}\n" +
-                                "\t\t\t}\n" +
-                            "\t\t}\n" +
-                        "\t}\n" +
-                    "}",
+                "public class BubbleSort {\n" +
+                    "\tpublic static void bubbleSort(int[] arr) {\n" +
+                        "\t\tint n = arr.length;\n" +
+                        "\t\tfor (int i = 0; i < n - 1; ++i) {\n" +
+                            "\t\t\tfor (int j = 0; j < n - i - 1; ++j) {\n" +
+                                "\t\t\t\tif (arr[j] > arr[j + 1]) {\n" +
+                                    "\t\t\t\t\t\tint temp = arr[j];\n" +
+                                    "\t\t\t\t\t\tarr[j] = arr[j + 1];\n" +
+                                    "\t\t\t\t\t\tarr[j + 1] = temp;\n" +
+                                "\t\t\t\t}\n" +
+                            "\t\t\t}\n" +
+                        "\t\t}\n" +
+                    "\t}\n" +
+                "}",
 
-                    "def bubble_sort(arr):\n" +
-                        "\tn = len(arr)\n" +
-                        "\tfor i in range(n - 1):\n" +
-                            "\t\tfor j in range(n - i - 1):\n" +
-                                "\t\t\tif arr[j] > arr[j + 1]:\n" +
-                                    "\t\t\t\tarr[j], arr[j + 1] = arr[j + 1], arr[j]"
+                "def bubble_sort(arr):\n" +
+                    "\tn = len(arr)\n" +
+                    "\tfor i in range(n - 1):\n" +
+                        "\t\tfor j in range(n - i - 1):\n" +
+                            "\t\t\tif arr[j] > arr[j + 1]:\n" +
+                                "\t\t\t\tarr[j], arr[j + 1] = arr[j + 1], arr[j]"
 
             ),
             new Algorithm.TimeComplexity(
@@ -254,59 +267,72 @@ class Algorithms {
             "선택 정렬",
             "<html>선택 정렬이란?<br/>1. 배열에서 최솟값을 찾는다.<br/>2. 최솟값을 맨 앞에 위치한 값과 교체한다.<br/>맨 처음 위치를 뺀 나머지 리스트를 같은 방법으로 교체한다.</html>",
             new Algorithm.Code(
-                    "선택 정렬 의사코드",
-                    
-                    "void selectionSort(int arr[], int n) {\n" +
-                        "\tint i, j, min_idx;\n" +
-                        "\tfor (i = 0; i < n-1; i++) {\n" +
-                            "\t\tmin_idx = i;\n" +
-                                "\t\tfor (j = i+1; j < n; j++) {\n" +
-                                    "\t\t\tif (arr[j] < arr[min_idx]) {\n" +
-                                        "\t\t\t\tmin_idx = j;\n" +
-                                    "\t\t\t}\n" +
-                                "}\t\t\n" +
-                            "\t\tint temp = arr[min_idx];\n" +
-                            "\t\tarr[min_idx] = arr[i];\n" +
-                            "\t\tarr[i] = temp;\n" +
-                        "\t}\n" +
-                    "}",
-
-                    "void selectionSort(std::vector<int> &arr) {\n" +
-                        "\tint n = arr.size();\n" +
-                        "\tfor (int i = 0; i < n - 1; ++i) {\n" +
-                            "\t\tint min_idx = i;\n" +
-                            "\t\tfor (int j = i + 1; j < n; ++j) {\n" +
+                "selectionSort(arr):\n" +
+                    "\tn = length of arr\n" +
+                    "\tfor i from 0 to n-1:\n" +
+                        "\t\tmin_idx = i\n" +
+                        "\t\tfor j from i+1 to n:\n" +
+                            "\t\t\tif arr[j] < arr[min_idx]:\n" +
+                                "\t\t\t\tmin_idx = j\n" +
+                            "\t\t\tend if\n" +
+                        "\t\tend for\n" +
+                        "\t\ttemp = arr[min_idx]\n" +
+                        "\t\tarr[min_idx] = arr[i]\n" +
+                        "\t\tarr[i] = temp\n" +
+                    "\tend for\n" +
+                "end selectionSort",
+                
+                "void selectionSort(int arr[], int n) {\n" +
+                    "\tint i, j, min_idx;\n" +
+                    "\tfor (i = 0; i < n-1; i++) {\n" +
+                        "\t\tmin_idx = i;\n" +
+                            "\t\tfor (j = i+1; j < n; j++) {\n" +
                                 "\t\t\tif (arr[j] < arr[min_idx]) {\n" +
                                     "\t\t\t\tmin_idx = j;\n" +
                                 "\t\t\t}\n" +
-                            "\t\t}\n" +
-                            "\t\tstd::swap(arr[i], arr[min_idx]);\n" +
-                        "\t}\n" +
-                    "}",
+                            "}\t\t\n" +
+                        "\t\tint temp = arr[min_idx];\n" +
+                        "\t\tarr[min_idx] = arr[i];\n" +
+                        "\t\tarr[i] = temp;\n" +
+                    "\t}\n" +
+                "}",
 
-                    "public static void selectionSort(int[] arr) {\n" +
-                        "\tint n = arr.length;;\n" +
-                        "\tfor (int i = 0; i < n - 1; ++i) {;\n" +
-                            "\t\tint min_idx = i;;\n" +
-                            "\t\tfor (int j = i + 1; j < n; ++j) {\n" +
-                                "\t\t\tif (arr[j] < arr[min_idx]) {\n" +
-                                    "\t\t\t\tmin_idx = j;\n" +
-                                "\t\t\t}\n" +
-                            "\t\t}\n" +
-                            "\t\tint temp = arr[min_idx];\n" +
-                            "\t\tarr[min_idx] = arr[i];\n" +
-                            "\t\tarr[i] = temp;\n" +
-                        "\t}\n" +
-                    "}",
+                "void selectionSort(std::vector<int> &arr) {\n" +
+                    "\tint n = arr.size();\n" +
+                    "\tfor (int i = 0; i < n - 1; ++i) {\n" +
+                        "\t\tint min_idx = i;\n" +
+                        "\t\tfor (int j = i + 1; j < n; ++j) {\n" +
+                            "\t\t\tif (arr[j] < arr[min_idx]) {\n" +
+                                "\t\t\t\tmin_idx = j;\n" +
+                            "\t\t\t}\n" +
+                        "\t\t}\n" +
+                        "\t\tstd::swap(arr[i], arr[min_idx]);\n" +
+                    "\t}\n" +
+                "}",
 
-                    "def selection_sort(arr):\n" +
-                        "\tn = len(arr)\n" +
-                        "\tfor i in range(n - 1):\n" +
-                            "\t\tmin_idx = i\n" +
-                            "\t\tfor j in range(i + 1, n):\n" +
-                                "\t\t\tif arr[j] < arr[min_idx]:\n" +
-                                    "\t\t\t\tmin_idx = j\n" +
-                            "\t\tarr[i], arr[min_idx] = arr[min_idx], arr[i]"),
+                "public static void selectionSort(int[] arr) {\n" +
+                    "\tint n = arr.length;;\n" +
+                    "\tfor (int i = 0; i < n - 1; ++i) {;\n" +
+                        "\t\tint min_idx = i;;\n" +
+                        "\t\tfor (int j = i + 1; j < n; ++j) {\n" +
+                            "\t\t\tif (arr[j] < arr[min_idx]) {\n" +
+                                "\t\t\t\tmin_idx = j;\n" +
+                            "\t\t\t}\n" +
+                        "\t\t}\n" +
+                        "\t\tint temp = arr[min_idx];\n" +
+                        "\t\tarr[min_idx] = arr[i];\n" +
+                        "\t\tarr[i] = temp;\n" +
+                    "\t}\n" +
+                "}",
+
+                "def selection_sort(arr):\n" +
+                    "\tn = len(arr)\n" +
+                    "\tfor i in range(n - 1):\n" +
+                        "\t\tmin_idx = i\n" +
+                        "\t\tfor j in range(i + 1, n):\n" +
+                            "\t\t\tif arr[j] < arr[min_idx]:\n" +
+                                "\t\t\t\tmin_idx = j\n" +
+                        "\t\tarr[i], arr[min_idx] = arr[min_idx], arr[i]"),
             new Algorithm.TimeComplexity(
                     "선택 정렬 최선 시간복잡도",
                     "선택 정렬 최악 시간복잡도",
@@ -316,9 +342,20 @@ class Algorithms {
             "삽입 정렬",
             "<html>삽입 정렬이란?<br>1. 배열의 모든 요소를 앞에서부터 이미 정렬된 배열 부분과 비교한다.<br>2. 자신의 위치를 찾아 삽입하면서 정렬을 완성한다.</html>",
             new Algorithm.Code(
-                    "삽입 정렬 의사코드",
-
-                    "void insertionSort(int arr[], int n) {\n" +
+                "insertionSort(arr):\n" +
+                    "\tn = length of arr\n" +
+                    "\tfor i from 1 to n-1:\n" +
+                        "\t\tkey = arr[i]\n" +
+                        "\t\tj = i - 1\n" +
+                        "\t\twhile j >= 0 and arr[j] > key:\n" +
+                            "\t\t\tarr[j + 1] = arr[j]\n" +
+                            "\t\t\tj = j - 1\n" +
+                        "\t\tend while\n" +
+                        "\t\tarr[j + 1] = key\n" +
+                    "\tend for\n" +
+                "end insertionSort",
+                
+                "void insertionSort(int arr[], int n) {\n" +
                         "\tint i, key, j;\n" +
                         "\tfor (i = 1; i < n; i++) {\n" +
                             "\t\tkey = arr[i];\n" +
@@ -375,104 +412,129 @@ class Algorithms {
             "퀵 정렬",
             "<html>퀵 정렬이란?<br>1. 배열 가운데에서 원소(피벗)을 고른다.<br>2. 피벗 앞에는 피벗보다 작은 값이 오고 뒤에는 큰 값이 오도록 피벗을 기준으로 배열을 둘로 나눈다(분할 작업).<br>3. 2(분할 작업)의 작업을 재귀적으로 반복하여 배열의 크기가 0이나 1이 될 때까지 정렬한다.</html>",
             new Algorithm.Code(
-                    "퀵 정렬 의사코드",
+                "swap(arr, i, j):\n" +
+                    "\ttemp = arr[i]\n" +
+                     "\tarr[i] = arr[j]\n" +
+                    "\tarr[j] = temp\n" +
+                "end swap\n" +
+                "\n" +
+                "partition(arr, low, high):\n" +
+                    "\tpivot = arr[high]\n" +
+                    "\ti = low - 1\n" +
+                    "\tfor j from low to high - 1:\n" +
+                        "\t\tif arr[j] < pivot:\n" +
+                            "\t\t\ti = i + 1\n" +
+                            "\t\t\tswap(arr, i, j)\n" +
+                        "\t\tend if\n" +
+                    "\tend for\n" +
+                    "\tswap(arr, i + 1, high)\n" +
+                    "\treturn i + 1\n" +
+                "end partition\n" +
+                "\n" +
+                "quickSort(arr, low, high):\n" +
+                    "\tif low < high:\n" +
+                        "\t\tpi = partition(arr, low, high)\n" +
+                        "\t\tquickSort(arr, low, pi - 1)\n" +
+                        "\t\tquickSort(arr, pi + 1, high)\n" +
+                    "\tend if\n" +
+                "end quickSort", 
 
-                    "void swap(int* a, int* b) {\n" +
-                        "\tint t = *a;\n" +
-                        "\t*a = *b;\n" +
-                        "\t*b = t;\n" +
-                    "}\n" +
-                    "int partition(int arr[], int low, int high) {\n" +
-                        "\tint pivot = arr[high];\n" +
-                        "\tint i = low - 1;\n" +
+                "void swap(int* a, int* b) {\n" +
+                    "\tint t = *a;\n" +
+                    "\t*a = *b;\n" +
+                    "\t*b = t;\n" +
+                "}\n" +
+                "int partition(int arr[], int low, int high) {\n" +
+                    "\tint pivot = arr[high];\n" +
+                    "\tint i = low - 1;\n" +
+                    "\n" +
+                    "\tfor (int j = low; j < high; j++) {\n" +
+                        "\t\tif (arr[j] < pivot) {\n" +
+                        "\t\ti++;\n" +
+                        "\t\tswap(&arr[i], &arr[j]);\n" +
+                        "\t\t}\n" +
+                    "\t}\n" +
+                    "\tswap(&arr[i + 1], &arr[high]);\n" +
+                    "\treturn (i + 1);\n" +
+                "}\n" +
+                "\n" +
+                "void quickSort(int arr[], int low, int high) {\n" +
+                    "\tif (low < high) {\n" +
+                        "\t\tint pi = partition(arr, low, high);\n" +
+                        "\t\tquickSort(arr, low, pi - 1);\n" +
+                        "\t\tquickSort(arr, pi + 1, high);\n" +
+                    "\t}\n" +
+                "}\n",
+
+                "void swap(int& a, int& b) {\n" +
+                    "\tint t = a;\n" +
+                    "\ta = b;\n" +
+                    "\tb = t;\n" +
+                "}\n" +
+                "int partition(int arr[], int low, int high) {\n" +
+                    "\tint pivot = arr[high];\n" +
+                    "\tint i = low - 1;\n" +
+                    "\n" +
+                    "\tfor (int j = low; j < high; j++) {\n" +
+                        "\t\tif (arr[j] < pivot) {\n" +
+                        "\t\ti++;\n" +
+                        "\t\tswap(arr[i], arr[j]);\n" +
+                        "\t\t}\n" +
+                    "\t}\n" +
+                    "\tswap(arr[i + 1], arr[high]);\n" +
+                    "\treturn (i + 1);\n" +
+                "}\n" +
+                "\n" +
+                "void quickSort(int arr[], int low, int high) {\n" +
+                    "\tif (low < high) {\n" +
+                        "\t\tint pi = partition(arr, low, high);\n" +
+                        "\t\tquickSort(arr, low, pi - 1);\n" +
+                        "\t\tquickSort(arr, pi + 1, high);\n" +
+                    "\t}\n" +
+                "}",
+
+                "public static void swap(int[] arr, int i, int j) {\n" +
+                    "\tint temp = arr[i];\n" +
+                    "\tarr[i] = arr[j];\n" +
+                    "\tarr[j] = temp;\n" +
+                "}\n" +
+                "\n" +
+                "public static int partition(int[] arr, int low, int high) {\n" +
+                    "\tint pivot = arr[high];\n" +
+                    "\tint i = low - 1;\n" +
+                    "\tfor (int j = low; j < high; j++) {\n" +
+                        "\t\tif (arr[j] < pivot) {\n" +
+                            "\t\t\ti++;\n" +
+                            "\t\t\tswap(arr, i, j);\n" +
+                        "\t\t}\n" +
+                    "\t}\n" +
+                    "\tswap(arr, i + 1, high);\n" +
+                    "\treturn i + 1;\n" +
+                "}\n" +
+                "\n" +
+                "public static void quickSort(int[] arr, int low, int high) {\n" +
+                    "\tif (low < high) {\n" +
+                        "\t\tint pi = partition(arr, low, high);\n" +
+                        "\t\tquickSort(arr, low, pi - 1);\n" +
+                        "\t\tquickSort(arr, pi + 1, high);\n" +
+                    "\t}\n" +
+                "}\n",
+
+                "def partition(arr, low, high):\n" +
+                    "\tpivot = arr[high];\n" +
+                    "\ti = low - 1;\n" +
+                    "\tfor j in range(low, high):\n" +
+                        "\t\tif arr[j] < pivot:\n" +
+                            "\t\t\ti += 1\n" +
+                            "\t\t\tarr[i], arr[j] = arr[j], arr[i]\n" +
+                            "\t\t\tarr[i + 1], arr[high] = arr[high], arr[i + 1]\n" +
+                        "\t\treturn i + 1\n" +
                         "\n" +
-                        "\tfor (int j = low; j < high; j++) {\n" +
-                            "\t\tif (arr[j] < pivot) {\n" +
-                            "\t\ti++;\n" +
-                            "\t\tswap(&arr[i], &arr[j]);\n" +
-                            "\t\t}\n" +
-                        "\t}\n" +
-                        "\tswap(&arr[i + 1], &arr[high]);\n" +
-                        "\treturn (i + 1);\n" +
-                    "}\n" +
-                    "\n" +
-                    "void quickSort(int arr[], int low, int high) {\n" +
-                        "\tif (low < high) {\n" +
-                            "\t\tint pi = partition(arr, low, high);\n" +
-                            "\t\tquickSort(arr, low, pi - 1);\n" +
-                            "\t\tquickSort(arr, pi + 1, high);\n" +
-                        "\t}\n" +
-                    "}\n",
-
-                    "void swap(int& a, int& b) {\n" +
-                        "\tint t = a;\n" +
-                        "\ta = b;\n" +
-                        "\tb = t;\n" +
-                    "}\n" +
-                    "int partition(int arr[], int low, int high) {\n" +
-                        "\tint pivot = arr[high];\n" +
-                        "\tint i = low - 1;\n" +
-                        "\n" +
-                        "\tfor (int j = low; j < high; j++) {\n" +
-                            "\t\tif (arr[j] < pivot) {\n" +
-                            "\t\ti++;\n" +
-                            "\t\tswap(arr[i], arr[j]);\n" +
-                            "\t\t}\n" +
-                        "\t}\n" +
-                        "\tswap(arr[i + 1], arr[high]);\n" +
-                        "\treturn (i + 1);\n" +
-                    "}\n" +
-                    "\n" +
-                    "void quickSort(int arr[], int low, int high) {\n" +
-                        "\tif (low < high) {\n" +
-                            "\t\tint pi = partition(arr, low, high);\n" +
-                            "\t\tquickSort(arr, low, pi - 1);\n" +
-                            "\t\tquickSort(arr, pi + 1, high);\n" +
-                        "\t}\n" +
-                    "}",
-
-                    "public static void swap(int[] arr, int i, int j) {\n" +
-                        "\tint temp = arr[i];\n" +
-                        "\tarr[i] = arr[j];\n" +
-                        "\tarr[j] = temp;\n" +
-                    "}\n" +
-                    "\n" +
-                    "public static int partition(int[] arr, int low, int high) {\n" +
-                        "\tint pivot = arr[high];\n" +
-                        "\tint i = low - 1;\n" +
-                        "\tfor (int j = low; j < high; j++) {\n" +
-                            "\t\tif (arr[j] < pivot) {\n" +
-                                "\t\t\ti++;\n" +
-                                "\t\t\tswap(arr, i, j);\n" +
-                            "\t\t}\n" +
-                        "\t}\n" +
-                        "\tswap(arr, i + 1, high);\n" +
-                        "\treturn i + 1;\n" +
-                    "}\n" +
-                    "\n" +
-                    "public static void quickSort(int[] arr, int low, int high) {\n" +
-                        "\tif (low < high) {\n" +
-                            "\t\tint pi = partition(arr, low, high);\n" +
-                            "\t\tquickSort(arr, low, pi - 1);\n" +
-                            "\t\tquickSort(arr, pi + 1, high);\n" +
-                        "\t}\n" +
-                    "}\n",
-
-                    "def partition(arr, low, high):\n" +
-                        "\tpivot = arr[high];\n" +
-                        "\ti = low - 1;\n" +
-                        "\tfor j in range(low, high):\n" +
-                            "\t\tif arr[j] < pivot:\n" +
-                                "\t\t\ti += 1\n" +
-                                "\t\t\tarr[i], arr[j] = arr[j], arr[i]\n" +
-                                "\t\t\tarr[i + 1], arr[high] = arr[high], arr[i + 1]\n" +
-                            "\t\treturn i + 1\n" +
-                            "\n" +
-                    "def quickSort(arr, low, high):\n" +
-                        "\tif low < high:\n" +
-                            "\t\tpi = partition(arr, low, high)\n" +
-                            "\t\tquickSort(arr, low, pi - 1)\n" +
-                            "\t\tquickSort(arr, pi + 1, high)"),
+                "def quickSort(arr, low, high):\n" +
+                    "\tif low < high:\n" +
+                        "\t\tpi = partition(arr, low, high)\n" +
+                        "\t\tquickSort(arr, low, pi - 1)\n" +
+                        "\t\tquickSort(arr, pi + 1, high)"),
             new Algorithm.TimeComplexity(
                     "퀵 정렬 최선 시간복잡도",
                     "퀵 정렬 최악 시간복잡도",
@@ -482,184 +544,227 @@ class Algorithms {
             "병합 정렬",
             "<html>병합 정렬이란?<br>1. 정렬되지 않은 배열을 하나의 원소만 포함하는 n개의 부분 배열로 분할한다.<br>2. 부분 배열이 하나만 남을 때까지 계속하여 반복하여 정렬된 배열을 생성한다.</html>",
             new Algorithm.Code(
-                    "병합 정렬 의사코드",
+                "merge(arr, l, m, r):\n" +
+                    "\tn1 = m - l + 1\n" +
+                    "\tn2 = r - m\n" +
+                    "\tL = new array of size n1\n" +
+                    "\tR = new array of size n2\n" +
+                    "\tfor i from 0 to n1 - 1:\n" +
+                        "\t\tL[i] = arr[l + i]\n" +
+                    "\tend for\n" +
+                    "\tfor j from 0 to n2 - 1:\n" +
+                        "\t\tR[j] = arr[m + 1 + j]\n" +
+                    "\tend for\n" +
+                    "\ti = 0\n" +
+                    "\tj = 0\n" +
+                    "\tk = l\n" +
+                    "\twhile i < n1 and j < n2:\n" +
+                        "\t\tif L[i] <= R[j]:\n" +
+                            "\t\t\tarr[k] = L[i]\n" +
+                            "\t\t\ti = i + 1\n" +
+                        "\t\telse:\n" +
+                            "\t\t\tarr[k] = R[j]\n" +
+                            "\t\t\tj = j + 1\n" +
+                        "\t\tend if\n" +
+                        "\t\tk = k + 1\n" +
+                    "\tend while\n" +
+                    "\twhile i < n1:\n" +
+                        "\t\tarr[k] = L[i]\n" +
+                        "\t\ti = i + 1\n" +
+                        "\t\tk = k + 1\n" +
+                    "\tend while\n" +
+                    "\twhile j < n2:\n" +
+                        "\t\tarr[k] = R[j]\n" +
+                        "\t\tj = j + 1\n" +
+                        "\t\tk = k + 1\n" +
+                    "\tend while\n" +
+                "end merge\n" +
+                "\n" +
+                "mergeSort(arr, l, r):\n" +
+                    "\tif l < r:\n" +
+                        "\t\tm = (l + r) / 2\n" +
+                        "\t\tmergeSort(arr, l, m)\n" +
+                        "\t\tmergeSort(arr, m + 1, r)\n" +
+                        "\t\tmerge(arr, l, m, r)\n" +
+                    "\tend if\n" +
+                "end mergeSort",
+                
+                "void merge(int arr[], int l, int m, int r) {\n" +
+                    "\tint i, j, k;\n" +
+                    "\tint n1 = m - l + 1;\n" +
+                    "\tint n2 = r - m;\n" +
+                    "\n" +
+                    "\tint L[n1], R[n2];\n" +
+                    "\n" +
+                    "\tfor (i = 0; i < n1; i++)\n" +
+                        "\t\tL[i] = arr[l + i];\n" +
+                    "\tfor (j = 0; j < n2; j++)\n" +
+                        "\t\tR[j] = arr[m + 1 + j];\n" +
+                    "\n" +
+                    "\ti = 0;\n" +
+                    "\tj = 0;\n" +
+                    "\tk = l;\n" +
+                    "\twhile (i < n1 && j < n2) {\n" +
+                        "\t\tif (L[i] <= R[j]) {\n" +
+                            "\t\t\tarr[k] = L[i];\n" +
+                            "\t\t\ti++;\n" +
+                        "\t\t} else {\n" +
+                            "\t\t\tarr[k] = R[j];\n" +
+                            "\t\t\tj++;\n" +
+                        "\t\t}\n" +
+                        "\t\tk++;\n" +
+                    "\t}\n" +
+                    "\n" +
+                    "\twhile (i < n1) {\n" +
+                        "\t\tarr[k] = L[i];\n" +
+                        "\t\ti++;\n" +
+                        "\t\tk++;\n" +
+                    "\t}\n" +
+                    "\n" +
+                    "\twhile (j < n2) {\n" +
+                        "\t\tarr[k] = R[j];\n" +
+                        "\t\tj++;\n" +
+                        "\t\tk++;\n" +
+                    "\t}\n" +
+                "}",
 
-                    "void merge(int arr[], int l, int m, int r) {\n" +
-                        "\tint i, j, k;\n" +
-                        "\tint n1 = m - l + 1;\n" +
-                        "\tint n2 = r - m;\n" +
+                "void merge(vector<int>& arr, int l, int m, int r) {\n" +
+                    "\tint i, j, k;\n" +
+                    "\tint n1 = m - l + 1;\n" +
+                    "\tint n2 = r - m;\n" +
+                    "\n" +
+                    "\tvector<int> L(n1), R(n2);\n" +
+                    "\n" +
+                    "\tfor (i = 0; i < n1; i++)\n" +
+                        "\t\tL[i] = arr[l + i];\n" +
+                    "\tfor (j = 0; j < n2; j++)\n" +
+                        "\t\tR[j] = arr[m + 1 + j];\n" +
+                    "\n" +
+                    "\ti = 0;\n" +
+                    "\tj = 0;\n" +
+                    "\tk = l;\n" +
+                    "\twhile (i < n1 && j < n2) {\n" +
+                        "\t\tif (L[i] <= R[j]) {\n" +
+                            "\t\t\tarr[k] = L[i]\n;" +
+                            "\t\t\ti++;\n" +
+                        "\t\t} else {\n" +
+                            "\t\t\tarr[k] = R[j];\n" +
+                            "\t\t\tj++;\n" +
+                        "\t\t}\n" +
+                        "\t\tk++;\n" +
+                    "\t}\n" +
+                    "\n" +
+                    "\twhile (i < n1) {\n" +
+                        "\t\tarr[k] = L[i];\n" +
+                        "\t\ti++;\n" +
+                        "\t\tk++;\n" +
+                    "\t}\n" +
+                    "\n" +
+                    "\twhile (j < n2) {\n" +
+                        "\t\tarr[k] = R[j];\n" +
+                        "\t\tj++;\n" +
+                        "\t\tk++;\n" +
+                    "\t}\n" +
+                "}\n" +
+                "\n" +
+                "void mergeSort(vector<int>& arr, int l, int r) {\n" +
+                    "\tif (l < r) {\n" +
+                        "\t\tint m = l + (r - l) / 2;\n" +
                         "\n" +
-                        "\tint L[n1], R[n2];\n" +
+                        "\t\tmergeSort(arr, l, m);\n" +
+                        "\t\tmergeSort(arr, m + 1, r);\n" +
                         "\n" +
-                        "\tfor (i = 0; i < n1; i++)\n" +
-                            "\t\tL[i] = arr[l + i];\n" +
-                        "\tfor (j = 0; j < n2; j++)\n" +
-                            "\t\tR[j] = arr[m + 1 + j];\n" +
-                        "\n" +
-                        "\ti = 0;\n" +
-                        "\tj = 0;\n" +
-                        "\tk = l;\n" +
-                        "\twhile (i < n1 && j < n2) {\n" +
-                            "\t\tif (L[i] <= R[j]) {\n" +
-                                "\t\t\tarr[k] = L[i];\n" +
-                                "\t\t\ti++;\n" +
-                            "\t\t} else {\n" +
-                                "\t\t\tarr[k] = R[j];\n" +
-                                "\t\t\tj++;\n" +
-                            "\t\t}\n" +
-                            "\t\tk++;\n" +
+                        "\t\tmerge(arr, l, m, r);\n" +
+                    "\t}\n" +
+                "}",
+
+                "public static void merge(int arr[], int l, int m, int r) {\n" +
+                    "\tint n1 = m - l + 1;\n" +
+                    "\tint n2 = r - m;\n" +
+                    "\n" +
+                    "\tint L[] = new int[n1];\n" +
+                    "\tint R[] = new int[n2];\n" +
+                    "\n" +
+                    "\tfor (int i = 0; i < n1; ++i)\n" +
+                        "\t\tL[i] = arr[l + i];\n" +
+                    "\tfor (int j = 0; j < n2; ++j)\n" +
+                        "\t\tR[j] = arr[m + 1 + j];\n" +
+                    "\n" +
+                    "\tint i = 0, j = 0;\n" +
+                    "\tint k = l;\n" +
+                    "\twhile (i < n1 && j < n2) {\n" +
+                        "\t\tif (L[i] <= R[j]) {\n" +
+                            "\t\t\tarr[k] = L[i];\n" +
+                            "\t\t\ti++;\n" +
+                        "\t\t} else {\n" +
+                            "\t\t\tarr[k] = R[j];\n" +
+                            "\t\t\tj++;\n" +
+                        "\t\t}\n" +
+                        "\t\tk++;\n" +
                         "\t}\n" +
                         "\n" +
-                        "\twhile (i < n1) {\n" +
+                    "\twhile (i < n1) {\n" +
                             "\t\tarr[k] = L[i];\n" +
                             "\t\ti++;\n" +
                             "\t\tk++;\n" +
-                        "\t}\n" +
-                        "\n" +
-                        "\twhile (j < n2) {\n" +
+                    "\t}\n" +
+                    "\n" +
+                    "\twhile (j < n2) {\n" +
                             "\t\tarr[k] = R[j];\n" +
                             "\t\tj++;\n" +
                             "\t\tk++;\n" +
-                        "\t}\n" +
-                    "}",
+                    "\t}\n" +
+                "}\n" +
+                "\n" +
+                "public static void mergeSort(int arr[], int l, int r) {\n" +
+                    "\tif (l < r) {\n" +
+                        "\t\tint m = (l + r) / 2;\n" +
+                        "\n" +
+                        "\t\tmergeSort(arr, l, m);\n" +
+                        "\t\tmergeSort(arr, m + 1, r);\n" +
+                        "\n" +
+                        "\t\tmerge(arr, l, m, r);\n" +
+                    "\t}\n" +
+                "}",
 
-                    "void merge(vector<int>& arr, int l, int m, int r) {\n" +
-                        "\tint i, j, k;\n" +
-                        "\tint n1 = m - l + 1;\n" +
-                        "\tint n2 = r - m;\n" +
-                        "\n" +
-                        "\tvector<int> L(n1), R(n2);\n" +
-                        "\n" +
-                        "\tfor (i = 0; i < n1; i++)\n" +
-                            "\t\tL[i] = arr[l + i];\n" +
-                        "\tfor (j = 0; j < n2; j++)\n" +
-                            "\t\tR[j] = arr[m + 1 + j];\n" +
-                        "\n" +
-                        "\ti = 0;\n" +
-                        "\tj = 0;\n" +
-                        "\tk = l;\n" +
-                        "\twhile (i < n1 && j < n2) {\n" +
-                            "\t\tif (L[i] <= R[j]) {\n" +
-                                "\t\t\tarr[k] = L[i]\n;" +
-                                "\t\t\ti++;\n" +
-                            "\t\t} else {\n" +
-                                "\t\t\tarr[k] = R[j];\n" +
-                                "\t\t\tj++;\n" +
-                            "\t\t}\n" +
-                            "\t\tk++;\n" +
-                        "\t}\n" +
-                        "\n" +
-                        "\twhile (i < n1) {\n" +
-                            "\t\tarr[k] = L[i];\n" +
-                            "\t\ti++;\n" +
-                            "\t\tk++;\n" +
-                        "\t}\n" +
-                        "\n" +
-                        "\twhile (j < n2) {\n" +
-                            "\t\tarr[k] = R[j];\n" +
-                            "\t\tj++;\n" +
-                            "\t\tk++;\n" +
-                        "\t}\n" +
-                    "}\n" +
+                "def merge(arr, l, m, r):\n" +
+                    "\tn1 = m - l + 1\n" +
+                    "\tn2 = r - m\n" +
                     "\n" +
-                    "void mergeSort(vector<int>& arr, int l, int r) {\n" +
-                        "\tif (l < r) {\n" +
-                            "\t\tint m = l + (r - l) / 2;\n" +
-                            "\n" +
-                            "\t\tmergeSort(arr, l, m);\n" +
-                            "\t\tmergeSort(arr, m + 1, r);\n" +
-                            "\n" +
-                            "\t\tmerge(arr, l, m, r);\n" +
-                        "\t}\n" +
-                    "}",
-
-                    "public static void merge(int arr[], int l, int m, int r) {\n" +
-                        "\tint n1 = m - l + 1;\n" +
-                        "\tint n2 = r - m;\n" +
-                        "\n" +
-                        "\tint L[] = new int[n1];\n" +
-                        "\tint R[] = new int[n2];\n" +
-                        "\n" +
-                        "\tfor (int i = 0; i < n1; ++i)\n" +
-                            "\t\tL[i] = arr[l + i];\n" +
-                        "\tfor (int j = 0; j < n2; ++j)\n" +
-                            "\t\tR[j] = arr[m + 1 + j];\n" +
-                        "\n" +
-                        "\tint i = 0, j = 0;\n" +
-                        "\tint k = l;\n" +
-                        "\twhile (i < n1 && j < n2) {\n" +
-                            "\t\tif (L[i] <= R[j]) {\n" +
-                                "\t\t\tarr[k] = L[i];\n" +
-                                "\t\t\ti++;\n" +
-                            "\t\t} else {\n" +
-                                "\t\t\tarr[k] = R[j];\n" +
-                                "\t\t\tj++;\n" +
-                            "\t\t}\n" +
-                            "\t\tk++;\n" +
-                            "\t}\n" +
-                            "\n" +
-                        "\twhile (i < n1) {\n" +
-                                "\t\tarr[k] = L[i];\n" +
-                                "\t\ti++;\n" +
-                                "\t\tk++;\n" +
-                        "\t}\n" +
-                        "\n" +
-                        "\twhile (j < n2) {\n" +
-                                "\t\tarr[k] = R[j];\n" +
-                                "\t\tj++;\n" +
-                                "\t\tk++;\n" +
-                        "\t}\n" +
-                    "}\n" +
+                    "\tL = arr[l:m + 1]\n" +
+                    "\tR = arr[m + 1:r + 1]\n" +
                     "\n" +
-                    "public static void mergeSort(int arr[], int l, int r) {\n" +
-                        "\tif (l < r) {\n" +
-                            "\t\tint m = (l + r) / 2;\n" +
-                            "\n" +
-                            "\t\tmergeSort(arr, l, m);\n" +
-                            "\t\tmergeSort(arr, m + 1, r);\n" +
-                            "\n" +
-                            "\t\tmerge(arr, l, m, r);\n" +
-                        "\t}\n" +
-                    "}",
-
-                    "def merge(arr, l, m, r):\n" +
-                        "\tn1 = m - l + 1\n" +
-                        "\tn2 = r - m\n" +
+                    "\ti = 0\n" +
+                    "\tj = 0\n" +
+                    "\tk = l\n" +
+                    "\n" +
+                    "\twhile i < n1 and j < n2:\n" +
+                        "\t\tif L[i] <= R[j]:\n" +
+                            "\t\t\tarr[k] = L[i]\n" +
+                            "\t\t\ti += 1\n" +
+                        "\t\telse:\n" +
+                            "\t\t\tarr[k] = R[j]\n" +
+                            "\t\t\tj += 1\n" +
+                        "\t\tk += 1\n" +
                         "\n" +
-                        "\tL = arr[l:m + 1]\n" +
-                        "\tR = arr[m + 1:r + 1]\n" +
-                        "\n" +
-                        "\ti = 0\n" +
-                        "\tj = 0\n" +
-                        "\tk = l\n" +
-                        "\n" +
-                        "\twhile i < n1 and j < n2:\n" +
-                            "\t\tif L[i] <= R[j]:\n" +
-                                "\t\t\tarr[k] = L[i]\n" +
-                                "\t\t\ti += 1\n" +
-                            "\t\telse:\n" +
-                                "\t\t\tarr[k] = R[j]\n" +
-                                "\t\t\tj += 1\n" +
+                        "\twhile i < n1:\n" +
+                            "\t\tarr[k] = L[i]\n" +
+                            "\t\ti += 1\n" +
                             "\t\tk += 1\n" +
-                            "\n" +
-                            "\twhile i < n1:\n" +
-                                "\t\tarr[k] = L[i]\n" +
-                                "\t\ti += 1\n" +
-                                "\t\tk += 1\n" +
-                            "\n" +
-                            "\twhile j < n2:\n" +
-                                "\t\tarr[k] = R[j]\n" +
-                                "\t\tj += 1\n" +
-                                "\t\tk += 1\n" +
-                            "\n" +
-                    "def merge_sort(arr, l, r):\n" +
-                        "\tif l < r:\n" +
-                            "\t\tm = (l + r) // 2\n" +
-                            "\n" +
-                            "\t\tmerge_sort(arr, l, m)\n" +
-                            "\t\tmerge_sort(arr, m + 1, r)\n" +
-                            "\n" +
-                            "\t\tmerge(arr, l, m, r)"),
+                        "\n" +
+                        "\twhile j < n2:\n" +
+                            "\t\tarr[k] = R[j]\n" +
+                            "\t\tj += 1\n" +
+                            "\t\tk += 1\n" +
+                        "\n" +
+                "def merge_sort(arr, l, r):\n" +
+                    "\tif l < r:\n" +
+                        "\t\tm = (l + r) // 2\n" +
+                        "\n" +
+                        "\t\tmerge_sort(arr, l, m)\n" +
+                        "\t\tmerge_sort(arr, m + 1, r)\n" +
+                        "\n" +
+                        "\t\tmerge(arr, l, m, r)"),
             new Algorithm.TimeComplexity(
                     "병합 정렬 최선 시간복잡도",
                     "병합 정렬 최악 시간복잡도",
@@ -741,6 +846,9 @@ class Algorithms {
     } //Algorithm 클래스
 } //Algorithms 클래스
 
+/**
+ * JLabel에서 줄바꿈과 들여쓰기를 구현하기 위해 문자열을 HTML 문법으로 파싱하는 클래스이다.
+ */
 class CodeParser {
     public static final int INDENT_SIZE = 4;
 
@@ -760,9 +868,264 @@ class CodeParser {
             strIndent += "&nbsp;";
         }
 
+        result = result.replace("<", "&lt;");
+        result = result.replace(">", "&gt;");
         result = result.replace("\n", "<br>");
         result = result.replace("\t", strIndent);
         
         return "<html><body>" + result + "</body></html>";
     }
 } //CodeParser 클래스
+
+/**
+ * 정렬 애니메이션을 구동시키기 위한 작동부가 구현된 클래스이다.
+ */
+class SortManager {
+    public static final int BUBBLE_SORT = 1;
+    public static final int SELECTION_SORT = 2;
+    public static final int INSERTION_SORT = 3;
+    public static final int QUICK_SORT = 4;
+    public static final int MERGE_SORT = 5;
+
+    public static final int START = 11;
+    public static final int PAUSE = 12;
+    public static final int RESUME = 13;
+    public static final int STOP = 14;
+
+    private SortingAnimation animation;
+    private SortingRunnable runnable;
+    private int status = STOP;
+
+    public SortManager(SortingAnimation animation, int sortType) {
+        this.animation = animation;
+        switch (sortType) {
+            case BUBBLE_SORT:
+                runnable = new BubbleSort(animation);
+                break;
+            case SELECTION_SORT:
+                runnable = new SelectionSort(animation);
+                break;
+            case INSERTION_SORT:
+                runnable = new InsertionSort(animation);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void start() {
+        if (status == STOP) {
+            new Thread(runnable).start();
+            status = START;
+        }
+    }
+
+    public void pause() {
+        if (status == START || status == RESUME) {
+            runnable.pause();
+            status = PAUSE;
+        }
+    }
+
+    public void resume() {
+        if (status == PAUSE) {
+            runnable.resume();
+            status = RESUME;
+        }
+    }
+
+    public void stop() {
+        if (status != STOP) {
+            runnable.stop();
+            status = STOP;
+        }
+    }
+
+    private abstract class SortingRunnable implements Runnable {
+        protected volatile boolean isRunning = true;
+        protected volatile boolean paused = false;
+        protected final Object pauseLock = new Object();
+
+        protected SortingAnimation animation;
+
+        public SortingRunnable(SortingAnimation animation) {
+            this.animation = animation;
+        }
+
+        @Override
+        public abstract void run();
+
+        public void pause() {
+            paused = true;
+        }
+
+        public void resume() {
+            synchronized (pauseLock) {
+                paused = false;
+                pauseLock.notifyAll();
+            }
+        }
+
+        public void stop() {
+            isRunning = false;
+            resume();
+        }
+    } //SortAlgoritm 클래스
+
+    private class BubbleSort extends SortingRunnable {
+
+        public BubbleSort(SortingAnimation anim) {
+            super(anim);
+        }
+
+        @Override
+        public void run() {
+            int i = 0;
+            int j = 0;
+            while (isRunning) {
+                synchronized (pauseLock) {
+                    if (!isRunning) {
+                        break;
+                    }
+                    if (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (InterruptedException ex) {
+                            break;
+                        }
+                        if (!isRunning) {
+                            break;
+                        }
+                    }
+                }
+    
+                //구현부
+                int n = animation.getLength();
+                if (i < n-1) {
+                    if (j < n-i-1) {
+                        if ( animation.getValue(j) > animation.getValue(j+1) ) {
+                            animation.swap(j, j+1);
+                        }
+                        j++;
+                    }
+                    else{
+                        j = 0;
+                        i++;
+                        continue;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        } //run()
+    } //BubbleSort 클래스
+
+    private class SelectionSort extends SortingRunnable {
+
+        public SelectionSort(SortingAnimation anim) {
+            super(anim);
+        }
+
+        @Override
+        public void run() {
+            int i = 0;
+            int j = i + 1;
+            int minIndex = i;
+            while (isRunning) {
+                synchronized (pauseLock) {
+                    if (!isRunning) {
+                        break;
+                    }
+                    if (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (InterruptedException ex) {
+                            break;
+                        }
+                        if (!isRunning) {
+                            break;
+                        }
+                    }
+                }
+    
+                //구현부
+                int n = animation.getLength();
+                if (i < n - 1) {
+                    if (j < n) {
+                        if (animation.getValue(j) < animation.getValue(minIndex)) {
+                            minIndex = j;
+                        }
+                        j++;
+                        continue;
+                    }
+                    else{
+                        if (minIndex != i) {
+                            animation.swap(i, minIndex);
+                        }
+                        j = i + 1;
+                        i++;
+                        minIndex = i;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        } //run()
+    } //SelectionSort 클래스
+
+    private class InsertionSort extends SortingRunnable {
+        //TODO: invalid
+
+        public InsertionSort(SortingAnimation anim) {
+            super(anim);
+        }
+
+        @Override
+        public void run() {
+            int i = 1;
+            int j = 0;
+            while (isRunning) {
+                synchronized (pauseLock) {
+                    if (!isRunning) {
+                        break;
+                    }
+                    if (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (InterruptedException ex) {
+                            break;
+                        }
+                        if (!isRunning) {
+                            break;
+                        }
+                    }
+                }
+    
+                //구현부
+                int n = animation.getLength();
+                if (i < n) {
+                    if (j < n-1) {
+                        if ( animation.getValue(i) < animation.getValue(j) ) {
+                            animation.shift(i, j);
+                            j = 0;
+                            i++;
+                            continue;
+                        }
+                        j++;
+                    }
+                    else {
+                        j = 0;
+                        i++;
+                        continue;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        } //run()
+    } //InsertionSort 클래스
+    
+} //SortManager 클래스

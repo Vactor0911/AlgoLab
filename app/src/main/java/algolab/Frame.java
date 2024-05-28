@@ -17,19 +17,20 @@ public class Frame extends JFrame {
     private Button btnQuiz = new Button("퀴즈 풀기");
 
     //화면 객체
-    private LearningScreen learningScreen = new LearningScreen();
+    private LearningScreen learningScreen = new LearningScreen(pnlContent);
     private PracticeScreen practiceScreen = new PracticeScreen();
-    private QuizStartScreen quizStartScreen = new QuizStartScreen();
+    private QuizStartScreen quizStartScreen = new QuizStartScreen(pnlContent);
     private QuizScreen quizScreen = new QuizScreen();
 
     //기타 객체
     private CardLayout cardLayout = new CardLayout(10, 10);
 
-    private class ScreenList {
+    public static class ScreenList {
         public static final String NONE = "none";
         public static final String LEARNING_SCREEN = "LearningPanel";
         public static final String PRACTICE_SCREEN = "PracticePanel";
         public static final String QUIZ_START_SCREEN = "QuizStartPanel";
+        public static final String QUIZ_SCREEN = "QuizScreen";
     }
 
     public Frame() {
@@ -78,6 +79,7 @@ public class Frame extends JFrame {
         pnlContent.add(learningScreen, ScreenList.LEARNING_SCREEN);
         pnlContent.add(practiceScreen, ScreenList.PRACTICE_SCREEN);
         pnlContent.add(quizStartScreen, ScreenList.QUIZ_START_SCREEN);
+        pnlContent.add(quizScreen, ScreenList.QUIZ_SCREEN);
 
         cardLayout.show(pnlContent, ScreenList.LEARNING_SCREEN);
         setVisible(true);
