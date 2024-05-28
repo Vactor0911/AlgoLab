@@ -17,7 +17,7 @@ public class Frame extends JFrame {
     private Button btnQuiz = new Button("퀴즈 풀기");
 
     //화면 객체
-    private LearningScreen learningScreen = new LearningScreen();
+    private LearningScreen learningScreen = new LearningScreen(pnlContent);
     private PracticeScreen practiceScreen = new PracticeScreen();
     private QuizStartScreen quizStartScreen = new QuizStartScreen(pnlContent);
     private QuizScreen quizScreen = new QuizScreen();

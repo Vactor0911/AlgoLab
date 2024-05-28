@@ -46,7 +46,11 @@ class LearningScreen extends JPanel {
     // 구조체 접근을 위한 변수 초기화
     private Algorithms.Algorithm algo = Algorithms.BUBBLE_SORT;
 
-    public LearningScreen() {
+    // 실습하기 버튼 구현 관련 변수
+    private JPanel pnlContent;
+
+    public LearningScreen(JPanel pnlContent) {
+        this.pnlContent = pnlContent;
         // 초기화
         comboAlgorithm.addItems(new String[][] {
                 { "버블 정렬", "" },
@@ -121,6 +125,8 @@ class LearningScreen extends JPanel {
         // 실습하기 버튼 리스너 구현
         btnLearn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
+                cardLayout.show(pnlContent, ScreenList.PRACTICE_SCREEN);
             }
         });
 
@@ -259,6 +265,7 @@ class PracticeScreen extends JPanel {
     private JPanel pnlControl = new JPanel();
     private ListBox listBox = new ListBox(1);
     private Button btnInsert = new Button("입력하기");
+
 
     public PracticeScreen() {
         // 초기화
@@ -413,7 +420,6 @@ class QuizScreen extends JPanel {
         // 문제 및 답안 추가
         quiz.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 1회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "2, 1, 13, 5, 30");
         quiz.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 2회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "1, 2, 5, 13, 30");
-
 
         quiz.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 37, 17, 40, 35");
         quiz.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 37, 40, 35");
