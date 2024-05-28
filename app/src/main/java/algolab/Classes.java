@@ -12,6 +12,8 @@ import java.awt.event.FocusListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.checkerframework.checker.units.qual.min;
+
 class GbcFactory {
     private static GridBagConstraints gbc = new GridBagConstraints();
 
@@ -763,6 +765,8 @@ class CodeParser {
             strIndent += "&nbsp;";
         }
 
+        result = result.replace("<", "&lt;");
+        result = result.replace(">", "&gt;");
         result = result.replace("\n", "<br>");
         result = result.replace("\t", strIndent);
         
@@ -773,15 +777,21 @@ class CodeParser {
 /**
  * 정렬 애니메이션을 구동시키기 위한 작동부가 구현된 클래스이다.
  */
-abstract class SortManager {
+class SortManager {
     public static final int BUBBLE_SORT = 1;
     public static final int SELECTION_SORT = 2;
     public static final int INSERTION_SORT = 3;
     public static final int QUICK_SORT = 4;
     public static final int MERGE_SORT = 5;
 
+    public static final int START = 11;
+    public static final int PAUSE = 12;
+    public static final int RESUME = 13;
+    public static final int STOP = 14;
+
     private SortingAnimation animation;
     private SortingRunnable runnable;
+    private int status = STOP;
 
     public SortManager(SortingAnimation animation, int sortType) {
         this.animation = animation;
@@ -789,25 +799,43 @@ abstract class SortManager {
             case BUBBLE_SORT:
                 runnable = new BubbleSort(animation);
                 break;
+            case SELECTION_SORT:
+                runnable = new SelectionSort(animation);
+                break;
+            case INSERTION_SORT:
+                runnable = new InsertionSort(animation);
+                break;
             default:
                 break;
         }
     }
 
     public void start() {
-        runnable.start();
+        if (status == STOP) {
+            new Thread(runnable).start();
+            status = START;
+        }
     }
 
     public void pause() {
-        runnable.pause();
+        if (status == START || status == RESUME) {
+            runnable.pause();
+            status = PAUSE;
+        }
     }
 
     public void resume() {
-        runnable.resume();
+        if (status == PAUSE) {
+            runnable.resume();
+            status = RESUME;
+        }
     }
 
     public void stop() {
-        runnable.stop();
+        if (status != STOP) {
+            runnable.stop();
+            status = STOP;
+        }
     }
 
     private abstract class SortingRunnable implements Runnable {
@@ -823,10 +851,6 @@ abstract class SortManager {
 
         @Override
         public abstract void run();
-
-        public void start() {
-            new Thread(this).start();
-        }
 
         public void pause() {
             paused = true;
@@ -853,6 +877,8 @@ abstract class SortManager {
 
         @Override
         public void run() {
+            int i = 0;
+            int j = 0;
             while (isRunning) {
                 synchronized (pauseLock) {
                     if (!isRunning) {
@@ -872,31 +898,131 @@ abstract class SortManager {
     
                 //구현부
                 int n = animation.getLength();
-                for (int i = 0; i < n-1; i++) {
-                    for (int j = 0; j < n-i-1; j++) {
+                if (i < n-1) {
+                    if (j < n-i-1) {
                         if ( animation.getValue(j) > animation.getValue(j+1) ) {
-                            // 현재 요소와 다음 요소의 위치를 바꿉니다
                             animation.swap(j, j+1);
-                            // int temp = array[j];
-                            // array[j] = array[j+1];
-                            // array[j+1] = temp;
+                        }
+                        j++;
+                    }
+                    else{
+                        j = 0;
+                        i++;
+                        continue;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        } //run()
+    } //BubbleSort 클래스
+
+    private class SelectionSort extends SortingRunnable {
+
+        public SelectionSort(SortingAnimation anim) {
+            super(anim);
+        }
+
+        @Override
+        public void run() {
+            int i = 0;
+            int j = i + 1;
+            int minIndex = i;
+            while (isRunning) {
+                synchronized (pauseLock) {
+                    if (!isRunning) {
+                        break;
+                    }
+                    if (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (InterruptedException ex) {
+                            break;
+                        }
+                        if (!isRunning) {
+                            break;
                         }
                     }
                 }
+    
+                //구현부
+                int n = animation.getLength();
+                if (i < n - 1) {
+                    if (j < n) {
+                        if (animation.getValue(j) < animation.getValue(minIndex)) {
+                            minIndex = j;
+                        }
+                        j++;
+                        continue;
+                    }
+                    else{
+                        if (minIndex != i) {
+                            animation.swap(i, minIndex);
+                        }
+                        j = i + 1;
+                        i++;
+                        minIndex = i;
+                    }
+                }
+                else {
+                    break;
+                }
             }
+        } //run()
+    } //SelectionSort 클래스
+
+    private class InsertionSort extends SortingRunnable {
+        //TODO: invalid
+
+        public InsertionSort(SortingAnimation anim) {
+            super(anim);
         }
-    } //BubbleSort 클래스
+
+        @Override
+        public void run() {
+            int i = 1;
+            int j = 0;
+            while (isRunning) {
+                synchronized (pauseLock) {
+                    if (!isRunning) {
+                        break;
+                    }
+                    if (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (InterruptedException ex) {
+                            break;
+                        }
+                        if (!isRunning) {
+                            break;
+                        }
+                    }
+                }
+    
+                //구현부
+                int n = animation.getLength();
+                if (i < n) {
+                    if (j < n-1) {
+                        if ( animation.getValue(i) < animation.getValue(j) ) {
+                            animation.shift(i, j);
+                            j = 0;
+                            i++;
+                            continue;
+                        }
+                        j++;
+                    }
+                    else {
+                        j = 0;
+                        i++;
+                        continue;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        } //run()
+    } //InsertionSort 클래스
     
 } //SortManager 클래스
-
-// int n = array.length;
-// for (int i = 0; i < n-1; i++) {
-//     for (int j = 0; j < n-i-1; j++) {
-//         if (array[j] > array[j+1]) {
-//             // 현재 요소와 다음 요소의 위치를 바꿉니다
-//             int temp = array[j];
-//             array[j] = array[j+1];
-//             array[j+1] = temp;
-//         }
-//     }
-// }
