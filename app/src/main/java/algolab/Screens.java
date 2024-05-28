@@ -2,6 +2,8 @@ package algolab;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
+
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -226,6 +228,9 @@ class LearningScreen extends JPanel {
  * 실습하기 메뉴
  */
 class PracticeScreen extends JPanel {
+    private static final Exception ValueInvalidException = new Exception("배열에는 정수만 입력할 수 있습니다!");
+    private static final Exception NumberTooBigException = new Exception("100 이하의 정수만 입력할 수 있습니다!");
+
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("학습하기");
     private SortingAnimation animation = new SortingAnimation();
@@ -289,30 +294,41 @@ class PracticeScreen extends JPanel {
         btnInsert.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //잘못된 값 입력 예외 처리
-                if (listBox.getLength() <= 0) {
+                //잘못된 값 예외 처리
+                if (listBox.getLength() <= 0) { //배열에 값 없음
                     MessageBox.show(Main.getFrame(), "배열에 값을 입력해주세요!", MessageBox.btnOK, MessageBox.iconERROR);
                     return;
                 }
 
-                boolean flagError = false;
+                try {
+                    boolean valueInvalidException = false;
+                    boolean numberTooBidException = false;
+                    for (int i=0; i<listBox.getLength(); i++) {
+                        boolean flagError = false;
+                        try {
+                            int value = Integer.parseInt(listBox.get(i)[0]);
+                            if (value > 100) {
+                                flagError = true;
+                                numberTooBidException = true;
+                            }
+                        }
+                        catch (Exception exception) {
+                            flagError = true;
+                            valueInvalidException = true;
+                        }
 
-                for (int i=0; i<listBox.getLength(); i++) {
-                    boolean isString = true;
-                    try {
-                        Integer.parseInt(listBox.get(i)[0]);
-                        isString = false;
+                        listBox.getContent(i).setAlert(flagError);
                     }
-                    catch (Exception exception) {}
 
-                    if (isString) {
-                        flagError = true;
+                    if (valueInvalidException) { //정수가 아닌 값 입력
+                        throw ValueInvalidException;
                     }
-                    listBox.getContent(i).setAlert(isString);
+                    else if (numberTooBidException) { //100 초과 값 입력
+                        throw NumberTooBigException;
+                    }
                 }
-
-                if (flagError) {
-                    MessageBox.show(Main.getFrame(), "배열에는 정수만 입력할 수 있습니다!", MessageBox.btnOK, MessageBox.iconERROR);
+                catch (Exception exception){
+                    MessageBox.show(Main.getFrame(), exception.getMessage(), MessageBox.btnOK, MessageBox.iconERROR);
                     return;
                 }
 
@@ -326,11 +342,15 @@ class PracticeScreen extends JPanel {
                 remove(animation);
                 animation = new SortingAnimation(array);
                 switch ( comboAlgorithm.getSelectedIndex() ) {
-                    case 0:
+                    case 0: //버블 정렬
                         manager = new SortManager(animation, SortManager.BUBBLE_SORT);
                         break;
-                    case 1:
-                    manager = new SortManager(animation, SortManager.SELECTION_SORT);
+                    case 1: //선택 정렬
+                        manager = new SortManager(animation, SortManager.SELECTION_SORT);
+                        break;
+                    case 2: //삽입 정렬
+                        manager = new SortManager(animation, SortManager.INSERTION_SORT);
+                        break;
                     default:
                         break;
                 }
@@ -340,6 +360,7 @@ class PracticeScreen extends JPanel {
             }
         }); //btnInsert 액션 리스너
 
+        //조작 버튼
         MyControlListener listener = new MyControlListener();
         btnStart.addActionListener(listener);
         btnPause.addActionListener(listener);
