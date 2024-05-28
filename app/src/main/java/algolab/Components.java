@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
-import javax.swing.plaf.TabbedPaneUI;
+import javax.swing.border.Border;
 import javax.swing.plaf.basic.*;
 
 /**
@@ -301,6 +301,10 @@ class ListBox extends JScrollPane {
         return listContents.get(index);
     }
 
+    public int getLength() {
+        return listContents.size();
+    }
+
     /**
      * 리스트에서 {@code index}번째 행을 삭제한다.
      * 
@@ -361,6 +365,8 @@ class ListContent extends JPanel {
 
         // 인덱스 라벨
         lblIndex = new JLabel(Integer.toString(index + 1), SwingConstants.CENTER);
+        lblIndex.setOpaque(true);
+        lblIndex.setBackground(Color.LIGHT_GRAY);
         lblIndex.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         add(lblIndex, GbcFactory.createGbc(0, 0, 0.1d, 1.0d));
         lblIndex.setPreferredSize(new Dimension(INDEX_WIDTH, (int) getPreferredSize().getHeight()));
@@ -482,6 +488,21 @@ class ListContent extends JPanel {
     public void showIndex(boolean b) {
         lblIndex.setVisible(b);
     }
+
+    public void setAlert(boolean b) {
+        Color color = (b == true ? Color.RED : Color.BLACK);
+        Color backColor = (b == true ? Color.PINK : Color.LIGHT_GRAY);
+        Border border = BorderFactory.createLineBorder(color);
+
+        lblIndex.setBackground(backColor);
+        lblIndex.setForeground(color);
+        lblIndex.setBorder(border);
+
+        for (JTextField tf : aryTextField) {
+            tf.setForeground(color);
+            tf.setBorder(border);
+        }
+    }
 } // ListContent 클래스
 
 /**
@@ -494,8 +515,8 @@ class ComboBox extends JComboBox {
     public ComboBox() {
         model = new DefaultComboBoxModel();
         setModel(model);
-        setRenderer(new ComboBoxRenderer(this));
-        setEditor(new ComboBoxEditor());
+        setRenderer( new ComboBoxRenderer(this) );
+        setEditor( new ComboBoxEditor(this) );
         setUI(new ComboBoxUI(this));
         setEditable(true);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -524,6 +545,13 @@ class ComboBox extends JComboBox {
      */
     public void addItem(String[] item) {
         model.addElement(item);
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        ComboBoxEditor editor = (ComboBoxEditor)getEditor();
+        editor.update();
     }
 
 } // ComboBox 클래스
@@ -570,7 +598,8 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer {
         if (isSelected) {
             lblItem.setBackground(Color.LIGHT_GRAY);
             lblItem.setForeground(Color.BLACK);
-        } else {
+        }
+        else {
             lblItem.setBackground(Color.WHITE);
             lblItem.setForeground(Color.BLACK);
         }
@@ -593,8 +622,10 @@ class ComboBoxEditor extends BasicComboBoxEditor {
     private JPanel pnl = new JPanel();
     private JLabel lblItem = new JLabel();
     private String selectedValue;
+    private ComboBox comboBox;
 
-    public ComboBoxEditor() {
+    public ComboBoxEditor(ComboBox comboBox) {
+        this.comboBox = comboBox;
 
         pnl.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -629,6 +660,14 @@ class ComboBoxEditor extends BasicComboBoxEditor {
 
         ImageIcon image = new ImageIcon(Main.getPath(aryItem[1]));
         lblItem.setIcon(image);
+    }
+
+    public void update() {
+        Color color = Color.LIGHT_GRAY;
+        if ( comboBox.isEnabled() == false ) {
+            color = color.darker();
+        }
+        pnl.setBackground(color);
     }
 } // ComboBoxEditor 클래스
 
@@ -685,7 +724,6 @@ class Chart extends JPanel {
         for (int i = 0; i < rows + 1; i++) { // 행
             for (int j = 0; j < columns + 1; j++) { // 열
                 JLabel lbl = new JLabel("", SwingConstants.CENTER);
-                System.out.println(lbl.getFont());
                 lbl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 lbl.setVisible(false);
 
@@ -843,20 +881,20 @@ class SortingAnimation extends JPanel {
     }
 
     protected class Bar {
-        private int data;
+        private int value;
         private Pointf position;
         private Pointf positionOld;
         private float lerp;
 
-        public Bar(int index, int data) {
-            this.data = data;
+        public Bar(int index, int value) {
+            this.value = value;
             position = new Pointf( (float)index, 0f );
             positionOld = new Pointf( (float)index, 0f );
             lerp = 1f;
         }
 
-        public int getData() {
-            return data;
+        public int getValue() {
+            return value;
         }
 
         public void moveTo(int index, boolean hide) {
@@ -891,7 +929,7 @@ class SortingAnimation extends JPanel {
         aryBar[to] = barFrom;
 
         sleep();
-    }
+    } //swap()
 
     public void shift(int from, int to) {
         if (from == to) {
@@ -925,18 +963,30 @@ class SortingAnimation extends JPanel {
 
         barPicked.moveTo(to, false);
         sleep();
+    } //shift()
+
+    public int getLength() {
+        return aryBar.length;
+    }
+
+    public int getValue(int index) {
+        return aryBar[index].getValue();
+    }
+
+    public int[] getValues() {
+        int[] aryData = new int[aryBar.length];
+        for(int i=0; i<aryData.length; i++) {
+            aryData[i] = aryBar[i].getValue();
+        }
+        return aryData;
+    }
+
+    public Bar getBar(int index) {
+        return aryBar[index];
     }
 
     public Bar[] getBars() {
         return aryBar;
-    }
-
-    public int[] getData() {
-        int[] aryData = new int[aryBar.length];
-        for(int i=0; i<aryData.length; i++) {
-            aryData[i] = aryBar[i].getData();
-        }
-        return aryData;
     }
 
     public int getMaxData() {
@@ -944,10 +994,10 @@ class SortingAnimation extends JPanel {
             return 0;
         }
 
-        int max = aryBar[0].getData();
+        int max = aryBar[0].getValue();
         for (int i=1; i<aryBar.length; i++) {
-            if (aryBar[i].getData() > max) {
-                max = aryBar[i].getData();
+            if (aryBar[i].getValue() > max) {
+                max = aryBar[i].getValue();
             }
         }
         return max;
@@ -1001,9 +1051,12 @@ class SortingAnimation extends JPanel {
         int maxData = getMaxData();
         int barHeightMul = maxHeight / maxData;
 
+        int fontSize = barFixedWidth / 2;
+        Font font = new Font("Dialog", Font.BOLD, fontSize);
+
         for (int i=0; i<aryBar.length; i++) {
             Bar bar = aryBar[i];
-            int barHeight = bar.getData() * barHeightMul;
+            int barHeight = bar.getValue() * barHeightMul;
 
             int barYMul = barHeight + barVGap;
 
@@ -1017,11 +1070,14 @@ class SortingAnimation extends JPanel {
             g.drawRect(barX + barHGap, barY, barFixedWidth, barHeight);
 
             //숫자 그리기
-            int textX = barX + barMidX;
+            //TODO: 가변형 폰트 크기를 가지도록 구현
+            String strValue = Integer.toString( bar.getValue() );
+            int fontOffset = (int)Math.ceil((strValue.length()-1) * fontSize * 0.25d);
+            int textX = barX + barFixedWidth / 2 - fontOffset;
             int textY = barY + barHeight - 10;
             g.setColor(TEXT_COLOR);
-            g.setFont( new Font("Dialog", Font.BOLD, 20) );
-            g.drawString(Integer.toString( bar.getData() ), textX, textY);
+            g.setFont(font);
+            g.drawString(Integer.toString( bar.getValue() ), textX, textY);
         }
     }
 } //SortingAnimation 클래스

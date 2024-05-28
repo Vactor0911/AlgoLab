@@ -2,13 +2,12 @@ package algolab;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import java.util.*;
 import java.util.List;
-
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-
 import algolab.Frame.ScreenList;
 
 public class Screens {
@@ -259,12 +258,20 @@ class LearningScreen extends JPanel {
  * 실습하기 메뉴
  */
 class PracticeScreen extends JPanel {
+    private static final Exception ValueInvalidException = new Exception("배열에는 정수만 입력할 수 있습니다!");
+    private static final Exception NumberTooBigException = new Exception("100 이하의 정수만 입력할 수 있습니다!");
+
     private ComboBox comboAlgorithm = new ComboBox();
     private Button btnLearn = new Button("학습하기");
-    private SortingAnimation graph = new SortingAnimation();
+    private SortingAnimation animation = new SortingAnimation();
+    private SortManager manager;
     private JPanel pnlControl = new JPanel();
     private ListBox listBox = new ListBox(1);
     private Button btnInsert = new Button("입력하기");
+    private Button btnStart = new Button("시작");
+    private Button btnPause = new Button("일시정지");
+    private Button btnResume = new Button("이어하기");
+    private Button btnStop = new Button("중지");
 
 
     public PracticeScreen() {
@@ -276,7 +283,8 @@ class PracticeScreen extends JPanel {
                 { "퀵 정렬", "" },
                 { "병합 정렬", "" }
         });
-        graph.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        animation.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        pnlControl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         // 화면 구성
         setLayout(new GridBagLayout());
@@ -292,23 +300,137 @@ class PracticeScreen extends JPanel {
         add(new JLabel(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1));
 
         // 3행
-        add(graph, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
+        add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
         add(new JLabel(""), GbcFactory.createGbc(2, 2, 0.05d, 0.85d, 1, 2));
         add(pnlControl, GbcFactory.createGbc(3, 2, 0.4d, 0.8d, 2, 1));
 
         //조작 패널
-        pnlControl.setLayout( new GridBagLayout() );
-        pnlControl.add( listBox, GbcFactory.createGbc(0, 0, 1d, 0.9d) );
-        pnlControl.add( btnInsert, GbcFactory.createGbc(0, 1, 1d, 0.1d) );
+        JPanel pnlInsert = new JPanel();
+        pnlInsert.setLayout( new GridBagLayout() );
+        pnlInsert.add( listBox, GbcFactory.createGbc(0, 0, 1d, 0.9d) );
+        pnlInsert.add( btnInsert, GbcFactory.createGbc(0, 1, 1d, 0.1d) );
+
+        JPanel pnlProcess = new JPanel();
+        pnlProcess.setLayout( new VerticalLayout() );
+        pnlProcess.add(btnStart);
+        pnlProcess.add(btnPause);
+        pnlProcess.add(btnResume);
+        pnlProcess.add(btnStop);
+
+        pnlControl.setLayout( new CardLayout() );
+        pnlControl.add(pnlInsert, "insert");
+        pnlControl.add(pnlProcess, "process");
 
         //입력하기 버튼
         btnInsert.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //#TODO: 사용자가 입력한 배열 원소 중 정수가 아닌 것이 탐색되면 경고 메시지와 함께 문제되는 항목 하이라이트
+                //잘못된 값 예외 처리
+                if (listBox.getLength() <= 0) { //배열에 값 없음
+                    MessageBox.show(Main.getFrame(), "배열에 값을 입력해주세요!", MessageBox.btnOK, MessageBox.iconERROR);
+                    return;
+                }
+
+                try {
+                    boolean valueInvalidException = false;
+                    boolean numberTooBidException = false;
+                    for (int i=0; i<listBox.getLength(); i++) {
+                        boolean flagError = false;
+                        try {
+                            int value = Integer.parseInt(listBox.get(i)[0]);
+                            if (value > 100) {
+                                flagError = true;
+                                numberTooBidException = true;
+                            }
+                        }
+                        catch (Exception exception) {
+                            flagError = true;
+                            valueInvalidException = true;
+                        }
+
+                        listBox.getContent(i).setAlert(flagError);
+                    }
+
+                    if (valueInvalidException) { //정수가 아닌 값 입력
+                        throw ValueInvalidException;
+                    }
+                    else if (numberTooBidException) { //100 초과 값 입력
+                        throw NumberTooBigException;
+                    }
+                }
+                catch (Exception exception){
+                    MessageBox.show(Main.getFrame(), exception.getMessage(), MessageBox.btnOK, MessageBox.iconERROR);
+                    return;
+                }
+
+                //정상 값 입력
+                int[] array = new int[listBox.getLength()];
+                for (int i=0; i<array.length; i++) {
+                    array[i] = Integer.parseInt(listBox.get(i)[0]);
+                }
+
+                //막대 그래프 초기화
+                remove(animation);
+                animation = new SortingAnimation(array);
+                switch ( comboAlgorithm.getSelectedIndex() ) {
+                    case 0: //버블 정렬
+                        manager = new SortManager(animation, SortManager.BUBBLE_SORT);
+                        break;
+                    case 1: //선택 정렬
+                        manager = new SortManager(animation, SortManager.SELECTION_SORT);
+                        break;
+                    case 2: //삽입 정렬
+                        manager = new SortManager(animation, SortManager.INSERTION_SORT);
+                        break;
+                    default:
+                        break;
+                }
+                add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
+                ( (CardLayout) pnlControl.getLayout() ).show(pnlControl, "process");
+                comboAlgorithm.setEnabled(false);
             }
-        });
+        }); //btnInsert 액션 리스너
+
+        //조작 버튼
+        MyControlListener listener = new MyControlListener();
+        btnStart.addActionListener(listener);
+        btnPause.addActionListener(listener);
+        btnResume.addActionListener(listener);
+        btnStop.addActionListener(listener);
     } // 생성자
+
+    private class MyControlListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (manager == null) {
+                reset();
+                return;
+            }
+
+            if ( e.getSource().equals(btnStart) ) {
+                manager.start();
+            }
+            else if ( e.getSource().equals(btnPause) ) {
+                manager.pause();
+            }
+            else if ( e.getSource().equals(btnResume) ) {
+                manager.resume();
+            }
+            else {
+                manager.stop();
+                manager = null;
+                reset();
+            }
+        }
+
+        private void reset() {
+            remove(animation);
+            animation = new SortingAnimation();
+            add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
+            ( (CardLayout) pnlControl.getLayout() ).show(pnlControl, "insert");
+            comboAlgorithm.setEnabled(true);
+        }
+    }
 } // PracticeScreen 클래스
 
 /**
