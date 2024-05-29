@@ -1040,7 +1040,13 @@ class SortingAnimation extends JPanel {
         super.paintComponent(g);
 
         //구분선 그리기
-        int lineY = (int)( (float)getHeight() * 0.7f );
+        float maxY = 0f;
+        for (int i=0; i<aryBar.length; i++) {
+            maxY = Math.max(maxY, aryBar[i].getPoint().y);
+        }
+        float lineYMul = 0.7f - maxY * 0.2f;
+
+        int lineY = (int)( (float)getHeight() * lineYMul );
         g.setColor(LINE_COLOR);
         g.fillRect(0, lineY, getWidth(), 3);
 
@@ -1052,12 +1058,15 @@ class SortingAnimation extends JPanel {
         int barWidth = getWidth() / aryBar.length;
         int barHGap = (int)( (float)barWidth * BAR_H_GAP_MULTIPLY );
         int barFixedWidth = barWidth - barHGap * 2;
-        int barMidX = barWidth / 2 - barHGap;
 
         int maxHeight = (int)( (float)lineY * BAR_MAX_HEIGHT_MULTIPLY );
         int barVGap = lineY - maxHeight;
         int maxData = getMaxData();
-        int barHeightMul = maxHeight / maxData;
+        int barHeightMul = 0;
+        try {
+            barHeightMul = maxHeight / maxData;
+        }
+        catch (Exception e) {}
 
         int fontSize = barFixedWidth / 2;
         Font font = new Font("Dialog", Font.BOLD, fontSize);
@@ -1066,7 +1075,7 @@ class SortingAnimation extends JPanel {
             Bar bar = aryBar[i];
             int barHeight = bar.getValue() * barHeightMul;
 
-            int barYMul = barHeight + barVGap;
+            int barYMul = maxHeight + barVGap;
 
             Pointf point = bar.getPoint();
             int barX = (int)(point.x * barWidth);
@@ -1078,7 +1087,6 @@ class SortingAnimation extends JPanel {
             g.drawRect(barX + barHGap, barY, barFixedWidth, barHeight);
 
             //숫자 그리기
-            //TODO: 가변형 폰트 크기를 가지도록 구현
             String strValue = Integer.toString( bar.getValue() );
             int fontOffset = (int)Math.ceil((strValue.length()-1) * fontSize * 0.25d);
             int textX = barX + barFixedWidth / 2 - fontOffset;
