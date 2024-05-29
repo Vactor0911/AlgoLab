@@ -916,6 +916,7 @@ class SortingAnimation extends JPanel {
     } //Bar 클래스
 
     public void swap(int from, int to) {
+        sync();
         if (from == to) {
             return;
         }
@@ -932,6 +933,7 @@ class SortingAnimation extends JPanel {
     } //swap()
 
     public void shift(int from, int to) {
+        sync();
         if (from == to) {
             return;
         }
@@ -970,6 +972,7 @@ class SortingAnimation extends JPanel {
     }
 
     public int getValue(int index) {
+        sync();
         return aryBar[index].getValue();
     }
 
@@ -1025,6 +1028,11 @@ class SortingAnimation extends JPanel {
             Thread.sleep( (int)(LERP_TIME * 1100f) );
         }
         catch (Exception e) {}
+    }
+
+    private void sync() {
+        while(SortManager.paused) {
+        }
     }
 
     @Override
