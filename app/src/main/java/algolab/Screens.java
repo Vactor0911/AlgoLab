@@ -269,6 +269,10 @@ class LearningScreen extends JPanel {
             getVerticalScrollBar().setUnitIncrement(SPEED);
         }
     }
+
+    protected void setComboIndex(int index) {
+        comboAlgorithm.setSelectedIndex(index);
+    }
 } // LearningScreen 클래스
 
 /**
@@ -290,8 +294,11 @@ class PracticeScreen extends JPanel {
     private Button btnResume = new Button("이어하기");
     private Button btnStop = new Button("중지");
 
+    // 학습하기 버튼 구현 관련 변수
+    private JPanel pnlContent;
 
-    public PracticeScreen() {
+    public PracticeScreen(JPanel pnlContent) {
+        this.pnlContent = pnlContent;
         // 초기화
         comboAlgorithm.addItems(new String[][] {
                 { "버블 정렬", "" },
@@ -337,6 +344,17 @@ class PracticeScreen extends JPanel {
         pnlControl.setLayout( new CardLayout() );
         pnlControl.add(pnlInsert, "insert");
         pnlControl.add(pnlProcess, "process");
+
+        // 학습하기 버튼
+        btnLearn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    int comboItemIndex = comboAlgorithm.getSelectedIndex();
+                    CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
+                    cardLayout.show(pnlContent, ScreenList.LEARNING_SCREEN);
+                    ((LearningScreen) pnlContent.getComponent(1)).setComboIndex(comboItemIndex);
+            }
+        });
 
         //입력하기 버튼
         btnInsert.addActionListener(new ActionListener() {
@@ -538,6 +556,7 @@ class QuizScreen extends JPanel {
                     MessageBox.show(Main.getFrame(), "정답입니다!", MessageBox.btnOK, MessageBox.iconINFORMATION);
                     answerEdit.setText(""); // 텍스트 필드 초기화
                     showrandomQuestionStr(); // 문제 출력 호출
+                    return;
                 }
                 else {
                     MessageBox.show(Main.getFrame(), "오답입니다.", MessageBox.btnOK, MessageBox.iconERROR);
@@ -585,21 +604,26 @@ class QuizScreen extends JPanel {
 
     private void putQuiz() { // 문제 추가 메소드
         // 문제 및 답안 추가
-        quizHashMap.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 1회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "2, 1, 13, 5, 30");
+        // 정의 문제
+        quizHashMap.put("<html>서로 인접한 두 원소를 검사하여 오른쪽 리스트가 자동으로 정렬되는 방식의 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "버블 정렬");
+        quizHashMap.put("<html>정렬되지 않은 데이터들에 대해 가장 작은 데이터를 찾아 가장 앞의 데이터와 교환하는 방식의 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "선택 정렬");
+        quizHashMap.put("<html>자료 배열의 모든 요소를 앞에서부터 차례대로 이미 정렬된 배열 부분과 비교하여 자신의 위치를 삽입하는 방식의 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "삽입 정렬");
+        quizHashMap.put("<html>피벗을 사용하는 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "퀵 정렬");
+        quizHashMap.put("<html>리스트를 2개의 균등한 크기로 분할하고 분할된 부분 리스트를 다른 2개의 정렬된 부분 리스트를 합하는 방식의 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "병합 정렬");
+
+        // 정렬 문제
+        //quizHashMap.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 1회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "2, 1, 13, 5, 30");
         quizHashMap.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 2회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "1, 2, 5, 13, 30");
-
-        quizHashMap.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 37, 17, 40, 35");
-        quizHashMap.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 37, 40, 35");
+        //quizHashMap.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 37, 17, 40, 35");
+        //quizHashMap.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 37, 40, 35");
         quizHashMap.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 35, 40, 37");
-
-        quizHashMap.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 8, 4, 9, 7");
+        //quizHashMap.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 8, 4, 9, 7");
         quizHashMap.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
-        quizHashMap.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
-        
+        //quizHashMap.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");        
         quizHashMap.put("<html>[2, 14, 51, 80, 43]를 퀵 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?(피벗은 51로 한다.)<br>2, 14, 51, 80, 43 식으로 정답을 입력하세요.</html>", "2, 14, 43, 51, 80");
 
-        quizHashMap.put("<html>버블, 선택, 삽입, 퀵, 합병 정렬 중 최선 시간 복잡도가 O(nlogn)인 정렬은?<br>ex) 'OO 정렬' 식으로 정답을 입력하세요.</html>", "합병 정렬");
-
+        // 시간복잡도 문제
+        quizHashMap.put("<html>버블, 선택, 삽입, 퀵, 합병 정렬 중 최선 시간 복잡도가 O(nlogn)인 정렬은?<br>ex) 'OO 정렬' 식으로 정답을 입력하세요.</html>", "병합 정렬");
     }
 
 } // QuizScreen 클래스
