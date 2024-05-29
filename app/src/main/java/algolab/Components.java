@@ -122,13 +122,13 @@ class RoundButton extends ButtonBase {
 /**
  * 수정 가능한 문자열 데이터를 저장할 수 있는 리스트 박스를 구현한 클래스이다.
  */
-class ListBox extends JScrollPane {
+class ListBox extends ScrollPane {
     // 상수
     private static final int GAP = 5;
     private static final int CONTENT_HEIGHT = 50;
 
     // 컴포넌트
-    private JPanel pnl = new JPanel();
+    private static JPanel pnl = new JPanel();
     private JPanel pnlContent = new JPanel();
     private Button btnAdd = new Button("Add");
 
@@ -144,10 +144,10 @@ class ListBox extends JScrollPane {
      * @param columns 리스트 박스의 열 개수를 지정한다. 1보다 작을 수 없다.
      */
     public ListBox(int columns) {
+        super(pnl);
         this.columns = Math.max(columns, 1);
 
         pnl.setLayout(new VerticalLayout(5));
-        setViewportView(pnl);
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         getVerticalScrollBar().setUnitIncrement(20);
@@ -1422,3 +1422,93 @@ class MessageBox extends JDialog implements ActionListener {
 		this.dispatchEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
 	}
 } //MessageBox 클래스
+
+class ScrollPane extends JScrollPane {
+    private static final int SPEED = 20;
+    
+    public ScrollPane(Component view) {
+        super(view);
+        setHorizontalScrollBar( new ScrollBar(JScrollBar.HORIZONTAL) );
+        setVerticalScrollBar( new ScrollBar(JScrollBar.VERTICAL) );
+
+        setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        getHorizontalScrollBar().setUnitIncrement(SPEED);
+        getVerticalScrollBar().setUnitIncrement(SPEED);
+    }
+
+    private class ScrollBar extends JScrollBar {
+        public ScrollBar(int orientation) {
+            setOrientation(orientation);
+            setUI( new MyScrollPaneUI() );
+            setPreferredSize( new Dimension(20, 20) );
+            setForeground(Color.BLACK);
+            setBackground(Color.LIGHT_GRAY);
+        }
+
+        private class MyScrollPaneUI extends BasicScrollBarUI {
+            private static final Color colorTrack = new Color(210, 210, 210);
+            private static final Color COLOR_THUMB_NORM = new Color(180, 180 ,180);
+            private static final Color COLOR_THUMB_HOVER = new Color(160, 160 ,160);
+            private static final Color COLOR_THUMB_DRAG = new Color(120, 120 ,120);
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent comp, Rectangle rect) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    
+                g2.setColor(colorTrack);
+                g2.fillRect(rect.x, rect.y, rect.width, rect.height);
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent comp, Rectangle rect) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                int x = rect.x;
+                int y = rect.y;
+                int width = rect.width;
+                int height = rect.height;
+
+                if (scrollbar.getOrientation() == JScrollBar.VERTICAL) {
+                    x += 2;
+                    width -= 4;
+                }
+                else {
+                    y += 2;
+                    height -= 4;
+                }
+
+                Color colorThumb = COLOR_THUMB_NORM;
+                if (isDragging) {
+                    colorThumb = COLOR_THUMB_DRAG;
+                }
+                else if ( isThumbRollover() ) {
+                    colorThumb = COLOR_THUMB_HOVER;
+                }
+
+                g2.setColor(colorThumb);
+                g2.fillRect(x, y, width, height);
+            }
+
+            private JButton createButton(int orientation) {
+                BasicArrowButton arrowButton = new BasicArrowButton( orientation, Color.LIGHT_GRAY, Color.GRAY.darker(),
+                    Color.GRAY, Color.LIGHT_GRAY.brighter() );
+                arrowButton.setPreferredSize( new Dimension(20, 20) );
+                return arrowButton;
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int i) {
+                return createButton(i);
+            }
+    
+            @Override
+            protected JButton createDecreaseButton(int i) {
+                return createButton(i);
+            }
+        } //MyScrollPaneUI 클래스
+    } //ScrollBar 클래스
+
+} //ScrollPane 클래스

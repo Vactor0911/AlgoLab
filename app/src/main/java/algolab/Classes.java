@@ -8,11 +8,8 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import org.checkerframework.checker.units.qual.min;
 
 class GbcFactory {
     private static GridBagConstraints gbc = new GridBagConstraints();

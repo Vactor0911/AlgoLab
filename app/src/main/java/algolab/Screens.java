@@ -72,21 +72,21 @@ class LearningScreen extends JPanel {
         // 탭 패널 초기화 및 스크롤 추가
         definitionTabPanel.setLayout(new BorderLayout());
         definitionTabPanel.add(definitionLabel);
-        MyScrollPane definitionScroll = new MyScrollPane(definitionTabPanel);
+        ScrollPane definitionScroll = new ScrollPane(definitionTabPanel);
 
         viewCodeTabPanel.setLayout(new BorderLayout());
 
         timeComplexityTabPanel.setLayout(new BorderLayout());
         timeComplexityTabPanel.add(timeComplexityLabel);
-        MyScrollPane timeComplexityScroll = new MyScrollPane(timeComplexityTabPanel);
+        ScrollPane timeComplexityScroll = new ScrollPane(timeComplexityTabPanel);
 
         tabLearn.addTab("정의", definitionScroll);
         tabLearn.addTab("코드", viewCodeTabPanel);
         tabLearn.addTab("시간 복잡도", timeComplexityScroll);
 
         // # ************** 스크롤 배경 색 및 스크롤 색상 변경 기능 ***************** #
-        tabLearnScroll.getVerticalScrollBar().setBackground(Color.BLACK);
-        tabLearnScroll.getHorizontalScrollBar().setBackground(Color.BLACK);
+        //tabLearnScroll.getVerticalScrollBar().setBackground(Color.BLACK);
+        //tabLearnScroll.getHorizontalScrollBar().setBackground(Color.BLACK);
         //https://stackoverflow.com/questions/16373459/java-jscrollbar-design
 
         // 콤보 박스 초기화
@@ -201,7 +201,7 @@ class LearningScreen extends JPanel {
                 // 콤보박스가 아직 추가되지 않았을 때만 추가
                 viewCodePanel.setLayout(new BorderLayout());
                 viewCodePanel.add(viewCodeLabel);
-                MyScrollPane viewCodeScroll = new MyScrollPane(viewCodePanel); // 패널을 감싸는 스크롤 추가
+                ScrollPane viewCodeScroll = new ScrollPane(viewCodePanel); // 패널을 감싸는 스크롤 추가
                 viewCodeScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); // 가로 스크롤이 항상 보이게
                 viewCodeTabPanel.setLayout(new GridBagLayout()); // 콤보박스 크기 조정을 위해 그리드백 레이아웃 적용
                 viewCodeTabPanel.add(comboViewCode, GbcFactory.createGbc(0, 0, 1.0d, 0.12d));
@@ -257,18 +257,6 @@ class LearningScreen extends JPanel {
         });
 
     } // 생성자
-
-    private class MyScrollPane extends JScrollPane {
-        private static final int SPEED = 20;
-
-        public MyScrollPane(Component view) {
-            super(view);
-            setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-            setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            getHorizontalScrollBar().setUnitIncrement(SPEED);
-            getVerticalScrollBar().setUnitIncrement(SPEED);
-        }
-    }
 } // LearningScreen 클래스
 
 /**
