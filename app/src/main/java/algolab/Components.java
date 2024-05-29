@@ -3,6 +3,7 @@ package algolab;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
@@ -831,7 +832,7 @@ class Chart extends JPanel {
 class SortingAnimation extends JPanel {
     //설정
     private static final int TIMER_PERIOD = 10;
-    private static final float LERP_TIME = 0.5f;
+    private static final float LERP_TIME = 0.3f;
     private static final float BAR_H_GAP_MULTIPLY = 0.1f;
     private static final float BAR_MAX_HEIGHT_MULTIPLY = 0.8f;
 
@@ -966,6 +967,38 @@ class SortingAnimation extends JPanel {
         barPicked.moveTo(to, false);
         sleep();
     } //shift()
+
+    public void mergeSort(int left, int right) {
+        ArrayList<Bar> listBar = new ArrayList<>();
+        for (int i=left; i<=right; i++) {
+            listBar.add(aryBar[i]);
+        }
+
+        listBar.sort(new Comparator<Bar>() {
+            @Override
+            public int compare(Bar bar1, Bar bar2) {
+                if ( bar1.getValue() > bar2.getValue() ) {
+                    return 1;
+                }
+                else if ( bar1.getValue() < bar2.getValue() ) {
+                    return -1;
+                }
+                return 0;
+            }
+        });
+
+        for (int i=0; i<listBar.size(); i++) {
+            sync();
+            listBar.get(i).moveTo(left + i, true);
+            sleep();
+        }
+        sync();
+        for (int i=0; i<listBar.size(); i++) {
+            aryBar[left + i] = listBar.get(i);
+            listBar.get(i).moveTo(left + i, false);
+        }
+        sleep();
+    }
 
     public int getLength() {
         return aryBar.length;

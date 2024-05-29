@@ -397,6 +397,9 @@ class PracticeScreen extends JPanel {
                     case 3: //퀵 정렬
                         manager = new SortManager(animation, SortManager.QUICK_SORT);
                         break;
+                    case 4: //합병 정렬
+                        manager = new SortManager(animation, SortManager.MERGE_SORT);
+                        break;
                     default:
                         break;
                 }

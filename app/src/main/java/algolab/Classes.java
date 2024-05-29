@@ -910,6 +910,8 @@ class SortManager {
             case QUICK_SORT:
                 runnable = new QuickSort(animation);
                 break;
+            case MERGE_SORT:
+                runnable = new MergeSort(animation);
             default:
                 break;
         }
@@ -1025,7 +1027,7 @@ class SortManager {
             }
         }
         
-        private static int partition(SortingAnimation anim, int low, int high) {
+        private int partition(SortingAnimation anim, int low, int high) {
             int pivot = anim.getValue(high);
             int i = (low - 1);
         
@@ -1046,5 +1048,26 @@ class SortManager {
             quickSort(animation, 0, n-1);
         }
     } //QuickSort 클래스
+
+    private class MergeSort extends SortingRunnable {
+        public MergeSort(SortingAnimation anim) {
+            super(anim);
+        }
+
+        private void mergeSort(int left, int right) {
+            if (left < right) {
+                int middle = (left + right) / 2;
+                mergeSort(left, middle);
+                mergeSort(middle + 1, right);
+                animation.mergeSort(left, right);
+            }
+        }
+
+        @Override
+        public void run() {
+            int n = animation.getValues().length;
+            mergeSort(0, n-1);
+        }
+    } //MergeSort 클래스    
     
 } //SortManager 클래스
