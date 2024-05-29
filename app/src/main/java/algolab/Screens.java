@@ -84,10 +84,6 @@ class LearningScreen extends JPanel {
         tabLearn.addTab("코드", viewCodeTabPanel);
         tabLearn.addTab("시간 복잡도", timeComplexityScroll);
 
-        // 탭 가로 스크롤이 항상 보이게
-        //definitionScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        //timeComplexityScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-
         // 콤보 박스 초기화
         comboAlgorithm.setSelectedIndex(0);
         comboViewCode.setSelectedIndex(0);
@@ -124,8 +120,12 @@ class LearningScreen extends JPanel {
         // 실습하기 버튼 리스너 구현
         btnLearn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                int comboItemIndex = comboAlgorithm.getSelectedIndex();
+
                 CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
                 cardLayout.show(pnlContent, ScreenList.PRACTICE_SCREEN);
+
+                ((PracticeScreen) pnlContent.getComponent(2)).setComboIndex(comboItemIndex);
             }
         });
 
@@ -394,6 +394,9 @@ class PracticeScreen extends JPanel {
                     case 2: //삽입 정렬
                         manager = new SortManager(animation, SortManager.INSERTION_SORT);
                         break;
+                    case 3: //퀵 정렬
+                        manager = new SortManager(animation, SortManager.QUICK_SORT);
+                        break;
                     default:
                         break;
                 }
@@ -442,6 +445,10 @@ class PracticeScreen extends JPanel {
             ( (CardLayout) pnlControl.getLayout() ).show(pnlControl, "insert");
             comboAlgorithm.setEnabled(true);
         }
+    } //MyControlListener 클래스
+
+    protected void setComboIndex(int index) {
+        comboAlgorithm.setSelectedIndex(index);
     }
 } // PracticeScreen 클래스
 
@@ -490,7 +497,7 @@ class QuizStartScreen extends JPanel {
  */
 class QuizScreen extends JPanel {
     private JPanel panel = new JPanel();
-    private JLabel quizLabel = new JLabel("");
+    private JLabel quizLabel = new JLabel("", SwingConstants.CENTER);
     private JTextField answerEdit = new JTextField();
     private JButton answerBtn = new JButton("정답 제출");
     HashMap<String, String> quiz = new HashMap<String, String>(); // 퀴즈와 답을 담을 HashMap
