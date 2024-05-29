@@ -1076,7 +1076,6 @@ class SortManager {
     } //SelectionSort 클래스
 
     private class InsertionSort extends SortingRunnable {
-        //TODO: invalid
 
         public InsertionSort(SortingAnimation anim) {
             super(anim);
@@ -1106,7 +1105,7 @@ class SortManager {
                 //구현부
                 int n = animation.getLength();
                 if (i < n) {
-                    if (j < n-1) {
+                    if (j < i) {
                         if ( animation.getValue(i) < animation.getValue(j) ) {
                             animation.shift(i, j);
                             j = 0;
