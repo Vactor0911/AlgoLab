@@ -85,8 +85,8 @@ class LearningScreen extends JPanel {
         tabLearn.addTab("시간 복잡도", timeComplexityScroll);
 
         // # ************** 스크롤 배경 색 및 스크롤 색상 변경 기능 ***************** #
-        tabLearnScroll.getVerticalScrollBar().setBackground(Color.BLACK);
-        tabLearnScroll.getHorizontalScrollBar().setBackground(Color.BLACK);
+        //tabLearnScroll.getVerticalScrollBar().setBackground(Color.BLACK);
+        //tabLearnScroll.getHorizontalScrollBar().setBackground(Color.BLACK);
         //https://stackoverflow.com/questions/16373459/java-jscrollbar-design
 
         // 콤보 박스 초기화
@@ -508,10 +508,11 @@ class QuizScreen extends JPanel {
     private JLabel quizLabel = new JLabel("", SwingConstants.CENTER);
     private JTextField answerEdit = new JTextField();
     private JButton answerBtn = new JButton("정답 제출");
-    HashMap<String, String> quiz = new HashMap<String, String>(); // 퀴즈와 답을 담을 HashMap
-    Random random = new Random();
-    String randomQuestion = ""; // 랜덤으로 선정된 문제를 담을 문자열
-    String quizQuestion = ""; // quiz HashMap에서 key를 찾을 때 사용되는 문자열
+    private HashMap<String, String> quizHashMap = new HashMap<String, String>(); // 퀴즈와 답을 담을 HashMap
+    private Random random = new Random();
+    private String randomQuestionStr = ""; // 랜덤으로 선정된 문제를 담을 문자열
+    private String quizGetKeyStr = ""; // quizHashMap HashMap에서 key를 찾을 때 사용되는 문자
+    private List<String> endQuestionList = new ArrayList<>(); // 출력 완료된 문제를 담을 리스트
 
     public QuizScreen() {
         setLayout(new GridBagLayout());
@@ -521,7 +522,7 @@ class QuizScreen extends JPanel {
         // 문제 추가 함수 호출
         putQuiz();
         // 랜덤 퀴즈 설정 함수 호출
-        showRandomQuestion();
+        showrandomQuestionStr();
 
          // 1행
          add(panel, GbcFactory.createGbc(0, 0, 1d, 0.9d, 2, 1));
@@ -533,11 +534,10 @@ class QuizScreen extends JPanel {
          answerBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {          
-                String userAnswer = answerEdit.getText(); // 사용자가 입력한 답안
-                if (userAnswer.equals(quizQuestion)){
+                if (answerEdit.getText().toString().equals(quizGetKeyStr)){
                     MessageBox.show(Main.getFrame(), "정답입니다!", MessageBox.btnOK, MessageBox.iconINFORMATION);
-                    answerEdit.setText("");
-                    showRandomQuestion();
+                    answerEdit.setText(""); // 텍스트 필드 초기화
+                    showrandomQuestionStr(); // 문제 출력 호출
                 }
                 else {
                     MessageBox.show(Main.getFrame(), "오답입니다.", MessageBox.btnOK, MessageBox.iconERROR);
@@ -553,34 +553,52 @@ class QuizScreen extends JPanel {
         ((JComponent) component).setBorder(BorderFactory.createLineBorder(Color.BLACK));
     }
 
-    private void showRandomQuestion() { // 랜덤 퀴즈 함수
+    private void showrandomQuestionStr() { // 랜덤 퀴즈 함수
         // 퀴즈 크기만큼 랜덤 정수 생성
-        int randomIndex = random.nextInt(quiz.size());
-        // HashMap의 keySet을 리스트에 저장
-        List<String> questionList = new ArrayList<>(quiz.keySet());
-        // 랜덤으로 문제(key)를 리스트에서 갖고와서 문자열에 넣기
-        randomQuestion  = questionList.get(randomIndex);
-        // 랜덤 문제를 quiz에서 해당하는 key를 찾고 quizLabel에 설정
-        quizQuestion = quiz.get(randomQuestion);
-        quizLabel.setText(randomQuestion);
+        int randomIndex = random.nextInt(quizHashMap.size());
+        if (endQuestionList.size() == quizHashMap.size()) {
+            // 모든 문제가 출제되었으면 메시지 출력
+            int result = MessageBox.show(Main.getFrame(), "문제가 끝났습니다. 다시 푸시겠습니까?", MessageBox.btnOK_CANCEL, MessageBox.iconQUESTION);
+            if (result == MessageBox.btnOK) { // OK 버튼을 누르면
+                endQuestionList.clear(); // 완료된 문제들 리스트 초기화
+                showrandomQuestionStr(); // 문제 출력 함수 호출
+                return;
+            }
+            else {
+                quizLabel.setText("문제가 더이상 없습니다.");
+                return;
+            }            
+        }
+        // 아직 출제되지 않은 문제를 찾을 때까지 반복
+        while (true) {
+            List<String> questionList = new ArrayList<>(quizHashMap.keySet()); // 해쉬맵에서 문제를 담을 리스트
+            randomQuestionStr = questionList.get(randomIndex); // 랜덤으로 문제를 골라와 문자열에 대입
+            if (!endQuestionList.contains(randomQuestionStr)) { // 출력 완료 문제를 담은 리스트에 랜덤 문제가 포함되면 break
+                break;
+            }
+        }
+        // 랜덤 문제를 quizHashMap에서 해당하는 key를 찾고 quizHashMapLabel에 설정
+        quizGetKeyStr = quizHashMap.get(randomQuestionStr);
+        quizLabel.setText(randomQuestionStr);
+        endQuestionList.add(randomQuestionStr); // 출력 완료 문제 리스트에 랜덤 문제 추가
     }
 
     private void putQuiz() { // 문제 추가 메소드
         // 문제 및 답안 추가
-        quiz.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 1회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "2, 1, 13, 5, 30");
-        quiz.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 2회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "1, 2, 5, 13, 30");
+        quizHashMap.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 1회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "2, 1, 13, 5, 30");
+        quizHashMap.put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 2회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "1, 2, 5, 13, 30");
 
-        quiz.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 37, 17, 40, 35");
-        quiz.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 37, 40, 35");
-        quiz.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 35, 40, 37");
+        quizHashMap.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 37, 17, 40, 35");
+        quizHashMap.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 37, 40, 35");
+        quizHashMap.put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 35, 40, 37");
 
-        quiz.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 8, 4, 9, 7");
-        quiz.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
-        quiz.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
+        quizHashMap.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 8, 4, 9, 7");
+        quizHashMap.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
+        quizHashMap.put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
         
-        quiz.put("<html>[2, 14, 51, 80, 43]를 퀵 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?(피벗은 51로 한다.)<br>2, 14, 51, 80, 43 식으로 정답을 입력하세요.</html>", "2, 14, 43, 51, 80");
+        quizHashMap.put("<html>[2, 14, 51, 80, 43]를 퀵 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?(피벗은 51로 한다.)<br>2, 14, 51, 80, 43 식으로 정답을 입력하세요.</html>", "2, 14, 43, 51, 80");
 
-        quiz.put("<html>버블, 선택, 삽입, 퀵, 합병 정렬 중 최선 시간 복잡도가 O(nlogn)인 정렬은?<br>ex) 'OO 정렬' 식으로 정답을 입력하세요.</html>", "합병 정렬");
+        quizHashMap.put("<html>버블, 선택, 삽입, 퀵, 합병 정렬 중 최선 시간 복잡도가 O(nlogn)인 정렬은?<br>ex) 'OO 정렬' 식으로 정답을 입력하세요.</html>", "합병 정렬");
 
     }
 
