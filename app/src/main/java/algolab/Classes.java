@@ -12,8 +12,6 @@ import java.awt.event.FocusListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.checkerframework.checker.units.qual.min;
-
 class GbcFactory {
     private static GridBagConstraints gbc = new GridBagConstraints();
 
@@ -197,7 +195,7 @@ class FocusAdapter implements FocusListener {
 class Algorithms {
     protected static final Algorithm BUBBLE_SORT = new Algorithm(
             "버블 정렬",
-            "<html>버블 정렬이란?<br>1. 배열의 두 수(𝑎, 𝑏)를 선택한다.<br>2. 만약 그 두 수가 정렬되었다면 놔두고 아니라면 두 수를 바꾸는 방식으로 진행한다.</html>",
+            "버블 정렬이란?\n서로 인접한 두 원소를 검사하여 정렬하는 알고리즘\n" + "인접한 원소를 교환하는 모습이 마치 물 속의 거품과 비슷하다 하여 버블 정렬이라고 부른다.\n" + "순서에 맞지 않은 원소들을 교환하다 보면 오른쪽 리스트는 자동으로 정렬되기 시작하며 이 과정에서 왼쪽 리스트에 있는 원소들을 반복적으로 교환하여 정렬\n" + "\n정렬 방법\n" + "1. 배열의 두 수(𝑎, 𝑏)를 선택한다.\n2. 만약 그 두 수가 정렬되었다면 놔두고 아니라면 두 수를 바꾸는 방식으로 진행한다.",
             new Algorithm.Code(
                 "bubbleSort(arr):\n" +
                     "\t n = length of arr\n" +
@@ -265,7 +263,7 @@ class Algorithms {
 
     protected static final Algorithm SELECTION_SORT = new Algorithm(
             "선택 정렬",
-            "<html>선택 정렬이란?<br/>1. 배열에서 최솟값을 찾는다.<br/>2. 최솟값을 맨 앞에 위치한 값과 교체한다.<br/>맨 처음 위치를 뺀 나머지 리스트를 같은 방법으로 교체한다.</html>",
+            "선택 정렬이란?\n" + "정렬되지 않은 데이터들에 대해 가장 작은 데이터를 찾아 가장 앞의 데이터와 교환해 나가는 방식의 알고리즘\n" + "\n정렬 방법\n" + "1. 배열에서 최솟값을 찾는다.\n2. 최솟값을 맨 앞에 위치한 값과 교체한다.<br/>맨 처음 위치를 뺀 나머지 리스트를 같은 방법으로 교체한다.",
             new Algorithm.Code(
                 "selectionSort(arr):\n" +
                     "\tn = length of arr\n" +
@@ -340,7 +338,7 @@ class Algorithms {
 
     protected static final Algorithm INSERTION_SORT = new Algorithm(
             "삽입 정렬",
-            "<html>삽입 정렬이란?<br>1. 배열의 모든 요소를 앞에서부터 이미 정렬된 배열 부분과 비교한다.<br>2. 자신의 위치를 찾아 삽입하면서 정렬을 완성한다.</html>",
+            "삽입 정렬이란?\n" + "자료 배열의 모든 요소를 앞에서부터 차례대로 이미 정렬된 배열 부분과 비교하여 자신의 위치를 찾아 삽입함으로써 정렬을 완성하는 알고리즘\n" + "\n정렬 방법\n" + "1. 배열의 모든 요소를 앞에서부터 이미 정렬된 배열 부분과 비교한다.\n2. 자신의 위치를 찾아 삽입하면서 정렬을 완성한다.",
             new Algorithm.Code(
                 "insertionSort(arr):\n" +
                     "\tn = length of arr\n" +
@@ -410,7 +408,7 @@ class Algorithms {
 
     protected static final Algorithm QUICK_SORT = new Algorithm(
             "퀵 정렬",
-            "<html>퀵 정렬이란?<br>1. 배열 가운데에서 원소(피벗)을 고른다.<br>2. 피벗 앞에는 피벗보다 작은 값이 오고 뒤에는 큰 값이 오도록 피벗을 기준으로 배열을 둘로 나눈다(분할 작업).<br>3. 2(분할 작업)의 작업을 재귀적으로 반복하여 배열의 크기가 0이나 1이 될 때까지 정렬한다.</html>",
+            "퀵 정렬이란?\n" + "분할 정복 방식을 사용하여 정렬하는 알고리즘\n" + "\n정렬 방법\n" + "1. 배열 가운데에서 원소(피벗)을 고른다.\n2. 피벗 앞에는 피벗보다 작은 값이 오고 뒤에는 큰 값이 오도록 피벗을 기준으로 배열을 둘로 나눈다(분할 작업).<br>3. 2(분할 작업)의 작업을 재귀적으로 반복하여 배열의 크기가 0이나 1이 될 때까지 정렬한다.",
             new Algorithm.Code(
                 "swap(arr, i, j):\n" +
                     "\ttemp = arr[i]\n" +
@@ -542,7 +540,7 @@ class Algorithms {
 
     protected static final Algorithm MERGE_SORT = new Algorithm(
             "병합 정렬",
-            "<html>병합 정렬이란?<br>1. 정렬되지 않은 배열을 하나의 원소만 포함하는 n개의 부분 배열로 분할한다.<br>2. 부분 배열이 하나만 남을 때까지 계속하여 반복하여 정렬된 배열을 생성한다.</html>",
+            "병합 정렬이란?\n" + "하나의 리스트를 두 개의 균등한 크기로 분할하고 분활된 부분 리스트를 정렬한 다음 두 개의 정렬된 부분 리스트를 합하여 전체가 정렬된 리스트가 되게 하는 알고리즘\n" + "\n정렬 방법\n" + "1. 정렬되지 않은 배열을 하나의 원소만 포함하는 n개의 부분 배열로 분할한다.\n2. 부분 배열이 하나만 남을 때까지 계속하여 반복하여 정렬된 배열을 생성한다.",
             new Algorithm.Code(
                 "merge(arr, l, m, r):\n" +
                     "\tn1 = m - l + 1\n" +

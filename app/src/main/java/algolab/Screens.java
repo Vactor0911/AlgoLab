@@ -94,7 +94,7 @@ class LearningScreen extends JPanel {
         comboViewCode.setSelectedIndex(0);
 
         // 버블 정렬 화면으로 초기화
-        definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
+        definitionLabel.setText(CodeParser.parseCode(Algorithms.BUBBLE_SORT.DEFINITION));
         timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
         c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
 
@@ -142,7 +142,7 @@ class LearningScreen extends JPanel {
                     String selectedAlgo = ((String[]) comboAlgorithm.getSelectedItem())[0];
                     switch (selectedAlgo) {
                         case "버블 정렬":
-                            definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.BUBBLE_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
                             comboViewCode.setSelectedIndex(0);
@@ -150,7 +150,7 @@ class LearningScreen extends JPanel {
                             viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "선택 정렬":
-                            definitionLabel.setText(Algorithms.SELECTION_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.SELECTION_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.SELECTION_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
                             comboViewCode.setSelectedIndex(0);
@@ -158,7 +158,7 @@ class LearningScreen extends JPanel {
                             viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "삽입 정렬":
-                            definitionLabel.setText(Algorithms.INSERTION_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.INSERTION_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.INSERTION_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
                             comboViewCode.setSelectedIndex(0);
@@ -166,7 +166,7 @@ class LearningScreen extends JPanel {
                             viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "퀵 정렬":
-                            definitionLabel.setText(Algorithms.QUICK_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.QUICK_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.QUICK_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(nlogn)" }, { "O(nlogn)" } });
                             comboViewCode.setSelectedIndex(0);
@@ -174,7 +174,7 @@ class LearningScreen extends JPanel {
                             viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
                             break;
                         case "병합 정렬":
-                            definitionLabel.setText(Algorithms.MERGE_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.MERGE_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.MERGE_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(nlogn)" }, { "O(nlogn)" }, { "O(nlogn)" } });
                             comboViewCode.setSelectedIndex(0);
