@@ -3,6 +3,7 @@ package algolab;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
@@ -831,7 +832,7 @@ class Chart extends JPanel {
 class SortingAnimation extends JPanel {
     //설정
     private static final int TIMER_PERIOD = 10;
-    private static final float LERP_TIME = 0.5f;
+    private static final float LERP_TIME = 0.3f;
     private static final float BAR_H_GAP_MULTIPLY = 0.1f;
     private static final float BAR_MAX_HEIGHT_MULTIPLY = 0.8f;
 
@@ -916,6 +917,7 @@ class SortingAnimation extends JPanel {
     } //Bar 클래스
 
     public void swap(int from, int to) {
+        sync();
         if (from == to) {
             return;
         }
@@ -932,6 +934,7 @@ class SortingAnimation extends JPanel {
     } //swap()
 
     public void shift(int from, int to) {
+        sync();
         if (from == to) {
             return;
         }
@@ -965,11 +968,44 @@ class SortingAnimation extends JPanel {
         sleep();
     } //shift()
 
+    public void mergeSort(int left, int right) {
+        ArrayList<Bar> listBar = new ArrayList<>();
+        for (int i=left; i<=right; i++) {
+            listBar.add(aryBar[i]);
+        }
+
+        listBar.sort(new Comparator<Bar>() {
+            @Override
+            public int compare(Bar bar1, Bar bar2) {
+                if ( bar1.getValue() > bar2.getValue() ) {
+                    return 1;
+                }
+                else if ( bar1.getValue() < bar2.getValue() ) {
+                    return -1;
+                }
+                return 0;
+            }
+        });
+
+        for (int i=0; i<listBar.size(); i++) {
+            sync();
+            listBar.get(i).moveTo(left + i, true);
+            sleep();
+        }
+        sync();
+        for (int i=0; i<listBar.size(); i++) {
+            aryBar[left + i] = listBar.get(i);
+            listBar.get(i).moveTo(left + i, false);
+        }
+        sleep();
+    }
+
     public int getLength() {
         return aryBar.length;
     }
 
     public int getValue(int index) {
+        sync();
         return aryBar[index].getValue();
     }
 
@@ -1027,12 +1063,23 @@ class SortingAnimation extends JPanel {
         catch (Exception e) {}
     }
 
+    private void sync() {
+        while(SortManager.paused) {
+        }
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         //구분선 그리기
-        int lineY = (int)( (float)getHeight() * 0.7f );
+        float maxY = 0f;
+        for (int i=0; i<aryBar.length; i++) {
+            maxY = Math.max(maxY, aryBar[i].getPoint().y);
+        }
+        float lineYMul = 0.7f - maxY * 0.2f;
+
+        int lineY = (int)( (float)getHeight() * lineYMul );
         g.setColor(LINE_COLOR);
         g.fillRect(0, lineY, getWidth(), 3);
 
@@ -1044,12 +1091,15 @@ class SortingAnimation extends JPanel {
         int barWidth = getWidth() / aryBar.length;
         int barHGap = (int)( (float)barWidth * BAR_H_GAP_MULTIPLY );
         int barFixedWidth = barWidth - barHGap * 2;
-        int barMidX = barWidth / 2 - barHGap;
 
         int maxHeight = (int)( (float)lineY * BAR_MAX_HEIGHT_MULTIPLY );
         int barVGap = lineY - maxHeight;
         int maxData = getMaxData();
-        int barHeightMul = maxHeight / maxData;
+        int barHeightMul = 0;
+        try {
+            barHeightMul = maxHeight / maxData;
+        }
+        catch (Exception e) {}
 
         int fontSize = barFixedWidth / 2;
         Font font = new Font("Dialog", Font.BOLD, fontSize);
@@ -1058,7 +1108,7 @@ class SortingAnimation extends JPanel {
             Bar bar = aryBar[i];
             int barHeight = bar.getValue() * barHeightMul;
 
-            int barYMul = barHeight + barVGap;
+            int barYMul = maxHeight + barVGap;
 
             Pointf point = bar.getPoint();
             int barX = (int)(point.x * barWidth);
@@ -1070,7 +1120,6 @@ class SortingAnimation extends JPanel {
             g.drawRect(barX + barHGap, barY, barFixedWidth, barHeight);
 
             //숫자 그리기
-            //TODO: 가변형 폰트 크기를 가지도록 구현
             String strValue = Integer.toString( bar.getValue() );
             int fontOffset = (int)Math.ceil((strValue.length()-1) * fontSize * 0.25d);
             int textX = barX + barFixedWidth / 2 - fontOffset;

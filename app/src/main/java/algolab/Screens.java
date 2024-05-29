@@ -72,21 +72,17 @@ class LearningScreen extends JPanel {
         // 탭 패널 초기화 및 스크롤 추가
         definitionTabPanel.setLayout(new BorderLayout());
         definitionTabPanel.add(definitionLabel);
-        JScrollPane definitionScroll = new JScrollPane(definitionTabPanel);
+        MyScrollPane definitionScroll = new MyScrollPane(definitionTabPanel);
 
         viewCodeTabPanel.setLayout(new BorderLayout());
 
         timeComplexityTabPanel.setLayout(new BorderLayout());
         timeComplexityTabPanel.add(timeComplexityLabel);
-        JScrollPane timeComplexityScroll = new JScrollPane(timeComplexityTabPanel);
+        MyScrollPane timeComplexityScroll = new MyScrollPane(timeComplexityTabPanel);
 
         tabLearn.addTab("정의", definitionScroll);
         tabLearn.addTab("코드", viewCodeTabPanel);
         tabLearn.addTab("시간 복잡도", timeComplexityScroll);
-
-        // 탭 가로 스크롤이 항상 보이게
-        definitionScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        timeComplexityScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         // 콤보 박스 초기화
         comboAlgorithm.setSelectedIndex(0);
@@ -124,8 +120,12 @@ class LearningScreen extends JPanel {
         // 실습하기 버튼 리스너 구현
         btnLearn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                int comboItemIndex = comboAlgorithm.getSelectedIndex();
+
                 CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
                 cardLayout.show(pnlContent, ScreenList.PRACTICE_SCREEN);
+
+                ((PracticeScreen) pnlContent.getComponent(2)).setComboIndex(comboItemIndex);
             }
         });
 
@@ -196,7 +196,7 @@ class LearningScreen extends JPanel {
                 // 콤보박스가 아직 추가되지 않았을 때만 추가
                 viewCodePanel.setLayout(new BorderLayout());
                 viewCodePanel.add(viewCodeLabel);
-                JScrollPane viewCodeScroll = new JScrollPane(viewCodePanel); // 패널을 감싸는 스크롤 추가
+                MyScrollPane viewCodeScroll = new MyScrollPane(viewCodePanel); // 패널을 감싸는 스크롤 추가
                 viewCodeScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); // 가로 스크롤이 항상 보이게
                 viewCodeTabPanel.setLayout(new GridBagLayout()); // 콤보박스 크기 조정을 위해 그리드백 레이아웃 적용
                 viewCodeTabPanel.add(comboViewCode, GbcFactory.createGbc(0, 0, 1.0d, 0.12d));
@@ -252,6 +252,18 @@ class LearningScreen extends JPanel {
         });
 
     } // 생성자
+
+    private class MyScrollPane extends JScrollPane {
+        private static final int SPEED = 20;
+
+        public MyScrollPane(Component view) {
+            super(view);
+            setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            getHorizontalScrollBar().setUnitIncrement(SPEED);
+            getVerticalScrollBar().setUnitIncrement(SPEED);
+        }
+    }
 } // LearningScreen 클래스
 
 /**
@@ -382,6 +394,12 @@ class PracticeScreen extends JPanel {
                     case 2: //삽입 정렬
                         manager = new SortManager(animation, SortManager.INSERTION_SORT);
                         break;
+                    case 3: //퀵 정렬
+                        manager = new SortManager(animation, SortManager.QUICK_SORT);
+                        break;
+                    case 4: //합병 정렬
+                        manager = new SortManager(animation, SortManager.MERGE_SORT);
+                        break;
                     default:
                         break;
                 }
@@ -430,6 +448,10 @@ class PracticeScreen extends JPanel {
             ( (CardLayout) pnlControl.getLayout() ).show(pnlControl, "insert");
             comboAlgorithm.setEnabled(true);
         }
+    } //MyControlListener 클래스
+
+    protected void setComboIndex(int index) {
+        comboAlgorithm.setSelectedIndex(index);
     }
 } // PracticeScreen 클래스
 
@@ -478,7 +500,7 @@ class QuizStartScreen extends JPanel {
  */
 class QuizScreen extends JPanel {
     private JPanel panel = new JPanel();
-    private JLabel quizLabel = new JLabel("");
+    private JLabel quizLabel = new JLabel("", SwingConstants.CENTER);
     private JTextField answerEdit = new JTextField();
     private JButton answerBtn = new JButton("정답 제출");
     HashMap<String, String> quiz = new HashMap<String, String>(); // 퀴즈와 답을 담을 HashMap
