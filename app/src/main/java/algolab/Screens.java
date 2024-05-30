@@ -289,10 +289,9 @@ class PracticeScreen extends JPanel {
     private JPanel pnlControl = new JPanel();
     private ListBox listBox = new ListBox(1);
     private Button btnInsert = new Button("입력하기");
-    private Button btnStart = new Button("시작");
-    private Button btnPause = new Button("일시정지");
-    private Button btnResume = new Button("이어하기");
-    private Button btnStop = new Button("중지");
+    private Button btnStart = new Button("▶");
+    private Button btnPause = new Button("❚❚");
+    private Button btnStop = new Button("■");
 
     // 학습하기 버튼 구현 관련 변수
     private JPanel pnlContent;
@@ -335,11 +334,13 @@ class PracticeScreen extends JPanel {
         pnlInsert.add( btnInsert, GbcFactory.createGbc(0, 1, 1d, 0.1d) );
 
         JPanel pnlProcess = new JPanel();
-        pnlProcess.setLayout( new VerticalLayout() );
+        pnlProcess.setAlignmentX(CENTER_ALIGNMENT);
+        pnlProcess.setBorder( BorderFactory.createEmptyBorder(30, 30, 30, 30) );
+        pnlProcess.setLayout( new GridLayout(3, 1, 0, 50) );
         pnlProcess.add(btnStart);
         pnlProcess.add(btnPause);
-        pnlProcess.add(btnResume);
         pnlProcess.add(btnStop);
+        btnPause.setEnabled(false);
 
         pnlControl.setLayout( new CardLayout() );
         pnlControl.add(pnlInsert, "insert");
@@ -436,7 +437,6 @@ class PracticeScreen extends JPanel {
         MyControlListener listener = new MyControlListener();
         btnStart.addActionListener(listener);
         btnPause.addActionListener(listener);
-        btnResume.addActionListener(listener);
         btnStop.addActionListener(listener);
     } // 생성자
 
@@ -452,17 +452,36 @@ class PracticeScreen extends JPanel {
                 manager.start();
             }
             else if ( e.getSource().equals(btnPause) ) {
-                manager.pause();
-            }
-            else if ( e.getSource().equals(btnResume) ) {
-                manager.resume();
+                if ( btnPause.getText().equals("❚❚") ) {
+                    manager.pause();
+                    btnPause.setText("▶❚");
+                }
+                else {
+                    manager.resume();
+                    btnPause.setText("❚❚");
+                }
             }
             else {
                 manager.stop();
                 manager = null;
                 reset();
+
+                btnStart.setEnabled(true);
+                btnPause.setEnabled(false);
             }
-        }
+
+            System.out.println(manager.getStatus());
+            switch ( manager.getStatus() ) {
+                case SortManager.START:
+                    btnStart.setEnabled(false);
+                    btnPause.setEnabled(true);
+                    break;
+                case SortManager.PAUSE: case SortManager.RESUME:
+                    btnStart.setEnabled(false);
+                    btnPause.setEnabled(true);
+                    break;
+            }
+        } //actionPerformed()
 
         private void reset() {
             remove(animation);

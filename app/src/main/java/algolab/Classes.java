@@ -970,6 +970,10 @@ class SortManager {
         thread.start();
     }
 
+    public int getStatus() {
+        return status;
+    }
+
     private abstract class SortingRunnable implements Runnable {
         protected SortingAnimation animation;
 
