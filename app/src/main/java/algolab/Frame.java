@@ -18,13 +18,14 @@ public class Frame extends JFrame {
 
     //화면 객체
     private LearningScreen learningScreen = new LearningScreen(pnlContent);
-    private PracticeScreen practiceScreen = new PracticeScreen();
+    private PracticeScreen practiceScreen = new PracticeScreen(pnlContent);
     private QuizStartScreen quizStartScreen = new QuizStartScreen(pnlContent);
     private QuizScreen quizScreen = new QuizScreen();
 
     //기타 객체
     private CardLayout cardLayout = new CardLayout(10, 10);
 
+    //스크린 ID
     public static class ScreenList {
         public static final String NONE = "none";
         public static final String LEARNING_SCREEN = "LearningPanel";
@@ -32,6 +33,9 @@ public class Frame extends JFrame {
         public static final String QUIZ_START_SCREEN = "QuizStartPanel";
         public static final String QUIZ_SCREEN = "QuizScreen";
     }
+
+    //변수
+    private float sizeMul = 1f;
 
     public Frame() {
         setTitle("AlgoLab");
@@ -83,5 +87,17 @@ public class Frame extends JFrame {
 
         cardLayout.show(pnlContent, ScreenList.LEARNING_SCREEN);
         setVisible(true);
+    }
+
+    public float getSizeMul() {
+        return sizeMul;
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        float width = (float)getWidth() / 600f;
+        float height = (float)getHeight() / 400f;
+        sizeMul = Math.min(width, height);
     }
 }
