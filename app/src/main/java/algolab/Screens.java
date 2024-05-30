@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import javax.swing.*;
 import javax.swing.event.*;
+
 import java.util.*;
 import java.util.List;
 import algolab.Frame.ScreenList;
@@ -27,9 +28,9 @@ class LearningScreen extends JPanel {
     private JPanel timeComplexityTabPanel = new JPanel();
 
     // 탭 패널에 글씨 세팅해 줄 라벨
-    private JLabel definitionLabel = new JLabel(""); // 정의
-    private JLabel viewCodeLabel = new JLabel(""); // 코드 보기
-    private JLabel timeComplexityLabel = new JLabel(""); // 시간 복잡도
+    private Label definitionLabel = new Label(""); // 정의
+    private Label viewCodeLabel = new Label(""); // 코드 보기
+    private Label timeComplexityLabel = new Label(""); // 시간 복잡도
 
     // View Code 안에 추가 할 콤보박스
     private ComboBox comboViewCode = new ComboBox();
@@ -40,13 +41,16 @@ class LearningScreen extends JPanel {
     Chart c = new Chart(3, 1);
 
     // 그래프 테스트
-    SortingAnimation graph = new SortingAnimation(new int[] {5, 2, 4, 1, 3});
+    int[] aryNumber = {5, 2, 1, 6, 4, 7, 3};
+    SortingAnimation graph = new SortingAnimation(aryNumber);
 
     // 구조체 접근을 위한 변수 초기화
     private Algorithms.Algorithm algo = Algorithms.BUBBLE_SORT;
 
     // 실습하기 버튼 구현 관련 변수
     private JPanel pnlContent;
+
+    SortManager manager = null;
 
     public LearningScreen(JPanel pnlContent) {
         this.pnlContent = pnlContent;
@@ -72,22 +76,17 @@ class LearningScreen extends JPanel {
         // 탭 패널 초기화 및 스크롤 추가
         definitionTabPanel.setLayout(new BorderLayout());
         definitionTabPanel.add(definitionLabel);
-        MyScrollPane definitionScroll = new MyScrollPane(definitionTabPanel);
+        ScrollPane definitionScroll = new ScrollPane(definitionTabPanel);
 
         viewCodeTabPanel.setLayout(new BorderLayout());
 
         timeComplexityTabPanel.setLayout(new BorderLayout());
         timeComplexityTabPanel.add(timeComplexityLabel);
-        MyScrollPane timeComplexityScroll = new MyScrollPane(timeComplexityTabPanel);
+        ScrollPane timeComplexityScroll = new ScrollPane(timeComplexityTabPanel);
 
         tabLearn.addTab("정의", definitionScroll);
         tabLearn.addTab("코드", viewCodeTabPanel);
         tabLearn.addTab("시간 복잡도", timeComplexityScroll);
-
-        // # ************** 스크롤 배경 색 및 스크롤 색상 변경 기능 ***************** #
-        //tabLearnScroll.getVerticalScrollBar().setBackground(Color.BLACK);
-        //tabLearnScroll.getHorizontalScrollBar().setBackground(Color.BLACK);
-        //https://stackoverflow.com/questions/16373459/java-jscrollbar-design
 
         // 콤보 박스 초기화
         comboAlgorithm.setSelectedIndex(0);
@@ -103,17 +102,17 @@ class LearningScreen extends JPanel {
 
         // 1행
         add(comboAlgorithm, GbcFactory.createGbc(0, 0, 0.5d, 0.1d));
-        add(new JLabel(""), GbcFactory.createGbc(1, 0, 0.05d, 0.1d));
+        add(new Label(""), GbcFactory.createGbc(1, 0, 0.05d, 0.1d));
         add(btnLearn, GbcFactory.createGbc(2, 0, 0.1d, 0.1d));
-        add(new JLabel(""), GbcFactory.createGbc(3, 0, 0.05, 0.1));
-        add(new JLabel(""), GbcFactory.createGbc(4, 0, 0.3d, 0.1));
+        add(new Label(""), GbcFactory.createGbc(3, 0, 0.05, 0.1));
+        add(new Label(""), GbcFactory.createGbc(4, 0, 0.3d, 0.1));
 
         // 2행
-        add(new JLabel(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1));
+        add(new Label(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1));
 
         // 3행
         add(tabLearn, GbcFactory.createGbc(0, 2, 0.65d, 0.85d, 3, 2));
-        add(new JLabel(""), GbcFactory.createGbc(3, 2, 0.05d, 0.85d, 1, 2));
+        add(new Label(""), GbcFactory.createGbc(3, 2, 0.05d, 0.85d, 1, 2));
         add(c, GbcFactory.createGbc(4, 2, 0.3d, 0.4d));
 
         // 4행
@@ -121,6 +120,10 @@ class LearningScreen extends JPanel {
 
         // 차트 행 제목 초기화
         c.setRowTitle(new String[] { "최선", "최악", "평균" });
+
+        //정렬 애니메이션 구현
+        manager = new SortManager(graph, SortManager.BUBBLE_SORT);
+        manager.loop();
 
         // 실습하기 버튼 리스너 구현
         btnLearn.addActionListener(new ActionListener() {
@@ -140,6 +143,15 @@ class LearningScreen extends JPanel {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     String selectedAlgo = ((String[]) comboAlgorithm.getSelectedItem())[0];
+
+                    if (manager != null) {
+                        manager.stop();
+                    }
+                    remove(graph);
+                    graph = new SortingAnimation(aryNumber);
+                    add(graph, GbcFactory.createGbc(4, 3, 0.3d, 0.5d));
+                    revalidate();
+
                     switch (selectedAlgo) {
                         case "버블 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.BUBBLE_SORT.DEFINITION));
@@ -148,6 +160,8 @@ class LearningScreen extends JPanel {
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.BUBBLE_SORT;
                             viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
+
+                            manager = new SortManager(graph, SortManager.BUBBLE_SORT);
                             break;
                         case "선택 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.SELECTION_SORT.DEFINITION));
@@ -156,6 +170,8 @@ class LearningScreen extends JPanel {
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.SELECTION_SORT;
                             viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
+
+                            manager = new SortManager(graph, SortManager.SELECTION_SORT);
                             break;
                         case "삽입 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.INSERTION_SORT.DEFINITION));
@@ -164,6 +180,8 @@ class LearningScreen extends JPanel {
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.INSERTION_SORT;
                             viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
+
+                            manager = new SortManager(graph, SortManager.INSERTION_SORT);
                             break;
                         case "퀵 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.QUICK_SORT.DEFINITION));
@@ -172,6 +190,8 @@ class LearningScreen extends JPanel {
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.QUICK_SORT;
                             viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
+
+                            manager = new SortManager(graph, SortManager.QUICK_SORT);
                             break;
                         case "병합 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.MERGE_SORT.DEFINITION));
@@ -180,8 +200,12 @@ class LearningScreen extends JPanel {
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.MERGE_SORT;
                             viewCodeLabel.setText(CodeParser.parseCode(algo.CODE.PSEUDO));
+
+                            manager = new SortManager(graph, SortManager.MERGE_SORT);
                             break;
                     }
+                    
+                    manager.loop();
                 }
             }
         });
@@ -201,7 +225,7 @@ class LearningScreen extends JPanel {
                 // 콤보박스가 아직 추가되지 않았을 때만 추가
                 viewCodePanel.setLayout(new BorderLayout());
                 viewCodePanel.add(viewCodeLabel);
-                MyScrollPane viewCodeScroll = new MyScrollPane(viewCodePanel); // 패널을 감싸는 스크롤 추가
+                ScrollPane viewCodeScroll = new ScrollPane(viewCodePanel); // 패널을 감싸는 스크롤 추가
                 viewCodeScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); // 가로 스크롤이 항상 보이게
                 viewCodeTabPanel.setLayout(new GridBagLayout()); // 콤보박스 크기 조정을 위해 그리드백 레이아웃 적용
                 viewCodeTabPanel.add(comboViewCode, GbcFactory.createGbc(0, 0, 1.0d, 0.12d));
@@ -255,24 +279,8 @@ class LearningScreen extends JPanel {
                 }
             }
         });
-
     } // 생성자
 
-    private class MyScrollPane extends JScrollPane {
-        private static final int SPEED = 20;
-
-        public MyScrollPane(Component view) {
-            super(view);
-            setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-            setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            getHorizontalScrollBar().setUnitIncrement(SPEED);
-            getVerticalScrollBar().setUnitIncrement(SPEED);
-        }
-    }
-
-    protected void setComboIndex(int index) {
-        comboAlgorithm.setSelectedIndex(index);
-    }
 } // LearningScreen 클래스
 
 /**
@@ -315,17 +323,17 @@ class PracticeScreen extends JPanel {
 
         // 1행
         add(comboAlgorithm, GbcFactory.createGbc(0, 0, 0.45d, 0.1d));
-        add(new JLabel(""), GbcFactory.createGbc(1, 0, 0.1d, 0.1d));
-        add(new JLabel(""), GbcFactory.createGbc(2, 0, 0.05d, 0.1d));
+        add(new Label(""), GbcFactory.createGbc(1, 0, 0.1d, 0.1d));
+        add(new Label(""), GbcFactory.createGbc(2, 0, 0.05d, 0.1d));
         add(btnLearn, GbcFactory.createGbc(3, 0, 0.2d, 0.1d));
-        add(new JLabel(""), GbcFactory.createGbc(4, 0, 0.2d, 0.1d));
+        add(new Label(""), GbcFactory.createGbc(4, 0, 0.2d, 0.1d));
 
         // 2행
-        add(new JLabel(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1));
+        add(new Label(""), GbcFactory.createGbc(0, 1, 1.0d, 0.05d, 5, 1));
 
         // 3행
         add(animation, GbcFactory.createGbc(0, 2, 0.55d, 0.85d, 2, 2));
-        add(new JLabel(""), GbcFactory.createGbc(2, 2, 0.05d, 0.85d, 1, 2));
+        add(new Label(""), GbcFactory.createGbc(2, 2, 0.05d, 0.85d, 1, 2));
         add(pnlControl, GbcFactory.createGbc(3, 2, 0.4d, 0.8d, 2, 1));
 
         //조작 패널
@@ -482,7 +490,7 @@ class PracticeScreen extends JPanel {
  * 퀴즈 시작 메뉴
  */
 class QuizStartScreen extends JPanel {
-    private JLabel lblQuiz = new JLabel("Quiz", SwingConstants.CENTER);
+    private Label lblQuiz = new Label("Quiz", SwingConstants.CENTER);
     private Button btnStart = new Button("Start");
     private JPanel pnlContent;
 
@@ -490,23 +498,23 @@ class QuizStartScreen extends JPanel {
         this.pnlContent = pnlContent;
         setLayout(new GridBagLayout());
         // 1행
-        add(new JLabel(""), GbcFactory.createGbc(0, 0, 1d, 0.3d, 3, 1));
+        add(new Label(""), GbcFactory.createGbc(0, 0, 1d, 0.3d, 3, 1));
 
         // 2행
-        add(new JLabel(""), GbcFactory.createGbc(0, 1, 0.33d, 0.2d));
+        add(new Label(""), GbcFactory.createGbc(0, 1, 0.33d, 0.2d));
         add(lblQuiz, GbcFactory.createGbc(1, 1, 0.34d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(2, 1, 0.33d, 0.2d));
+        add(new Label(""), GbcFactory.createGbc(2, 1, 0.33d, 0.2d));
 
         // 3행
-        add(new JLabel(""), GbcFactory.createGbc(0, 2, 1d, 0.3d, 3, 1));
+        add(new Label(""), GbcFactory.createGbc(0, 2, 1d, 0.3d, 3, 1));
 
         // 4행
-        add(new JLabel(""), GbcFactory.createGbc(0, 3, 0.33d, 0.2d));
+        add(new Label(""), GbcFactory.createGbc(0, 3, 0.33d, 0.2d));
         add(btnStart, GbcFactory.createGbc(1, 3, 0.34d, 0.2d));
-        add(new JLabel(""), GbcFactory.createGbc(2, 3, 0.33d, 0.2d));
+        add(new Label(""), GbcFactory.createGbc(2, 3, 0.33d, 0.2d));
 
         // 5행
-        add(new JLabel(""), GbcFactory.createGbc(0, 4, 1d, 0.3d, 3, 1));
+        add(new Label(""), GbcFactory.createGbc(0, 4, 1d, 0.3d, 3, 1));
 
         btnStart.addActionListener(new ActionListener() {
             @Override
@@ -558,7 +566,6 @@ class QuizScreen extends JPanel {
 
         // 랜덤으로 3문제 선택하여 리스트에 추가
         selectRandomQuestions();
-
          // 1행
          add(panel, GbcFactory.createGbc(0, 0, 1d, 0.9d, 2, 1));
 
@@ -641,8 +648,8 @@ class QuizTODO extends JPanel {
     // Declaration of object of ButtonGroup class.
     ButtonGroup G1;
 
-    // Declaration of object of JLabel class.
-    JLabel L1;
+    // Declaration of object of Label class.
+    Label L1;
 
     // Constructor of Demo class.
     public QuizTODO() {
@@ -662,8 +669,8 @@ class QuizTODO extends JPanel {
         // Initialization of object of "ButtonGroup" class.
         G1 = new ButtonGroup();
 
-        // Initialization of object of " JLabel" class.
-        L1 = new JLabel("Qualification");
+        // Initialization of object of " Label" class.
+        L1 = new Label("Qualification");
 
         // setText(...) function is used to set text of radio button.
         // Setting text of "jRadioButton2".
@@ -681,7 +688,7 @@ class QuizTODO extends JPanel {
         // Setting Bounds of "jButton".
         jButton.setBounds(125, 90, 80, 30);
 
-        // Setting Bounds of JLabel "L2".
+        // Setting Bounds of Label "L2".
         L1.setBounds(20, 30, 150, 50);
 
         // "this" keyword in java refers to current object.
@@ -694,7 +701,7 @@ class QuizTODO extends JPanel {
         // Adding "jButton" on JFrame.
         this.add(jButton);
 
-        // Adding JLabel "L2" on JFrame.
+        // Adding Label "L2" on JFrame.
         this.add(L1);
 
         // Adding "jRadioButton1" and "jRadioButton3" in a Button Group "G2".

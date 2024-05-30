@@ -11,9 +11,48 @@ import javax.swing.border.Border;
 import javax.swing.plaf.basic.*;
 
 /**
+ * 화면 크기에 따라 폰트의 크기가 유동적으로 변경되도록 구현한 라벨 클래스이다.
+ */
+class Label extends JLabel {
+    private int fontSize = 12;
+
+    public Label(String text, int horizontalAlignment) {
+        super(text, horizontalAlignment);
+    }
+
+    public Label(String text) {
+        super(text);
+    }
+
+    public Label(ImageIcon imageIcon) {
+        super(imageIcon);
+    }
+
+    public Label() {
+        super();
+    }
+
+    @Override
+    public void setFont(Font font) {
+        super.setFont(font);
+        fontSize = font.getSize();
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        float newFontSize = (float)fontSize * Main.getFrame().getSizeMul();
+        Font font = getFont().deriveFont(newFontSize);
+        super.setFont(font);
+    }
+}
+
+/**
  * 버튼의 기본적인 속성을 지정해주는 클래스이다.
  */
 class ButtonBase extends JButton {
+    private int fontSize = 12;
+
     public ButtonBase(String text) {
         super(text);
 
@@ -24,6 +63,20 @@ class ButtonBase extends JButton {
 
     public ButtonBase() {
         this("");
+    }
+
+    @Override
+    public void setFont(Font font) {
+        super.setFont(font);
+        fontSize = font.getSize();
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        float newFontSize = (float)fontSize * Main.getFrame().getSizeMul();
+        Font font = getFont().deriveFont(newFontSize);
+        super.setFont(font);
     }
 
     /**
@@ -48,12 +101,6 @@ class ButtonBase extends JButton {
 
         // 그라데이션 재질 적용
         Graphics2D g2 = (Graphics2D) g.create();
-        // g2.setPaint(
-        // new GradientPaint(
-        // new Point(0, 0), color1,
-        // new Point(0, getHeight() ), color2
-        // )
-        // );
         g2.setColor(color1);
 
         return g2;
@@ -122,13 +169,13 @@ class RoundButton extends ButtonBase {
 /**
  * 수정 가능한 문자열 데이터를 저장할 수 있는 리스트 박스를 구현한 클래스이다.
  */
-class ListBox extends JScrollPane {
+class ListBox extends ScrollPane {
     // 상수
     private static final int GAP = 5;
     private static final int CONTENT_HEIGHT = 50;
 
     // 컴포넌트
-    private JPanel pnl = new JPanel();
+    private static JPanel pnl = new JPanel();
     private JPanel pnlContent = new JPanel();
     private Button btnAdd = new Button("Add");
 
@@ -144,10 +191,10 @@ class ListBox extends JScrollPane {
      * @param columns 리스트 박스의 열 개수를 지정한다. 1보다 작을 수 없다.
      */
     public ListBox(int columns) {
+        super(pnl);
         this.columns = Math.max(columns, 1);
 
         pnl.setLayout(new VerticalLayout(5));
-        setViewportView(pnl);
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         getVerticalScrollBar().setUnitIncrement(20);
@@ -348,8 +395,9 @@ class ListContent extends JPanel {
     private final int INDEX_WIDTH;
 
     // 컴포넌트
+    private ListBox root;
     private JPanel pnl = new JPanel();
-    private JLabel lblIndex;
+    private Label lblIndex;
     private JTextField[] aryTextField;
 
     // 변수
@@ -359,13 +407,14 @@ class ListContent extends JPanel {
         super();
 
         // 초기화
+        this.root = root;
         this.index = index;
         INDEX_WIDTH = (int) (getPreferredSize().getWidth() * 0.1d);
         aryTextField = new JTextField[values.length];
         setLayout(new GridBagLayout());
 
         // 인덱스 라벨
-        lblIndex = new JLabel(Integer.toString(index + 1), SwingConstants.CENTER);
+        lblIndex = new Label(Integer.toString(index + 1), SwingConstants.CENTER);
         lblIndex.setOpaque(true);
         lblIndex.setBackground(Color.LIGHT_GRAY);
         lblIndex.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -562,7 +611,7 @@ class ComboBox extends JComboBox {
  */
 @SuppressWarnings("rawtypes")
 class ComboBoxRenderer extends JPanel implements ListCellRenderer {
-    private JLabel lblItem = new JLabel();
+    private Label lblItem = new Label();
     private ComboBox comboBox;
 
     public ComboBoxRenderer(ComboBox comboBox) {
@@ -575,7 +624,7 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer {
         constraints.insets = new Insets(1, 1, 1, 1);
 
         lblItem.setOpaque(true);
-        lblItem.setHorizontalAlignment(JLabel.LEFT);
+        lblItem.setHorizontalAlignment(Label.LEFT);
 
         add(lblItem, constraints);
         setBackground(Color.LIGHT_GRAY);
@@ -621,7 +670,7 @@ class ComboBoxRenderer extends JPanel implements ListCellRenderer {
  */
 class ComboBoxEditor extends BasicComboBoxEditor {
     private JPanel pnl = new JPanel();
-    private JLabel lblItem = new JLabel();
+    private Label lblItem = new Label();
     private String selectedValue;
     private ComboBox comboBox;
 
@@ -635,7 +684,7 @@ class ComboBoxEditor extends BasicComboBoxEditor {
         constraints.insets = new Insets(2, 5, 2, 2);
 
         lblItem.setOpaque(false);
-        lblItem.setHorizontalAlignment(JLabel.LEFT);
+        lblItem.setHorizontalAlignment(Label.LEFT);
         lblItem.setForeground(Color.BLACK);
 
         pnl.add(lblItem, constraints);
@@ -708,14 +757,14 @@ class ComboBoxUI extends BasicComboBoxUI {
 class Chart extends JPanel {
     private static Font fontBold = new Font("Dialog", Font.BOLD, 16);
 
-    private JLabel[] aryRowLabel;
-    private JLabel[] aryColumnLabel;
-    private JLabel[][] aryContentLabel;
+    private Label[] aryRowLabel;
+    private Label[] aryColumnLabel;
+    private Label[][] aryContentLabel;
 
     public Chart(int rows, int columns) {
-        aryRowLabel = new JLabel[rows];
-        aryColumnLabel = new JLabel[columns];
-        aryContentLabel = new JLabel[rows][columns];
+        aryRowLabel = new Label[rows];
+        aryColumnLabel = new Label[columns];
+        aryContentLabel = new Label[rows][columns];
 
         setLayout(new GridBagLayout());
 
@@ -724,7 +773,7 @@ class Chart extends JPanel {
 
         for (int i = 0; i < rows + 1; i++) { // 행
             for (int j = 0; j < columns + 1; j++) { // 열
-                JLabel lbl = new JLabel("", SwingConstants.CENTER);
+                Label lbl = new Label("", SwingConstants.CENTER);
                 lbl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 lbl.setVisible(false);
 
@@ -748,7 +797,7 @@ class Chart extends JPanel {
     } // 생성자
 
     // 가독성 향상용 공통 속성 제어 함수
-    private void setLabelTitle(JLabel lbl) {
+    private void setLabelTitle(Label lbl) {
         lbl.setOpaque(true);
         lbl.setBackground(Color.LIGHT_GRAY);
         lbl.setFont(fontBold);
@@ -844,10 +893,12 @@ class SortingAnimation extends JPanel {
     private static final float LERP_STEP = (float)TIMER_PERIOD * 0.0001f / LERP_TIME;
 
     //변수
+    private final int[] aryNumber;
     private Bar[] aryBar;
 
     public SortingAnimation(int[] aryNumber) {
-        setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        this.aryNumber = aryNumber;
+        setBorder( BorderFactory.createLineBorder(Color.BLACK) );
 
         aryBar = new Bar[aryNumber.length];
         for (int i=0; i<aryNumber.length; i++) {
@@ -1056,6 +1107,13 @@ class SortingAnimation extends JPanel {
         return pointLerp;
     }
 
+    public void reset() {
+        for (int i=0; i<aryNumber.length; i++) {
+            aryBar[i] = new Bar(i, aryNumber[i]);
+        }
+        revalidate();
+    }
+
     private void sleep() {
         try {
             Thread.sleep( (int)(LERP_TIME * 1100f) );
@@ -1144,6 +1202,9 @@ class TabbedPane extends JTabbedPane {
     }
 } //TabbedPane 클래스
 
+/**
+ * 팝업 메시지 박스를 구현한 클래스이다.
+ */
 class MessageBox extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	//버튼 타입 id
@@ -1171,10 +1232,10 @@ class MessageBox extends JDialog implements ActionListener {
 	private JPanel pnlSouth = new JPanel();
 	private JPanel pnlCenter = new JPanel();
 	private JPanel pnlCenterMain = new JPanel();
-	private Button btnOk = new Button("확인");
-	private Button btnCancel = new Button("취소");
-	private Button btnYes = new Button("예");
-	private Button btnNo = new Button("아니오");
+	private MessageButton btnOk = new MessageButton("확인");
+	private MessageButton btnCancel = new MessageButton("취소");
+	private MessageButton btnYes = new MessageButton("예");
+	private MessageButton btnNo = new MessageButton("아니오");
 	
 	private JFrame frame;
 	private JDialog dialog;
@@ -1220,7 +1281,55 @@ class MessageBox extends JDialog implements ActionListener {
 		setLocation( dialog.getLocation() );
 		draw();
 	}
-	
+
+    /**
+     * 메시지 박스에 사용되는 버튼을 구현한 클래스이다.
+     */
+    private class MessageButton extends JButton {
+        public MessageButton(String text) {
+            super(text);
+            setContentAreaFilled(false);
+            setFocusPainted(false);
+        }
+
+        /**
+         * 버튼의 UI를 구성하는 Graphics 객체를 반환한다.
+         * @param g {@code Graphics} 객체
+         * @return 버튼의 UI를 구성하는 {@code Graphics2D}객체
+         */
+        public Graphics2D getGraphics2D(Graphics g) {
+            ButtonModel model = getModel();
+            Color color1 = Color.LIGHT_GRAY;
+            Color color2 = Color.GRAY;
+    
+            if (model.isPressed()) { // 눌렀을 때
+                color1 = color1.darker();
+                color2 = color2.darker();
+            } else if (model.isRollover()) { // 커서를 올려뒀을 때
+                color1 = color1.brighter();
+                color2 = color2.brighter();
+            }
+    
+            // 그라데이션 재질 적용
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setColor(color1);
+    
+            return g2;
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            Graphics2D g2 = getGraphics2D(g);
+            g2.fillRect(0, 0, getSize().width, getSize().height);
+            super.paintComponent(g2);
+        }
+
+        @Override
+        public void paintBorder(Graphics g) {
+            g.setColor(Color.BLACK);
+            g.drawRect(0, 0, getSize().width - 1, getSize().height - 1);
+        }
+    } //MessageButton 클래스
 
 	/**
 	 * 메시지 박스 대화상자를 그린다.
@@ -1235,7 +1344,7 @@ class MessageBox extends JDialog implements ActionListener {
 		add(pnlBase);
 		
 		//버튼 객체 설정
-		Button[] aryBtn = { btnOk, btnCancel, btnYes, btnNo };
+		MessageButton[] aryBtn = { btnOk, btnCancel, btnYes, btnNo };
 		for (int i=0; i<aryBtn.length; i++) {
 			Dimension size = new Dimension(80, 30);
 			aryBtn[i].setPreferredSize(size);
@@ -1422,3 +1531,102 @@ class MessageBox extends JDialog implements ActionListener {
 		this.dispatchEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
 	}
 } //MessageBox 클래스
+
+/**
+ * 스크롤 바를 통해 스크롤이 가능한 화면을 표시하는 스크롤 패널을 구현한 클래스이다.
+ */
+class ScrollPane extends JScrollPane {
+    private static final int SPEED = 20;
+    
+    public ScrollPane(Component view) {
+        super(view);
+        setHorizontalScrollBar( new ScrollBar(JScrollBar.HORIZONTAL) );
+        setVerticalScrollBar( new ScrollBar(JScrollBar.VERTICAL) );
+
+        setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        getHorizontalScrollBar().setUnitIncrement(SPEED);
+        getVerticalScrollBar().setUnitIncrement(SPEED);
+    }
+
+    /**
+     * 스크롤 바를 구현하는 클래스이다.
+     */
+    private class ScrollBar extends JScrollBar {
+        public ScrollBar(int orientation) {
+            setOrientation(orientation);
+            setUI( new MyScrollPaneUI() );
+            setPreferredSize( new Dimension(20, 20) );
+            setForeground(Color.BLACK);
+            setBackground(Color.LIGHT_GRAY);
+        }
+
+        /**
+         * 스크롤 바의 UI를 구성하는 클래스이다.
+         */
+        private class MyScrollPaneUI extends BasicScrollBarUI {
+            private static final Color colorTrack = new Color(210, 210, 210);
+            private static final Color COLOR_THUMB_NORM = new Color(180, 180 ,180);
+            private static final Color COLOR_THUMB_HOVER = new Color(160, 160 ,160);
+            private static final Color COLOR_THUMB_DRAG = new Color(120, 120 ,120);
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent comp, Rectangle rect) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    
+                g2.setColor(colorTrack);
+                g2.fillRect(rect.x, rect.y, rect.width, rect.height);
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent comp, Rectangle rect) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                int x = rect.x;
+                int y = rect.y;
+                int width = rect.width;
+                int height = rect.height;
+
+                if (scrollbar.getOrientation() == JScrollBar.VERTICAL) {
+                    x += 2;
+                    width -= 4;
+                }
+                else {
+                    y += 2;
+                    height -= 4;
+                }
+
+                Color colorThumb = COLOR_THUMB_NORM;
+                if (isDragging) {
+                    colorThumb = COLOR_THUMB_DRAG;
+                }
+                else if ( isThumbRollover() ) {
+                    colorThumb = COLOR_THUMB_HOVER;
+                }
+
+                g2.setColor(colorThumb);
+                g2.fillRect(x, y, width, height);
+            }
+
+            private JButton createButton(int orientation) {
+                BasicArrowButton arrowButton = new BasicArrowButton( orientation, Color.LIGHT_GRAY, Color.GRAY.darker(),
+                    Color.GRAY, Color.LIGHT_GRAY.brighter() );
+                arrowButton.setPreferredSize( new Dimension(20, 20) );
+                return arrowButton;
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int i) {
+                return createButton(i);
+            }
+    
+            @Override
+            protected JButton createDecreaseButton(int i) {
+                return createButton(i);
+            }
+        } //MyScrollPaneUI 클래스
+    } //ScrollBar 클래스
+
+} //ScrollPane 클래스

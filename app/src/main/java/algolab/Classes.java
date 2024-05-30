@@ -8,7 +8,6 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -890,11 +889,15 @@ class SortManager {
     public static final int RESUME = 13;
     public static final int STOP = 14;
 
+    private SortingAnimation animation;
     private SortingRunnable runnable;
+    private Thread thread;
     private int status = STOP;
     protected static volatile boolean paused = false;
 
     public SortManager(SortingAnimation animation, int sortType) {
+        this.animation = animation;
+
         switch (sortType) {
             case BUBBLE_SORT:
                 runnable = new BubbleSort(animation);
@@ -917,7 +920,8 @@ class SortManager {
 
     public void start() {
         if (status == STOP) {
-            new Thread(runnable).start();
+            thread = new Thread(runnable);
+            thread.start();
             status = START;
         }
     }
@@ -938,9 +942,32 @@ class SortManager {
 
     public void stop() {
         if (status != STOP) {
+            thread.interrupt();
             paused = false;
             status = STOP;
         }
+    }
+
+    public void loop() {
+        if (thread != null) {
+            thread.interrupt();
+        }
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(status == START) {
+                    try {
+                        Thread.sleep(500);
+                        runnable.run();
+                        Thread.sleep(1500);
+                        animation.reset();
+                    }
+                    catch (Exception e) {}
+                }
+            }
+        });
+        status = START;
+        thread.start();
     }
 
     private abstract class SortingRunnable implements Runnable {
