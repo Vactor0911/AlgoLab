@@ -30,7 +30,6 @@ class LearningScreen extends JPanel {
     // 탭 패널에 글씨 세팅해 줄 라벨
     private Label definitionLabel = new Label(""); // 정의
     private Label viewCodeLabel = new Label(""); // 코드 보기
-    private Label timeComplexityLabel = new Label(""); // 시간 복잡도
 
     // View Code 안에 추가 할 콤보박스
     private ComboBox comboViewCode = new ComboBox();
@@ -80,13 +79,8 @@ class LearningScreen extends JPanel {
 
         viewCodeTabPanel.setLayout(new BorderLayout());
 
-        timeComplexityTabPanel.setLayout(new BorderLayout());
-        timeComplexityTabPanel.add(timeComplexityLabel);
-        ScrollPane timeComplexityScroll = new ScrollPane(timeComplexityTabPanel);
-
         tabLearn.addTab("정의", definitionScroll);
         tabLearn.addTab("코드", viewCodeTabPanel);
-        tabLearn.addTab("시간 복잡도", timeComplexityScroll);
 
         // 콤보 박스 초기화
         comboAlgorithm.setSelectedIndex(0);
@@ -94,7 +88,6 @@ class LearningScreen extends JPanel {
 
         // 버블 정렬 화면으로 초기화
         definitionLabel.setText(CodeParser.parseCode(Algorithms.BUBBLE_SORT.DEFINITION));
-        timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
         c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
 
         // 탭 패널 초기화
@@ -155,7 +148,6 @@ class LearningScreen extends JPanel {
                     switch (selectedAlgo) {
                         case "버블 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.BUBBLE_SORT.DEFINITION));
-                            timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.BUBBLE_SORT;
@@ -165,7 +157,6 @@ class LearningScreen extends JPanel {
                             break;
                         case "선택 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.SELECTION_SORT.DEFINITION));
-                            timeComplexityLabel.setText(Algorithms.SELECTION_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.SELECTION_SORT;
@@ -175,7 +166,6 @@ class LearningScreen extends JPanel {
                             break;
                         case "삽입 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.INSERTION_SORT.DEFINITION));
-                            timeComplexityLabel.setText(Algorithms.INSERTION_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.INSERTION_SORT;
@@ -185,7 +175,6 @@ class LearningScreen extends JPanel {
                             break;
                         case "퀵 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.QUICK_SORT.DEFINITION));
-                            timeComplexityLabel.setText(Algorithms.QUICK_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(nlogn)" }, { "O(nlogn)" } });
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.QUICK_SORT;
@@ -195,7 +184,6 @@ class LearningScreen extends JPanel {
                             break;
                         case "병합 정렬":
                             definitionLabel.setText(CodeParser.parseCode(Algorithms.MERGE_SORT.DEFINITION));
-                            timeComplexityLabel.setText(Algorithms.MERGE_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(nlogn)" }, { "O(nlogn)" }, { "O(nlogn)" } });
                             comboViewCode.setSelectedIndex(0);
                             algo = Algorithms.MERGE_SORT;
@@ -280,6 +268,10 @@ class LearningScreen extends JPanel {
             }
         });
     } // 생성자
+
+    protected void setComboIndex(int index) {
+        comboAlgorithm.setSelectedIndex(index);
+    }
 
 } // LearningScreen 클래스
 
@@ -533,7 +525,7 @@ class QuizStartScreen extends JPanel {
  */
 class QuizScreen extends JPanel {
     private JPanel panel = new JPanel();
-    private static JLabel quizLabel = new JLabel("", SwingConstants.CENTER);
+    private static Label quizLabel = new Label("", SwingConstants.CENTER);
     private JTextField answerEdit = new JTextField();
     private Button answerBtn = new Button("정답 제출");
     private static HashMap<String, String> quizHashMap = new HashMap<String, String>() {{
@@ -630,82 +622,3 @@ class QuizScreen extends JPanel {
     }
 
 } // QuizScreen 클래스
-
-/**
- * 라디오 버튼 연습
- */
-class QuizTODO extends JPanel {
-
-    // Declaration of object of JRadioButton class.
-    JRadioButton jRadioButton1;
-
-    // Declaration of object of JRadioButton class.
-    JRadioButton jRadioButton2;
-
-    // Declaration of object of JButton class.
-    JButton jButton;
-
-    // Declaration of object of ButtonGroup class.
-    ButtonGroup G1;
-
-    // Declaration of object of Label class.
-    Label L1;
-
-    // Constructor of Demo class.
-    public QuizTODO() {
-
-        // Setting layout as null of JFrame.
-        this.setLayout(null);
-
-        // Initialization of object of "JRadioButton" class.
-        jRadioButton1 = new JRadioButton();
-
-        // Initialization of object of "JRadioButton" class.
-        jRadioButton2 = new JRadioButton();
-
-        // Initialization of object of "JButton" class.
-        jButton = new JButton("Click");
-
-        // Initialization of object of "ButtonGroup" class.
-        G1 = new ButtonGroup();
-
-        // Initialization of object of " Label" class.
-        L1 = new Label("Qualification");
-
-        // setText(...) function is used to set text of radio button.
-        // Setting text of "jRadioButton2".
-        jRadioButton1.setText("Under-Graduate");
-
-        // Setting text of "jRadioButton4".
-        jRadioButton2.setText("Graduate");
-
-        // Setting Bounds of "jRadioButton2".
-        jRadioButton1.setBounds(120, 30, 120, 50);
-
-        // Setting Bounds of "jRadioButton4".
-        jRadioButton2.setBounds(250, 30, 80, 50);
-
-        // Setting Bounds of "jButton".
-        jButton.setBounds(125, 90, 80, 30);
-
-        // Setting Bounds of Label "L2".
-        L1.setBounds(20, 30, 150, 50);
-
-        // "this" keyword in java refers to current object.
-        // Adding "jRadioButton2" on JFrame.
-        this.add(jRadioButton1);
-
-        // Adding "jRadioButton4" on JFrame.
-        this.add(jRadioButton2);
-
-        // Adding "jButton" on JFrame.
-        this.add(jButton);
-
-        // Adding Label "L2" on JFrame.
-        this.add(L1);
-
-        // Adding "jRadioButton1" and "jRadioButton3" in a Button Group "G2".
-        G1.add(jRadioButton1);
-        G1.add(jRadioButton2);
-    } // 생성자
-} // QuizTODO 클래스
