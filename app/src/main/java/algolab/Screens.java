@@ -93,7 +93,7 @@ class LearningScreen extends JPanel {
         comboViewCode.setSelectedIndex(0);
 
         // 버블 정렬 화면으로 초기화
-        definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
+        definitionLabel.setText(CodeParser.parseCode(Algorithms.BUBBLE_SORT.DEFINITION));
         timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
         c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
 
@@ -154,7 +154,7 @@ class LearningScreen extends JPanel {
 
                     switch (selectedAlgo) {
                         case "버블 정렬":
-                            definitionLabel.setText(Algorithms.BUBBLE_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.BUBBLE_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.BUBBLE_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n)" }, { "O(n²)" } });
                             comboViewCode.setSelectedIndex(0);
@@ -164,7 +164,7 @@ class LearningScreen extends JPanel {
                             manager = new SortManager(graph, SortManager.BUBBLE_SORT);
                             break;
                         case "선택 정렬":
-                            definitionLabel.setText(Algorithms.SELECTION_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.SELECTION_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.SELECTION_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
                             comboViewCode.setSelectedIndex(0);
@@ -174,7 +174,7 @@ class LearningScreen extends JPanel {
                             manager = new SortManager(graph, SortManager.SELECTION_SORT);
                             break;
                         case "삽입 정렬":
-                            definitionLabel.setText(Algorithms.INSERTION_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.INSERTION_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.INSERTION_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(n²)" }, { "O(n²)" } });
                             comboViewCode.setSelectedIndex(0);
@@ -184,7 +184,7 @@ class LearningScreen extends JPanel {
                             manager = new SortManager(graph, SortManager.INSERTION_SORT);
                             break;
                         case "퀵 정렬":
-                            definitionLabel.setText(Algorithms.QUICK_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.QUICK_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.QUICK_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(n²)" }, { "O(nlogn)" }, { "O(nlogn)" } });
                             comboViewCode.setSelectedIndex(0);
@@ -194,7 +194,7 @@ class LearningScreen extends JPanel {
                             manager = new SortManager(graph, SortManager.QUICK_SORT);
                             break;
                         case "병합 정렬":
-                            definitionLabel.setText(Algorithms.MERGE_SORT.DEFINITION);
+                            definitionLabel.setText(CodeParser.parseCode(Algorithms.MERGE_SORT.DEFINITION));
                             timeComplexityLabel.setText(Algorithms.MERGE_SORT.TIME_COMPLEXITY.BEST);
                             c.put(new String[][] { { "O(nlogn)" }, { "O(nlogn)" }, { "O(nlogn)" } });
                             comboViewCode.setSelectedIndex(0);
@@ -280,6 +280,7 @@ class LearningScreen extends JPanel {
             }
         });
     } // 생성자
+
 } // LearningScreen 클래스
 
 /**
@@ -301,8 +302,11 @@ class PracticeScreen extends JPanel {
     private Button btnResume = new Button("이어하기");
     private Button btnStop = new Button("중지");
 
+    // 학습하기 버튼 구현 관련 변수
+    private JPanel pnlContent;
 
-    public PracticeScreen() {
+    public PracticeScreen(JPanel pnlContent) {
+        this.pnlContent = pnlContent;
         // 초기화
         comboAlgorithm.addItems(new String[][] {
                 { "버블 정렬", "" },
@@ -348,6 +352,17 @@ class PracticeScreen extends JPanel {
         pnlControl.setLayout( new CardLayout() );
         pnlControl.add(pnlInsert, "insert");
         pnlControl.add(pnlProcess, "process");
+
+        // 학습하기 버튼
+        btnLearn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    int comboItemIndex = comboAlgorithm.getSelectedIndex();
+                    CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
+                    cardLayout.show(pnlContent, ScreenList.LEARNING_SCREEN);
+                    ((LearningScreen) pnlContent.getComponent(1)).setComboIndex(comboItemIndex);
+            }
+        });
 
         //입력하기 버튼
         btnInsert.addActionListener(new ActionListener() {
@@ -505,10 +520,9 @@ class QuizStartScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CardLayout cardLayout = (CardLayout) pnlContent.getLayout();
-                cardLayout.show(pnlContent, ScreenList.QUIZ_SCREEN);
-
-                QuizScreen screen = (QuizScreen) pnlContent.getComponent(4);
-                screen.showRandomQuestion();
+                // 랜덤 퀴즈 설정 함수 호출
+                QuizScreen.showrandomQuestionStr();  // 랜덤 퀴즈 생성
+                cardLayout.show(pnlContent, ScreenList.QUIZ_SCREEN);   
             }
         });
     } // 생성자
@@ -519,34 +533,39 @@ class QuizStartScreen extends JPanel {
  */
 class QuizScreen extends JPanel {
     private JPanel panel = new JPanel();
-    private Label quizLabel = new Label("", SwingConstants.CENTER);
+    private static JLabel quizLabel = new JLabel("", SwingConstants.CENTER);
     private JTextField answerEdit = new JTextField();
-    private JButton answerBtn = new JButton("정답 제출");
-    Random random = new Random();
-    String randomQuestion = ""; // 랜덤으로 선정된 문제를 담을 문자열
-    String quizQuestion = ""; // quiz HashMap에서 key를 찾을 때 사용되는 문자열
-    private static final HashMap<String, String> dictQuestion = new HashMap<>() {{
+    private Button answerBtn = new Button("정답 제출");
+    private static HashMap<String, String> quizHashMap = new HashMap<String, String>() {{
+        // 문제 및 답안 추가
+        // 정의 문제
+        put("<html>서로 인접한 두 원소를 검사하여 오른쪽 리스트가 자동으로 정렬되는 방식의 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "버블 정렬");
+        put("<html>정렬되지 않은 데이터들에 대해 가장 작은 데이터를 찾아 가장 앞의 데이터와 교환하는 방식의 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "선택 정렬");
+        put("<html>자료 배열의 모든 요소를 앞에서부터 차례대로 이미 정렬된 배열 부분과 비교하여 자신의 위치를 삽입하는 방식의 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "삽입 정렬");
+        put("<html>피벗을 사용하는 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "퀵 정렬");
+        put("<html>리스트를 2개의 균등한 크기로 분할하고 분할된 부분 리스트를 다른 2개의 정렬된 부분 리스트를 합하는 방식의 알고리즘은?<br>'OO 정렬' 식으로 정답을 입력하세요.</html>", "병합 정렬");
+
+        // 정렬 문제
         put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 1회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "2, 1, 13, 5, 30");
-        put("<html>[2, 30, 1, 13, 5]를 버블 정렬할 때 2회전 후 결과는?<br>2, 30, 1, 13, 5 식으로 정답을 입력하세요.</html>", "1, 2, 5, 13, 30");
-
-        put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 37, 17, 40, 35");
-        put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 37, 40, 35");
-        put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 35, 40, 37");
-
-        put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 8, 4, 9, 7");
-        put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
-        put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");
-        
+        put("<html>[37, 14, 17, 40, 35]를 선택 정렬을 이용해 오름차순 정렬할 때 3회전 후 결과는?<br>37, 14, 17, 40, 35 식으로 정답을 입력하세요.</html>", "14, 17, 35, 40, 37");       
+        put("<html>[8, 3, 4, 9, 7]를 삽입 정렬을 이용해 오름차순 정렬할 때 2회전 후 결과는?<br>8, 3, 4, 9, 7 식으로 정답을 입력하세요.</html>", "3, 4, 8, 9, 7");     
         put("<html>[2, 14, 51, 80, 43]를 퀵 정렬을 이용해 오름차순 정렬할 때 1회전 후 결과는?(피벗은 51로 한다.)<br>2, 14, 51, 80, 43 식으로 정답을 입력하세요.</html>", "2, 14, 43, 51, 80");
 
-        put("<html>버블, 선택, 삽입, 퀵, 합병 정렬 중 최선 시간 복잡도가 O(nlogn)인 정렬은?<br>ex) 'OO 정렬' 식으로 정답을 입력하세요.</html>", "합병 정렬");
-    }};
+        // 시간복잡도 문제
+        put("<html>버블, 선택, 삽입, 퀵, 병합 정렬 중 최선 시간 복잡도가 O(nlogn)인 정렬은?<br>ex) 'OO 정렬' 식으로 정답을 입력하세요.</html>", "병합 정렬");
+    }}; // 퀴즈와 답을 담을 HashMap
+    private static Random random = new Random();
+    private static String randomQuestionStr = ""; // 랜덤으로 선정된 문제를 담을 문자열
+    private static String quizGetKeyStr = ""; // quizHashMap HashMap에서 key를 찾을 때 사용되는 문자
+    private static List<String> questionList = new ArrayList<>(); // 문제를 담을 리스트
 
     public QuizScreen() {
         setLayout(new GridBagLayout());
         panel.setLayout(new BorderLayout());
         panel.add(quizLabel, BorderLayout.CENTER);
 
+        // 랜덤으로 3문제 선택하여 리스트에 추가
+        selectRandomQuestions();
          // 1행
          add(panel, GbcFactory.createGbc(0, 0, 1d, 0.9d, 2, 1));
 
@@ -556,12 +575,12 @@ class QuizScreen extends JPanel {
 
          answerBtn.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {          
-                String userAnswer = answerEdit.getText(); // 사용자가 입력한 답안
-                if (userAnswer.equals(quizQuestion)){
+            public void actionPerformed(ActionEvent e) {      
+                if (answerEdit.getText().toString().equals(quizGetKeyStr)){
                     MessageBox.show(Main.getFrame(), "정답입니다!", MessageBox.btnOK, MessageBox.iconINFORMATION);
-                    answerEdit.setText("");
-                    showRandomQuestion();
+                    answerEdit.setText(""); // 텍스트 필드 초기화
+                    showrandomQuestionStr(); // 문제 출력 호출
+                    return;
                 }
                 else {
                     MessageBox.show(Main.getFrame(), "오답입니다.", MessageBox.btnOK, MessageBox.iconERROR);
@@ -577,16 +596,37 @@ class QuizScreen extends JPanel {
         ((JComponent) component).setBorder(BorderFactory.createLineBorder(Color.BLACK));
     }
 
-    protected void showRandomQuestion() { // 랜덤 퀴즈 함수
+    public static void selectRandomQuestions() { // 랜덤으로 3문제 선택하여 questionList에 추가하는 함수
+        List<String> shuffleQuizList = new ArrayList<>(quizHashMap.keySet()); // quiz의 키를 받아오는 리스트
+        Collections.shuffle(shuffleQuizList); // 리스트를 랜덤으로 섞기
+        for (int i = 0; i < 3 && i < shuffleQuizList.size(); i++) { // 3개만 questionList에 추가
+            questionList.add(shuffleQuizList.get(i));
+        }
+    }
+
+    public static void showrandomQuestionStr() { // 랜덤 퀴즈 함수
         // 퀴즈 크기만큼 랜덤 정수 생성
-        int randomIndex = random.nextInt(dictQuestion.size());
-        // HashMap의 keySet을 리스트에 저장
-        List<String> questionList = new ArrayList<>(dictQuestion.keySet());
-        // 랜덤으로 문제(key)를 리스트에서 갖고와서 문자열에 넣기
-        randomQuestion  = questionList.get(randomIndex);
-        // 랜덤 문제를 quiz에서 해당하는 key를 찾고 quizLabel에 설정
-        quizQuestion = dictQuestion.get(randomQuestion);
-        quizLabel.setText(randomQuestion);
+        if (questionList.isEmpty()) {
+            // 모든 문제가 출제되었으면 메시지 출력
+            int result = MessageBox.show(Main.getFrame(), "문제가 끝났습니다. 다시 푸시겠습니까?", MessageBox.btnOK_CANCEL, MessageBox.iconQUESTION);
+            if (result == MessageBox.btnOK) { // OK 버튼을 누르면
+                selectRandomQuestions(); // 랜덤으로 3문제 선택하여 questionList에 추가하는 함수
+                showrandomQuestionStr(); // 문제 출력 함수 호출
+                return;
+            }
+            else {
+                quizLabel.setText("문제가 더이상 없습니다.");
+                return;
+            }            
+        }
+        // 남은 문제 리스트에서 랜덤 선택
+        int randomIndex = random.nextInt(questionList.size());
+        randomQuestionStr = questionList.get(randomIndex);
+    
+        // 랜덤 문제를 quizHashMap에서 해당하는 key를 찾고 quizGetKeyStr에 설정
+        quizGetKeyStr = quizHashMap.get(randomQuestionStr);
+        quizLabel.setText(randomQuestionStr);
+        questionList.remove(randomIndex); // 출력 완료 문제 리스트에 랜덤 문제 추가
     }
 
 } // QuizScreen 클래스

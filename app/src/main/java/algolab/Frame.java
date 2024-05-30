@@ -18,7 +18,7 @@ public class Frame extends JFrame {
 
     //화면 객체
     private LearningScreen learningScreen = new LearningScreen(pnlContent);
-    private PracticeScreen practiceScreen = new PracticeScreen();
+    private PracticeScreen practiceScreen = new PracticeScreen(pnlContent);
     private QuizStartScreen quizStartScreen = new QuizStartScreen(pnlContent);
     private QuizScreen quizScreen = new QuizScreen();
 
