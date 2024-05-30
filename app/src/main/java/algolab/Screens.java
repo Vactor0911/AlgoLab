@@ -438,6 +438,11 @@ class PracticeScreen extends JPanel {
         btnStart.addActionListener(listener);
         btnPause.addActionListener(listener);
         btnStop.addActionListener(listener);
+        
+        Font font = new Font("Dialog", Font.PLAIN, 20);
+        btnStart.setFont(font);
+        btnPause.setFont(font);
+        btnStop.setFont(font);
     } // 생성자
 
     private class MyControlListener implements ActionListener {
