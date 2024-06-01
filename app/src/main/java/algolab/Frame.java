@@ -7,25 +7,25 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 public class Frame extends JFrame {
-    //주 패널
+    // 주 패널
     private JPanel pnlMenu = new JPanel();
     private JPanel pnlContent = new JPanel();
 
-    //메뉴 버튼
+    // 메뉴 버튼
     private Button btnLearning = new Button("학습하기");
     private Button btnTraining = new Button("실습하기");
     private Button btnQuiz = new Button("퀴즈 풀기");
 
-    //화면 객체
+    // 화면 객체
     private LearningScreen learningScreen = new LearningScreen(pnlContent);
     private PracticeScreen practiceScreen = new PracticeScreen(pnlContent);
     private QuizStartScreen quizStartScreen = new QuizStartScreen(pnlContent);
     private QuizScreen quizScreen = new QuizScreen();
 
-    //기타 객체
+    // 기타 객체
     private CardLayout cardLayout = new CardLayout(10, 10);
 
-    //스크린 ID
+    // 스크린 ID
     public static class ScreenList {
         public static final String NONE = "none";
         public static final String LEARNING_SCREEN = "LearningPanel";
@@ -34,7 +34,7 @@ public class Frame extends JFrame {
         public static final String QUIZ_SCREEN = "QuizScreen";
     }
 
-    //변수
+    // 변수
     private float sizeMul = 1f;
 
     public Frame() {
@@ -44,6 +44,7 @@ public class Frame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout( new GridBagLayout() );
+        setIconImage( new ImageIcon( Main.getPath("/Images/AlgoLab.png" ) ).getImage() );
 
         //메뉴 패널
         pnlMenu.setLayout( new GridLayout(3, 1) );
@@ -96,8 +97,8 @@ public class Frame extends JFrame {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        float width = (float)getWidth() / 600f;
-        float height = (float)getHeight() / 400f;
+        float width = (float) getWidth() / 600f;
+        float height = (float) getHeight() / 400f;
         sizeMul = Math.min(width, height);
     }
 }
